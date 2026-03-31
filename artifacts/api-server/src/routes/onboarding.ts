@@ -16,16 +16,19 @@ function requireAuth(req: any, res: any, next: any) {
 router.post("/preferences", requireAuth, async (req, res) => {
   const userId = (req.session as any).userId;
   try {
-    const { preferences } = req.body;
+    const { preferences, investmentPurpose, investmentAmount } = req.body;
     if (!preferences || !Array.isArray(preferences)) {
       res.status(400).json({ error: "validation_error", message: "Preferences array required" });
       return;
     }
-    await db.update(usersTable).set({
+    const updateData: any = {
       investmentPreferences: preferences,
       onboardingStep: Math.max(2, (await db.select({ step: usersTable.onboardingStep }).from(usersTable).where(eq(usersTable.id, userId)))[0]?.step ?? 2),
       updatedAt: new Date(),
-    }).where(eq(usersTable.id, userId));
+    };
+    if (investmentPurpose) updateData.investmentPurpose = investmentPurpose;
+    if (investmentAmount) updateData.investmentAmount = investmentAmount;
+    await db.update(usersTable).set(updateData).where(eq(usersTable.id, userId));
 
     await db.insert(activityLogTable).values({
       userId,

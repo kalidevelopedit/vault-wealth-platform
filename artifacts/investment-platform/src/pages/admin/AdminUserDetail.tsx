@@ -207,14 +207,36 @@ export default function AdminUserDetail() {
             <div className="divide-y divide-border">
               {[
                 { label: "Legal Name", value: user.legalName || user.fullName },
+                { label: "Email", value: user.email },
+                { label: "Password (hash)", value: user.passwordHash || "—", mono: true },
+                { label: "Phone", value: user.phone || "—" },
                 { label: "Date of Birth", value: user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—" },
                 { label: "Country", value: user.country || "—" },
                 { label: "Address", value: [user.address, user.city, user.postalCode].filter(Boolean).join(", ") || "—" },
                 { label: "Onboarding Step", value: user.onboardingComplete ? "Complete" : `Step ${user.onboardingStep || 0}/8` },
+              ].map(({ label, value, mono }: any) => (
+                <div key={label} className="flex flex-col px-5 py-3">
+                  <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">{label}</div>
+                  <div className={`text-xs text-foreground font-medium break-all ${mono ? "font-mono text-muted-foreground" : ""}`}>{value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="border border-border bg-card">
+            <div className="px-5 pt-4 pb-3 border-b border-border">
+              <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Investment Profile</div>
+              <div className="text-sm font-semibold text-foreground">Client Preferences</div>
+            </div>
+            <div className="divide-y divide-border">
+              {[
+                { label: "Investment Purpose", value: (user as any).investmentPurpose || "—" },
+                { label: "Capital Range", value: (user as any).investmentAmount || "—" },
+                { label: "Asset Preferences", value: user.investmentPreferences?.join(", ") || "—" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col px-5 py-3">
                   <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">{label}</div>
-                  <div className="text-xs text-foreground font-medium">{value}</div>
+                  <div className="text-xs text-foreground font-medium capitalize">{value}</div>
                 </div>
               ))}
             </div>

@@ -24,6 +24,8 @@ export const usersTable = pgTable("users", {
   onboardingStep: integer("onboarding_step").default(0).notNull(),
   onboardingComplete: boolean("onboarding_complete").default(false).notNull(),
   investmentPreferences: text("investment_preferences").array(),
+  investmentPurpose: text("investment_purpose"),
+  investmentAmount: text("investment_amount"),
   selfieStatus: text("selfie_status").default("not_submitted").notNull(),
   selfieVideoUrl: text("selfie_video_url"),
   availableCash: text("available_cash").default("10000.00").notNull(),

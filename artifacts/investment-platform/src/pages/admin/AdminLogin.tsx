@@ -16,6 +16,7 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       await adminLogin.mutateAsync({ data: { passcode } });
+      localStorage.setItem("adminAuthenticated", "true");
       toast.success("Access granted");
       setLocation("/admin/dashboard");
     } catch {
