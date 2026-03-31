@@ -1,0 +1,190 @@
+import { useRoute } from "wouter";
+import { useGetAdminUserDetail, useUpdateUserKycStatus } from "@workspace/api-client-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Loader2, ArrowLeft, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Link } from "wouter";
+
+export default function AdminUserDetail() {
+  const [match, params] = useRoute("/admin/users/:id");
+  const userId = Number(params?.id);
+  
+  const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId } });
+  const updateStatus = useUpdateUserKycStatus();
+  
+  const [notes, setNotes] = useState("");
+
+  if (isLoading) return <div className="p-20 flex justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>;
+  if (!detail) return <div>User not found</div>;
+
+  const { user, balance, kycDocuments, selfieStatus } = detail;
+
+  const handleStatusUpdate = async (status: "approved" | "rejected" | "flagged") => {
+    try {
+      await updateStatus.mutateAsync({
+        userId,
+        data: { status, notes }
+      });
+      toast.success(`User marked as ${status}`);
+      refetch();
+    } catch (e: any) {
+      toast.error(e.message || "Update failed");
+    }
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-6 pb-12">
+      <Link href="/admin/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory
+      </Link>
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-6 rounded-xl border shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center text-xl font-medium text-zinc-800">
+            {user.fullName.charAt(0)}
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{user.fullName}</h1>
+            <p className="text-muted-foreground">{user.email} • {user.phone}</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium capitalize mb-2
+            ${user.kycStatus === 'approved' ? 'bg-success/10 text-success' : 
+              user.kycStatus === 'pending' ? 'bg-yellow-500/10 text-yellow-600' : 
+              user.kycStatus === 'rejected' ? 'bg-destructive/10 text-destructive' :
+              'bg-muted text-muted-foreground'}
+          `}>
+            Status: {user.kycStatus.replace('_', ' ')}
+          </div>
+          <div className="text-sm text-muted-foreground">Joined: {new Date(user.createdAt).toLocaleDateString()}</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>KYC Documents</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                {kycDocuments?.map((doc) => (
+                  <div key={doc.id} className="border rounded-lg p-4 bg-muted/20">
+                    <div className="text-sm font-medium capitalize mb-2">{doc.documentType.replace('_', ' ')} - {doc.side}</div>
+                    <div className="aspect-video bg-muted rounded flex items-center justify-center border overflow-hidden">
+                      <img src={doc.fileUrl} alt="Doc" className="w-full h-full object-cover opacity-50" />
+                      <div className="absolute font-medium text-xs bg-background/80 px-2 py-1 rounded">View Document</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 border-t pt-6">
+                <div className="text-sm font-medium mb-2">Selfie Verification</div>
+                <div className="flex items-center gap-2 text-sm">
+                  {selfieStatus === 'approved' ? <CheckCircle className="text-success w-5 h-5" /> : 
+                   selfieStatus === 'submitted' ? <AlertTriangle className="text-yellow-500 w-5 h-5" /> :
+                   <XCircle className="text-muted-foreground w-5 h-5" />}
+                  <span className="capitalize">{selfieStatus.replace('_', ' ')}</span>
+                  {selfieStatus === 'submitted' && <Button variant="link" size="sm">Review Video</Button>}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Compliance Decision</CardTitle>
+              <CardDescription>Review notes and approve or reject KYC.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea 
+                placeholder="Add compliance notes here (internal only)..." 
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="min-h-[100px]"
+              />
+              <div className="flex gap-3">
+                <Button 
+                  className="bg-success text-success-foreground hover:bg-success/90" 
+                  onClick={() => handleStatusUpdate('approved')}
+                >
+                  Approve Application
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="text-destructive hover:bg-destructive/10"
+                  onClick={() => handleStatusUpdate('rejected')}
+                >
+                  Reject & Request Updates
+                </Button>
+                <Button 
+                  variant="secondary"
+                  onClick={() => handleStatusUpdate('flagged')}
+                >
+                  Flag for Review
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <div className="text-sm text-muted-foreground">Total Assets</div>
+                <div className="text-2xl font-bold">${balance?.totalPortfolioValue.toLocaleString()}</div>
+              </div>
+              <div className="pt-4 border-t space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Available Cash</span>
+                  <span className="font-medium">${balance?.availableCash.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Crypto Assets</span>
+                  <span className="font-medium">${balance?.cryptoBalance.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Equities</span>
+                  <span className="font-medium">${balance?.stockBalance.toLocaleString()}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <div className="text-muted-foreground text-xs mb-0.5">Legal Name</div>
+                <div className="font-medium">{user.legalName || user.fullName}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs mb-0.5">Date of Birth</div>
+                <div className="font-medium">{user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'N/A'}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs mb-0.5">Address</div>
+                <div className="font-medium">{user.address}, {user.city} {user.postalCode}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs mb-0.5">Country</div>
+                <div className="font-medium">{user.country}</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

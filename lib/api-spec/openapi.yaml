@@ -1,22 +1,39 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Investment Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management
+  - name: onboarding
+    description: Onboarding and KYC
+  - name: portfolio
+    description: Portfolio management
+  - name: assets
+    description: Asset marketplace
+  - name: transactions
+    description: Transaction history
+  - name: watchlist
+    description: User watchlist
+  - name: market
+    description: Market data and news
+  - name: admin
+    description: Admin operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +41,672 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /onboarding/preferences:
+    post:
+      operationId: saveInvestmentPreferences
+      tags: [onboarding]
+      summary: Save investment preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentPreferencesRequest"
+      responses:
+        "200":
+          description: Preferences saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /onboarding/profile:
+    post:
+      operationId: saveUserProfile
+      tags: [onboarding]
+      summary: Save user profile details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileSetupRequest"
+      responses:
+        "200":
+          description: Profile saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /onboarding/kyc/upload-id:
+    post:
+      operationId: uploadIdDocument
+      tags: [onboarding]
+      summary: Upload ID document (front or back)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentUploadRequest"
+      responses:
+        "200":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentUploadResponse"
+
+  /onboarding/kyc/upload-selfie:
+    post:
+      operationId: uploadSelfieVideo
+      tags: [onboarding]
+      summary: Upload selfie/liveness video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelfieUploadRequest"
+      responses:
+        "200":
+          description: Selfie uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /onboarding/kyc/submit:
+    post:
+      operationId: submitKyc
+      tags: [onboarding]
+      summary: Submit KYC for review
+      responses:
+        "200":
+          description: KYC submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /onboarding/status:
+    get:
+      operationId: getOnboardingStatus
+      tags: [onboarding]
+      summary: Get onboarding/KYC status
+      responses:
+        "200":
+          description: Onboarding status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingStatus"
+
+  /portfolio/summary:
+    get:
+      operationId: getPortfolioSummary
+      tags: [portfolio]
+      summary: Get portfolio summary
+      responses:
+        "200":
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioSummary"
+
+  /portfolio/performance:
+    get:
+      operationId: getPortfolioPerformance
+      tags: [portfolio]
+      summary: Get portfolio performance over time
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [ytd, 1y, 3y, all]
+          required: false
+      responses:
+        "200":
+          description: Performance data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceData"
+
+  /portfolio/holdings:
+    get:
+      operationId: getHoldings
+      tags: [portfolio]
+      summary: Get user holdings
+      responses:
+        "200":
+          description: Holdings list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Holding"
+
+  /portfolio/asset-mix:
+    get:
+      operationId: getAssetMix
+      tags: [portfolio]
+      summary: Get asset allocation breakdown
+      responses:
+        "200":
+          description: Asset mix
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetMix"
+
+  /portfolio/open-orders:
+    get:
+      operationId: getOpenOrders
+      tags: [portfolio]
+      summary: Get open orders
+      responses:
+        "200":
+          description: Open orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /assets/search:
+    get:
+      operationId: searchAssets
+      tags: [assets]
+      summary: Search assets
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [crypto, stock, commodity]
+          required: false
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Asset"
+
+  /assets/{symbol}:
+    get:
+      operationId: getAssetDetail
+      tags: [assets]
+      summary: Get asset detail and quote
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Asset detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetDetail"
+
+  /assets/{symbol}/chart:
+    get:
+      operationId: getAssetChart
+      tags: [assets]
+      summary: Get asset price chart data
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [1d, 1w, 1m, 1y, all]
+          required: false
+      responses:
+        "200":
+          description: Chart data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChartData"
+
+  /assets/list:
+    get:
+      operationId: listAssets
+      tags: [assets]
+      summary: List available assets by type
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [crypto, stock, commodity]
+          required: false
+      responses:
+        "200":
+          description: Assets list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Asset"
+
+  /transactions:
+    get:
+      operationId: getTransactions
+      tags: [transactions]
+      summary: Get transaction history
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [buy, sell, deposit, withdraw, convert]
+          required: false
+      responses:
+        "200":
+          description: Transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionList"
+
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a transaction (buy/sell/convert/deposit/withdraw)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionRequest"
+      responses:
+        "201":
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Insufficient funds or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /watchlist:
+    get:
+      operationId: getWatchlist
+      tags: [watchlist]
+      summary: Get user watchlist
+      responses:
+        "200":
+          description: Watchlist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WatchlistItem"
+
+    post:
+      operationId: addToWatchlist
+      tags: [watchlist]
+      summary: Add asset to watchlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WatchlistRequest"
+      responses:
+        "201":
+          description: Added to watchlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WatchlistItem"
+
+  /watchlist/{symbol}:
+    delete:
+      operationId: removeFromWatchlist
+      tags: [watchlist]
+      summary: Remove from watchlist
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /market/news:
+    get:
+      operationId: getMarketNews
+      tags: [market]
+      summary: Get latest market news
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: News articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsArticle"
+
+  /market/summary:
+    get:
+      operationId: getMarketSummary
+      tags: [market]
+      summary: Get market summary with top movers
+      responses:
+        "200":
+          description: Market summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketSummary"
+
+  /users/profile:
+    get:
+      operationId: getUserProfile
+      tags: [users]
+      summary: Get user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+    patch:
+      operationId: updateUserProfile
+      tags: [users]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /users/balance:
+    get:
+      operationId: getUserBalance
+      tags: [users]
+      summary: Get user balance and funds
+      responses:
+        "200":
+          description: User balance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserBalance"
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login with passcode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Admin authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
+          description: Invalid passcode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get platform-wide statistics
+      responses:
+        "200":
+          description: Admin stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      summary: Get all users
+      parameters:
+        - name: kycStatus
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected, not_started]
+          required: false
+        - name: country
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: search
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [balance, createdAt, name]
+          required: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          required: false
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserList"
+
+  /admin/users/{userId}:
+    get:
+      operationId: getAdminUserDetail
+      tags: [admin]
+      summary: Get detailed user information
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUserDetail"
+
+  /admin/users/{userId}/kyc:
+    patch:
+      operationId: updateUserKycStatus
+      tags: [admin]
+      summary: Update user KYC status (approve/reject/flag)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KycStatusUpdateRequest"
+      responses:
+        "200":
+          description: KYC status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +714,747 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error]
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    RegisterRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        country:
+          type: string
+        agreedToTerms:
+          type: boolean
+      required: [fullName, email, password, phone, country, agreedToTerms]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        message:
+          type: string
+      required: [user, message]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        country:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        kycStatus:
+          type: string
+          enum: [not_started, pending, approved, rejected]
+        onboardingStep:
+          type: integer
+        onboardingComplete:
+          type: boolean
+        profilePhotoUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, fullName, email, phone, country, role, kycStatus, onboardingStep, onboardingComplete, createdAt]
+
+    InvestmentPreferencesRequest:
+      type: object
+      properties:
+        preferences:
+          type: array
+          items:
+            type: string
+            enum: [crypto, stocks, commodities]
+      required: [preferences]
+
+    ProfileSetupRequest:
+      type: object
+      properties:
+        legalName:
+          type: string
+        dateOfBirth:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        profilePhotoUrl:
+          type: string
+          nullable: true
+      required: [legalName, dateOfBirth, phone, address, city, postalCode, country]
+
+    DocumentUploadRequest:
+      type: object
+      properties:
+        documentType:
+          type: string
+          enum: [passport, drivers_license, national_id]
+        side:
+          type: string
+          enum: [front, back]
+        fileUrl:
+          type: string
+      required: [documentType, side, fileUrl]
+
+    DocumentUploadResponse:
+      type: object
+      properties:
+        documentId:
+          type: integer
+        message:
+          type: string
+      required: [documentId, message]
+
+    SelfieUploadRequest:
+      type: object
+      properties:
+        videoUrl:
+          type: string
+      required: [videoUrl]
+
+    OnboardingStatus:
+      type: object
+      properties:
+        currentStep:
+          type: integer
+        totalSteps:
+          type: integer
+        kycStatus:
+          type: string
+          enum: [not_started, pending, approved, rejected]
+        completedSteps:
+          type: array
+          items:
+            type: string
+        investmentPreferences:
+          type: array
+          items:
+            type: string
+          nullable: true
+        hasProfilePhoto:
+          type: boolean
+        hasIdFront:
+          type: boolean
+        hasIdBack:
+          type: boolean
+        hasSelfie:
+          type: boolean
+      required: [currentStep, totalSteps, kycStatus, completedSteps, hasProfilePhoto, hasIdFront, hasIdBack, hasSelfie]
+
+    PortfolioSummary:
+      type: object
+      properties:
+        totalAssets:
+          type: number
+        availableCash:
+          type: number
+        totalReturn:
+          type: number
+        returnPercentage:
+          type: number
+        totalInvested:
+          type: number
+        dayChange:
+          type: number
+        dayChangePercentage:
+          type: number
+      required: [totalAssets, availableCash, totalReturn, returnPercentage, totalInvested, dayChange, dayChangePercentage]
+
+    PerformanceData:
+      type: object
+      properties:
+        period:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChartPoint"
+      required: [period, startDate, endDate, data]
+
+    ChartPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        value:
+          type: number
+      required: [date, value]
+
+    Holding:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        assetType:
+          type: string
+          enum: [crypto, stock, commodity]
+        quantity:
+          type: number
+        averageCost:
+          type: number
+        currentPrice:
+          type: number
+        currentValue:
+          type: number
+        gainLoss:
+          type: number
+        gainLossPercentage:
+          type: number
+        logoUrl:
+          type: string
+          nullable: true
+      required: [id, symbol, name, assetType, quantity, averageCost, currentPrice, currentValue, gainLoss, gainLossPercentage]
+
+    AssetMix:
+      type: object
+      properties:
+        totalValue:
+          type: number
+        allocations:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssetAllocation"
+      required: [totalValue, allocations]
+
+    AssetAllocation:
+      type: object
+      properties:
+        assetType:
+          type: string
+        percentage:
+          type: number
+        value:
+          type: number
+        color:
+          type: string
+      required: [assetType, percentage, value, color]
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        orderType:
+          type: string
+          enum: [buy, sell]
+        quantity:
+          type: number
+        limitPrice:
+          type: number
+        status:
+          type: string
+          enum: [pending, filled, cancelled]
+        createdAt:
+          type: string
+      required: [id, symbol, name, orderType, quantity, limitPrice, status, createdAt]
+
+    Asset:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        assetType:
+          type: string
+          enum: [crypto, stock, commodity]
+        currentPrice:
+          type: number
+        change24h:
+          type: number
+        changePercent24h:
+          type: number
+        marketCap:
+          type: number
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+      required: [symbol, name, assetType, currentPrice, change24h, changePercent24h]
+
+    AssetDetail:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        assetType:
+          type: string
+          enum: [crypto, stock, commodity]
+        currentPrice:
+          type: number
+        change24h:
+          type: number
+        changePercent24h:
+          type: number
+        high24h:
+          type: number
+        low24h:
+          type: number
+        volume24h:
+          type: number
+        marketCap:
+          type: number
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        exchange:
+          type: string
+          nullable: true
+        lastUpdated:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+      required: [symbol, name, assetType, currentPrice, change24h, changePercent24h, high24h, low24h, volume24h, lastUpdated]
+
+    ChartData:
+      type: object
+      properties:
+        symbol:
+          type: string
+        period:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChartPoint"
+      required: [symbol, period, data]
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [buy, sell, deposit, withdraw, convert]
+        symbol:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        quantity:
+          type: number
+          nullable: true
+        price:
+          type: number
+          nullable: true
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        createdAt:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+      required: [id, type, amount, status, createdAt]
+
+    TransactionList:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required: [transactions, total, limit, offset]
+
+    CreateTransactionRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [buy, sell, deposit, withdraw, convert]
+        symbol:
+          type: string
+          nullable: true
+        quantity:
+          type: number
+          nullable: true
+        amount:
+          type: number
+        fromSymbol:
+          type: string
+          nullable: true
+        toSymbol:
+          type: string
+          nullable: true
+      required: [type, amount]
+
+    WatchlistItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        name:
+          type: string
+        assetType:
+          type: string
+          enum: [crypto, stock, commodity]
+        currentPrice:
+          type: number
+        change24h:
+          type: number
+        changePercent24h:
+          type: number
+        logoUrl:
+          type: string
+          nullable: true
+        addedAt:
+          type: string
+      required: [id, symbol, name, assetType, currentPrice, change24h, changePercent24h, addedAt]
+
+    WatchlistRequest:
+      type: object
+      properties:
+        symbol:
+          type: string
+        assetType:
+          type: string
+          enum: [crypto, stock, commodity]
+      required: [symbol, assetType]
+
+    NewsArticle:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        summary:
+          type: string
+          nullable: true
+        source:
+          type: string
+        url:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        publishedAt:
+          type: string
+        category:
+          type: string
+          nullable: true
+      required: [id, title, source, url, publishedAt]
+
+    MarketSummary:
+      type: object
+      properties:
+        topGainers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Asset"
+        topLosers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Asset"
+        trending:
+          type: array
+          items:
+            $ref: "#/components/schemas/Asset"
+      required: [topGainers, topLosers, trending]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        legalName:
+          type: string
+          nullable: true
+        email:
+          type: string
+        phone:
+          type: string
+        country:
+          type: string
+        dateOfBirth:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+          nullable: true
+        profilePhotoUrl:
+          type: string
+          nullable: true
+        kycStatus:
+          type: string
+          enum: [not_started, pending, approved, rejected]
+        investmentPreferences:
+          type: array
+          items:
+            type: string
+          nullable: true
+        onboardingComplete:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, fullName, email, phone, country, kycStatus, onboardingComplete, createdAt]
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        postalCode:
+          type: string
+        profilePhotoUrl:
+          type: string
+          nullable: true
+
+    UserBalance:
+      type: object
+      properties:
+        availableCash:
+          type: number
+        totalPortfolioValue:
+          type: number
+        cryptoBalance:
+          type: number
+        stockBalance:
+          type: number
+        commodityBalance:
+          type: number
+        pendingDeposits:
+          type: number
+        pendingWithdrawals:
+          type: number
+      required: [availableCash, totalPortfolioValue, cryptoBalance, stockBalance, commodityBalance, pendingDeposits, pendingWithdrawals]
+
+    AdminLoginRequest:
+      type: object
+      properties:
+        passcode:
+          type: string
+      required: [passcode]
+
+    AdminStats:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+        verifiedUsers:
+          type: integer
+        pendingKyc:
+          type: integer
+        rejectedKyc:
+          type: integer
+        todaySignups:
+          type: integer
+        totalPlatformAssets:
+          type: number
+        totalDeposits:
+          type: number
+        totalWithdrawals:
+          type: number
+      required: [totalUsers, verifiedUsers, pendingKyc, rejectedKyc, todaySignups, totalPlatformAssets, totalDeposits, totalWithdrawals]
+
+    AdminUserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUser"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+      required: [users, total, limit, offset]
+
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        country:
+          type: string
+        profilePhotoUrl:
+          type: string
+          nullable: true
+        kycStatus:
+          type: string
+          enum: [not_started, pending, approved, rejected]
+        onboardingStep:
+          type: integer
+        onboardingComplete:
+          type: boolean
+        availableBalance:
+          type: number
+        totalAssets:
+          type: number
+        holdingsCount:
+          type: integer
+        transactionCount:
+          type: integer
+        lastActive:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, fullName, email, country, kycStatus, onboardingStep, onboardingComplete, availableBalance, totalAssets, holdingsCount, transactionCount, createdAt]
+
+    AdminUserDetail:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserProfile"
+        balance:
+          $ref: "#/components/schemas/UserBalance"
+        holdings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Holding"
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        kycDocuments:
+          type: array
+          items:
+            $ref: "#/components/schemas/KycDocument"
+        selfieStatus:
+          type: string
+          enum: [not_submitted, submitted, approved, rejected]
+        kycNotes:
+          type: string
+          nullable: true
+        activityTimeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityEvent"
+      required: [user, balance, holdings, recentTransactions, kycDocuments, selfieStatus]
+
+    KycDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        documentType:
+          type: string
+        side:
+          type: string
+        fileUrl:
+          type: string
+        uploadedAt:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+      required: [id, documentType, side, fileUrl, uploadedAt, status]
+
+    ActivityEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        eventType:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+      required: [id, eventType, description, timestamp]
+
+    KycStatusUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected, flagged, pending]
+        notes:
+          type: string
+          nullable: true
+      required: [status]

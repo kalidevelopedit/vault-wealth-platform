@@ -1,0 +1,20 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "oTzXAHtk0knmWpU2LdpGa"
+uri = "file://artifacts/investment-platform/public/hero-mockup.png"
+type = "image"
+title = "High-end investment platform UI"
+
+[[generated]]
+id = "e6PCsY_5-wLx4ssNElm8p"
+uri = "file://artifacts/investment-platform/public/feature-growth.png"
+type = "image"
+title = "Financial growth abstract lines"
+
+[[generated]]
+id = "sGra3zpMvrKLgmc_1R2ix"
+uri = "file://artifacts/investment-platform/public/feature-security.png"
+type = "image"
+title = "Secure vault abstract concept"
