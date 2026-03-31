@@ -1,7 +1,7 @@
 import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
-import { Check, Shield, ChevronRight, Globe, ExternalLink, Info } from "lucide-react";
+import { Check, ChevronRight, ExternalLink, Info, User, Users, Landmark, Briefcase, Building2, DollarSign, Globe2, Zap, ShieldCheck } from "lucide-react";
 
 const css = `
   @keyframes fadeInUp {
@@ -32,7 +32,7 @@ export default function Home() {
         {/* Subtle ambient glow */}
         <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: "700px", height: "300px", background: "radial-gradient(ellipse, rgba(200,16,46,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: "860px", margin: "0 auto", padding: "0 24px 56px" }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: "860px", margin: "0 auto", padding: "0 24px 28px" }}>
           <p className="hero-text-1" style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.28)", marginBottom: "22px" }}>
             Institutional-Grade Trading
           </p>
@@ -73,7 +73,7 @@ export default function Home() {
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%", background: "linear-gradient(to top, #0d0d10 0%, transparent 100%)" }} />
           </div>
           {/* Platform mockup on top */}
-          <div style={{ position: "relative", zIndex: 2, padding: "40px 60px 0" }}>
+          <div style={{ position: "relative", zIndex: 2, padding: "0 60px 0" }}>
             <img src="/ibkr-platform-mockup.png" alt="Vault Wealth trading platform on laptop and mobile" style={{ width: "100%", maxWidth: "960px", display: "block", margin: "0 auto", objectFit: "contain" }} />
             {/* Bottom fade to merge with next section */}
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: "linear-gradient(to bottom, transparent 0%, #0d0d10 100%)", pointerEvents: "none" }} />
@@ -134,35 +134,33 @@ export default function Home() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
             {[
               {
-                icon: "💰", title: "Professional Pricing",
+                Icon: DollarSign, title: "Professional Pricing",
                 desc: "Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",
-                link: "Learn More",
               },
               {
-                icon: "🌍", title: "Global Access",
+                Icon: Globe2, title: "Global Access",
                 desc: "Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",
-                link: "Learn More",
               },
               {
-                icon: "⚡", title: "Premier Technology",
+                Icon: Zap, title: "Premier Technology",
                 desc: "Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",
-                link: "Learn More",
               },
               {
-                icon: "🏛", title: "Strength & Security",
+                Icon: ShieldCheck, title: "Strength & Security",
                 desc: "$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",
-                link: "Learn More",
               },
-            ].map(c => (
-              <div key={c.title} className="feature-card" style={{
+            ].map(({ Icon, title, desc }) => (
+              <div key={title} className="feature-card" style={{
                 border: "1px solid #e5e7eb", padding: "28px 24px",
                 cursor: "pointer", transition: "background 0.15s",
               }}>
-                <div style={{ fontSize: "28px", marginBottom: "16px" }}>{c.icon}</div>
-                <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#111", marginBottom: "10px" }}>{c.title}</h3>
-                <p style={{ fontSize: "13.5px", color: "#6b7280", lineHeight: 1.7, marginBottom: "16px" }}>{c.desc}</p>
+                <div style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #e5e7eb", marginBottom: "18px" }}>
+                  <Icon size={18} color="#374151" strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#111", marginBottom: "10px" }}>{title}</h3>
+                <p style={{ fontSize: "13.5px", color: "#6b7280", lineHeight: 1.7, marginBottom: "16px" }}>{desc}</p>
                 <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "13px", fontWeight: 600, color: "#c8102e", textDecoration: "none" }}>
-                  {c.link} <ChevronRight size={14} />
+                  Learn More <ChevronRight size={14} />
                 </a>
               </div>
             ))}
@@ -358,20 +356,22 @@ export default function Home() {
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center", marginBottom: "56px" }}>
             {[
-              { emoji: "👤", label: "Individual Accounts", sub: "Personal investing accounts" },
-              { emoji: "👥", label: "Joint or Trust Accounts", sub: "Shared and fiduciary accounts" },
-              { emoji: "🏦", label: "Retirement Accounts", sub: "IRA, Roth, SEP and SIMPLE" },
-              { emoji: "🤝", label: "Non-Professional Advisors", sub: "Manage friends & family portfolios" },
-              { emoji: "🏢", label: "Institutional Accounts", sub: "Advisors, hedge funds & brokers" },
-            ].map(a => (
-              <a key={a.label} href="#" className="acct-card" style={{
+              { Icon: User,      label: "Individual Accounts",        sub: "Personal investing accounts" },
+              { Icon: Users,     label: "Joint or Trust Accounts",    sub: "Shared and fiduciary accounts" },
+              { Icon: Landmark,  label: "Retirement Accounts",        sub: "IRA, Roth, SEP and SIMPLE" },
+              { Icon: Briefcase, label: "Non-Professional Advisors",  sub: "Manage friends & family portfolios" },
+              { Icon: Building2, label: "Institutional Accounts",     sub: "Advisors, hedge funds & brokers" },
+            ].map(({ Icon, label, sub }) => (
+              <a key={label} href="#" className="acct-card" style={{
                 display: "flex", flexDirection: "column", alignItems: "center",
                 padding: "28px 24px", border: "1px solid #e5e7eb", textDecoration: "none",
                 width: "175px", transition: "box-shadow 0.18s, border-color 0.18s",
               }}>
-                <span style={{ fontSize: "36px", marginBottom: "12px" }}>{a.emoji}</span>
-                <span style={{ fontSize: "13.5px", fontWeight: 700, color: "#111", marginBottom: "4px", textAlign: "center", lineHeight: 1.3 }}>{a.label}</span>
-                <span style={{ fontSize: "11.5px", color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>{a.sub}</span>
+                <div style={{ width: "44px", height: "44px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #e5e7eb", marginBottom: "14px" }}>
+                  <Icon size={20} color="#374151" strokeWidth={1.5} />
+                </div>
+                <span style={{ fontSize: "13.5px", fontWeight: 700, color: "#111", marginBottom: "4px", textAlign: "center", lineHeight: 1.3 }}>{label}</span>
+                <span style={{ fontSize: "11.5px", color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>{sub}</span>
               </a>
             ))}
           </div>
