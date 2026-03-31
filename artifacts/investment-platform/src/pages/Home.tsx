@@ -1,324 +1,314 @@
-import { Navbar } from "@/components/layout/Navbar";
+import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
-import { ArrowRight, ShieldCheck, TrendingUp, Globe, LineChart, Building2, Lock } from "lucide-react";
+import { Check, ArrowRight, Shield, ChevronRight } from "lucide-react";
 
-const stats = [
-  { value: "$2.4B+", label: "Assets Under Custody" },
-  { value: "17", label: "Asset Classes" },
-  { value: "99.98%", label: "Platform Uptime" },
-  { value: "SOC 2", label: "Type II Certified" },
-];
+const platformMockup = "/platform-mockup.png";
+const platformGlobe = "/platform-globe.png";
+const platformDevices = "/platform-devices.png";
 
-const features = [
+const RATES = [
   {
-    icon: TrendingUp,
-    title: "Institutional Execution",
-    desc: "Direct market access with institutional-grade pricing, minimal slippage, and real-time order routing across 40+ venues.",
+    headline: "Earn interest up to",
+    currency: "USD",
+    rate: "3.14%",
+    sub: "on uninvested cash.\nAutomatically.",
+    cta: "Compare Interest Rates",
   },
   {
-    icon: ShieldCheck,
-    title: "Bank-Level Security",
-    desc: "Multi-sig cold storage, hardware security modules, and 24/7 security operations monitoring your portfolio.",
-  },
-  {
-    icon: LineChart,
-    title: "Professional Analytics",
-    desc: "Advanced portfolio analytics, risk attribution, and real-time P&L across all asset classes in one unified view.",
-  },
-  {
-    icon: Globe,
-    title: "Global Market Access",
-    desc: "Trade equities, digital assets, and commodities across multiple jurisdictions from a single account.",
-  },
-  {
-    icon: Building2,
-    title: "Private Client Services",
-    desc: "Dedicated relationship managers and bespoke advisory for high-net-worth individuals and family offices.",
-  },
-  {
-    icon: Lock,
-    title: "Regulatory Compliance",
-    desc: "Fully regulated, KYC/AML compliant infrastructure built to the highest institutional standards.",
+    headline: "Borrow for as low as",
+    currency: "USD",
+    rate: "4.14%",
+    sub: "Among the lowest\nmargin rates globally.",
+    cta: "Compare Margin Rates",
   },
 ];
 
-const assetRows = [
-  { name: "Bitcoin", sym: "BTC", type: "Digital Asset", price: "$67,234", chg: "+2.79%", pos: true },
-  { name: "Apple Inc.", sym: "AAPL", type: "Equity", price: "$185.42", chg: "+1.28%", pos: true },
-  { name: "Gold", sym: "XAU/USD", type: "Commodity", price: "$2,342.5", chg: "+0.79%", pos: true },
-  { name: "Ethereum", sym: "ETH", type: "Digital Asset", price: "$3,542.8", chg: "+2.53%", pos: true },
-  { name: "Microsoft", sym: "MSFT", type: "Equity", price: "$415.80", chg: "+1.57%", pos: true },
-  { name: "Crude Oil", sym: "WTI", type: "Commodity", price: "$78.43", chg: "−1.54%", pos: false },
+const PLAN_LITE = {
+  tag: "Occasional Traders",
+  name: "VAULT LITE",
+  features: [
+    { bold: "$0", text: " Commissions on US stocks and ETFs" },
+    { text: "Margin as low as USD 6.14%" },
+    { text: "Interest up to USD 2.14%" },
+  ],
+};
+
+const PLAN_PRO = {
+  tag: "Active Traders",
+  name: "VAULT PRO",
+  features: [
+    { bold: "$0.005", text: " per share on US Stocks and ETFs" },
+    { text: "Margin as low as USD 4.14%" },
+    { text: "Interest up to USD 3.14%" },
+    { text: "Enhanced price execution" },
+    { text: "Extra protection on uninvested cash" },
+  ],
+};
+
+const PLATFORMS = [
+  { label: "Vault Desktop", href: "#" },
+  { label: "Client Portal", href: "#" },
+  { label: "Vault Mobile", href: "#" },
+  { label: "Trader Workstation", href: "#" },
+];
+
+const STATS = [
+  { sup: "Trusted by over", val: "4 Million", sub: "clients worldwide" },
+  { sup: "Executing more than", val: "4 Million", sub: "trades daily" },
+  { sup: "Nasdaq-listed", val: "VWT", sub: "" },
+  { sup: "Member of the", val: "S&P 500", sub: "" },
+  { sup: "Client assets over", val: "$750 Billion", sub: "" },
+  { sup: "Total Equity", val: "$19.5 Billion", sub: "" },
+  { sup: "Over", val: "$5 Million", sub: "in account protection coverage for uninvested cash" },
+  { sup: "Nearly", val: "50 Years", sub: "of Innovation" },
 ];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background font-sans">
-      <Navbar />
+    <div className="min-h-screen font-sans" style={{ background: "#fff" }}>
+      <HomeNavbar />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="bg-[#0a1628] text-white relative overflow-hidden">
-        {/* Grid texture overlay */}
-        <div className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-
-        <div className="relative max-w-7xl mx-auto px-6 pt-20 pb-0">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-2 mb-8">
-              <div className="h-px w-8 bg-white/30" />
-              <span className="text-white/50 text-[11px] font-semibold uppercase tracking-[0.2em]">Institutional Wealth Platform</span>
-            </div>
-            <h1 className="text-[52px] leading-[1.08] font-semibold tracking-[-0.03em] text-white mb-6">
-              Sophisticated capital<br />markets access.<br />
-              <span className="text-white/40">For serious investors.</span>
-            </h1>
-            <p className="text-white/55 text-base leading-relaxed max-w-xl mb-10">
-              Institutional-grade tools, deep liquidity, and bank-level security across crypto, equities, and commodities — managed from one unified platform.
-            </p>
-            <div className="flex items-center gap-4">
-              <Link href="/register"
-                className="inline-flex items-center gap-2 bg-white text-[#0a1628] text-xs font-bold uppercase tracking-[0.1em] px-6 py-3 hover:bg-white/92 transition-colors">
-                Open an Account <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-              <Link href="/login"
-                className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-semibold uppercase tracking-[0.1em] px-6 py-3 hover:border-white/40 hover:bg-white/5 transition-colors">
-                Sign In
-              </Link>
-            </div>
-          </div>
-
-          {/* Live market strip */}
-          <div className="mt-16 border-t border-white/10">
-            <div className="overflow-x-auto">
-              <table className="w-full text-[11px] border-collapse">
-                <thead>
-                  <tr className="border-b border-white/8">
-                    <th className="text-left py-2 text-white/30 font-semibold uppercase tracking-widest text-[9px] pr-8">Instrument</th>
-                    <th className="text-left py-2 text-white/30 font-semibold uppercase tracking-widest text-[9px] pr-8">Type</th>
-                    <th className="text-right py-2 text-white/30 font-semibold uppercase tracking-widest text-[9px] pr-8">Last Price</th>
-                    <th className="text-right py-2 text-white/30 font-semibold uppercase tracking-widest text-[9px]">24h Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {assetRows.map((a) => (
-                    <tr key={a.sym} className="border-b border-white/5 hover:bg-white/3 transition-colors">
-                      <td className="py-2.5 pr-8">
-                        <span className="text-white font-medium">{a.name}</span>
-                        <span className="text-white/30 ml-2 font-mono">{a.sym}</span>
-                      </td>
-                      <td className="py-2.5 pr-8 text-white/40 font-mono text-[10px]">{a.type}</td>
-                      <td className="py-2.5 pr-8 text-right text-white font-mono">{a.price}</td>
-                      <td className={`py-2.5 text-right font-mono font-semibold ${a.pos ? "text-emerald-400" : "text-red-400"}`}>{a.chg}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats Bar ────────────────────────────────────────── */}
-      <section className="bg-[#0d1e36] border-b border-white/6">
-        <div className="max-w-7xl mx-auto px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-white/8">
-          {stats.map((s) => (
-            <div key={s.label} className="px-8 first:pl-0 last:pr-0">
-              <div className="text-2xl font-semibold text-white tracking-tight tabular-nums">{s.value}</div>
-              <div className="text-[10px] font-semibold text-white/35 uppercase tracking-widest mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Platform Features ─────────────────────────────────── */}
-      <section id="solutions" className="py-24 border-b border-border">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-            <div className="lg:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-px w-6 bg-foreground/30" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Platform</span>
-              </div>
-              <h2 className="text-3xl font-semibold tracking-tight leading-tight text-foreground mb-4">
-                Built for institutional standards.
-              </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Every component of our platform is engineered to meet the requirements of professional investors, family offices, and wealth managers.
-              </p>
-              <Link href="/register"
-                className="inline-flex items-center gap-2 mt-8 border border-foreground text-foreground text-xs font-bold uppercase tracking-[0.1em] px-5 py-2.5 hover:bg-foreground hover:text-background transition-colors">
-                Start Today <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-0 border border-border">
-              {features.map((f, i) => (
-                <div key={i}
-                  className={`p-7 border-border bg-card hover:bg-muted/30 transition-colors
-                    ${i % 2 === 0 && i < features.length - 1 ? "border-r" : ""}
-                    ${i < features.length - 2 ? "border-b" : ""}
-                  `}>
-                  <f.icon className="w-5 h-5 text-primary mb-5 opacity-80" />
-                  <h3 className="text-sm font-semibold text-foreground mb-2">{f.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Asset Classes ─────────────────────────────────────── */}
-      <section id="markets" className="py-24 border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center gap-2 mb-10">
-            <div className="h-px w-6 bg-foreground/30" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Asset Classes</span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            <div>
-              <h2 className="text-3xl font-semibold tracking-tight leading-tight text-foreground mb-5">
-                One platform. Every market.
-              </h2>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-10">
-                Move seamlessly between traditional and digital markets without managing multiple brokers, custodians, or wallets. Vault Wealth consolidates your entire portfolio under one institutional roof.
-              </p>
-              <div className="space-y-0 border border-border">
-                {[
-                  { cat: "Digital Assets", items: "BTC, ETH, SOL, BNB + 46 more vetted assets", count: "50+" },
-                  { cat: "Equities & ETFs", items: "US & international stocks, major indices", count: "5,000+" },
-                  { cat: "Commodities", items: "Precious metals, energy, agriculture", count: "25+" },
-                ].map((a, i) => (
-                  <div key={i} className={`flex items-center gap-6 p-5 hover:bg-muted/30 transition-colors ${i < 2 ? "border-b border-border" : ""}`}>
-                    <div className="text-2xl font-semibold text-primary tracking-tight tabular-nums w-14 shrink-0">{a.count}</div>
-                    <div>
-                      <div className="text-sm font-semibold text-foreground">{a.cat}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">{a.items}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="border border-border bg-background p-4">
-                <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Sample Portfolio Allocation</div>
-                <div className="space-y-2">
-                  {[
-                    { label: "Equities", pct: 45, color: "bg-[#0a1628]" },
-                    { label: "Digital Assets", pct: 30, color: "bg-[#1e3a5f]" },
-                    { label: "Commodities", pct: 15, color: "bg-[#3d6b9e]" },
-                    { label: "Cash", pct: 10, color: "bg-[#8ba9c9]" },
-                  ].map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-muted-foreground font-medium">{item.label}</span>
-                        <span className="text-foreground font-semibold tabular-nums">{item.pct}%</span>
-                      </div>
-                      <div className="h-1.5 bg-muted">
-                        <div className={`h-full ${item.color} transition-all`} style={{ width: `${item.pct}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: "Total Return", value: "+24.6%", sub: "YTD", pos: true },
-                  { label: "Risk Score", value: "Medium", sub: "Portfolio risk" },
-                  { label: "Volatility", value: "12.4%", sub: "Annualized" },
-                  { label: "Sharpe Ratio", value: "1.84", sub: "Risk-adjusted" },
-                ].map((m) => (
-                  <div key={m.label} className="border border-border bg-card p-4">
-                    <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1.5">{m.label}</div>
-                    <div className={`text-xl font-semibold tracking-tight tabular-nums ${m.pos ? "text-emerald-700" : "text-foreground"}`}>{m.value}</div>
-                    <div className="text-[10px] text-muted-foreground mt-0.5">{m.sub}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Security ──────────────────────────────────────────── */}
-      <section id="security" className="py-24 border-b border-border bg-[#0a1628] text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <div className="flex items-center gap-2 mb-8">
-                <div className="h-px w-6 bg-white/30" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Security & Trust</span>
-              </div>
-              <h2 className="text-3xl font-semibold tracking-tight leading-tight text-white mb-5">
-                Your capital, protected by institutional-grade infrastructure.
-              </h2>
-              <p className="text-white/50 text-sm leading-relaxed mb-10">
-                We operate under strict regulatory frameworks across multiple jurisdictions. Our custody solutions employ industry-leading cryptography, multi-signature authorization, and continuous security monitoring.
-              </p>
-              <div className="grid grid-cols-2 gap-0 border border-white/10">
-                {[
-                  { val: "$500M+", label: "Insurance Coverage" },
-                  { val: "SOC 2", label: "Type II Certified" },
-                  { val: "256-bit", label: "AES Encryption" },
-                  { val: "24/7", label: "Security Operations" },
-                ].map((s, i) => (
-                  <div key={i}
-                    className={`p-5 border-white/10
-                      ${i % 2 === 0 ? "border-r" : ""}
-                      ${i < 2 ? "border-b" : ""}
-                    `}>
-                    <div className="text-2xl font-semibold text-white tracking-tight">{s.val}</div>
-                    <div className="text-[10px] font-semibold uppercase tracking-widest text-white/35 mt-0.5">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border border-white/10 p-8 space-y-5">
-              {[
-                { title: "Cold Storage Custody", desc: "98% of assets held in offline, multi-sig cold storage with geographically distributed keys." },
-                { title: "Real-Time Monitoring", desc: "Continuous fraud detection and anomaly analysis across all account activity." },
-                { title: "Regulatory Compliance", desc: "Fully KYC/AML compliant with automated reporting and audit trail." },
-                { title: "Data Encryption", desc: "End-to-end encryption for all data in transit and at rest using AES-256." },
-              ].map((item, i) => (
-                <div key={i} className={`pb-5 ${i < 3 ? "border-b border-white/8" : ""}`}>
-                  <div className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-white/40 mt-1.5 shrink-0" />
-                    <div>
-                      <div className="text-sm font-semibold text-white mb-1">{item.title}</div>
-                      <div className="text-xs text-white/40 leading-relaxed">{item.desc}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA ───────────────────────────────────────────────── */}
-      <section className="py-24 border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-10">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground mb-3">
-              Ready to elevate your portfolio?
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-lg">
-              Join thousands of high-net-worth individuals and institutions who trust Vault Wealth with their capital.
-            </p>
-          </div>
-          <div className="flex items-center gap-4 shrink-0">
+      <section style={{ background: "#111115" }} className="text-white">
+        <div className="max-w-5xl mx-auto px-6 pt-20 pb-0 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+            Lower Costs. Better Returns.
+          </h1>
+          <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-2xl mx-auto mb-8">
+            Earn <strong className="text-white font-semibold">up to USD 3.14%</strong> on uninvested cash,{" "}
+            <strong className="text-white font-semibold">pay up to 55% less</strong> on margin, and trade with{" "}
+            <strong className="text-white font-semibold">commissions starting at $0</strong> across{" "}
+            <strong className="text-white font-semibold">170+ markets</strong> worldwide.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-3">
             <Link href="/register"
-              className="inline-flex items-center gap-2 bg-[#0a1628] text-white text-xs font-bold uppercase tracking-[0.1em] px-7 py-3.5 hover:bg-[#0d1f38] transition-colors">
-              Open an Account <ArrowRight className="w-3.5 h-3.5" />
+              className="inline-flex items-center justify-center gap-2 bg-[#c8102e] text-white font-bold text-base px-8 py-3.5 hover:bg-[#a50d25] transition-colors">
+              Get Started
+            </Link>
+          </div>
+          <p className="text-white/30 text-xs mb-12">
+            <span className="inline-flex items-center gap-1">
+              <Shield className="w-3 h-3" /> Lower Cost Disclosure
+            </span>
+          </p>
+
+          {/* Hero image */}
+          <div className="relative max-w-4xl mx-auto">
+            <img
+              src={platformMockup}
+              alt="Vault Wealth Trading Platform"
+              className="w-full object-contain"
+              style={{ maxHeight: 440 }}
+            />
+            {/* Fade bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-24"
+              style={{ background: "linear-gradient(to bottom, transparent, #111115)" }} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Your Money Works Harder Here ─────────────────────── */}
+      <section style={{ background: "#111115" }} className="text-white py-20">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Your Money Works Harder Here
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {RATES.map((r) => (
+              <div key={r.headline} style={{ background: "#1c2537" }} className="p-8">
+                <p className="text-white/60 text-sm mb-2">{r.headline}</p>
+                <p className="text-sm text-white/50 mb-1">
+                  <span className="text-white/70 text-base font-medium">{r.currency} </span>
+                  <span className="text-5xl font-bold text-white">{r.rate}</span>
+                </p>
+                <p className="text-white/60 text-sm mt-3 whitespace-pre-line">{r.sub}</p>
+                <a href="#" className="flex items-center gap-2 mt-6 text-sm font-semibold text-white hover:text-white/70 transition-colors">
+                  {r.cta} <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing ──────────────────────────────────────────── */}
+      <section style={{ background: "#111115" }} className="text-white py-20 border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Pricing for Any Trading Style
+          </h2>
+
+          <div style={{ background: "#1c2537" }} className="p-8 md:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {/* LITE */}
+              <div>
+                <div className="inline-block border border-white/20 text-white/70 text-xs font-semibold px-3 py-1 mb-4">
+                  {PLAN_LITE.tag}
+                </div>
+                <h3 className="text-2xl font-bold mb-6 text-white">{PLAN_LITE.name}</h3>
+                <ul className="space-y-3">
+                  {PLAN_LITE.features.map((f, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-white/70">
+                      <Check className="w-4 h-4 text-[#c8102e] shrink-0 mt-0.5" />
+                      <span>
+                        {f.bold && <strong className="text-white">{f.bold}</strong>}
+                        {f.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* PRO */}
+              <div>
+                <div className="inline-block border border-white/20 text-white/70 text-xs font-semibold px-3 py-1 mb-4">
+                  {PLAN_PRO.tag}
+                </div>
+                <h3 className="text-2xl font-bold mb-6 text-white">{PLAN_PRO.name}</h3>
+                <ul className="space-y-3">
+                  {PLAN_PRO.features.map((f, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-white/70">
+                      <Check className="w-4 h-4 text-[#c8102e] shrink-0 mt-0.5" />
+                      <span>
+                        {f.bold && <strong className="text-white">{f.bold}</strong>}
+                        {f.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-10 pt-8 border-t border-white/10 text-center">
+              <a href="#" className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-white/70 transition-colors">
+                See Pricing Details <ChevronRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Platforms ─────────────────────────────────────────── */}
+      <section style={{ background: "#111115" }} className="text-white py-20 border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-2 mb-4 text-white/50 text-sm font-medium">
+            <span>↑↓</span>
+            <span>Vault Platforms</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Institutional-Grade Tools.<br />Built for You.
+          </h2>
+          <p className="text-white/60 text-base max-w-lg mx-auto mb-8">
+            Access lightning-fast, advanced trading platforms built for precision and insight — on any device.
+          </p>
+
+          <div className="flex items-center justify-center flex-wrap gap-2 mb-14">
+            <p className="text-white font-semibold text-sm mr-2">View Our Award-Winning Trading Platforms</p>
+            {PLATFORMS.map((p) => (
+              <a key={p.label} href={p.href}
+                className="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-1 border border-white/15 px-3 py-1.5 hover:border-white/30">
+                {p.label} <ChevronRight className="w-3 h-3" />
+              </a>
+            ))}
+          </div>
+
+          <div className="relative">
+            <img
+              src={platformDevices}
+              alt="Vault Wealth Platform on multiple devices"
+              className="w-full max-w-4xl mx-auto object-contain"
+              style={{ maxHeight: 480 }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 h-16"
+              style={{ background: "linear-gradient(to bottom, transparent, #111115)" }} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Globe / Global Markets ───────────────────────────── */}
+      <section className="text-white py-20 border-t border-white/5 relative overflow-hidden"
+        style={{ background: "#0d0f14" }}>
+        <div className="absolute inset-0 z-0">
+          <img src={platformGlobe} alt="Global Markets" className="w-full h-full object-cover opacity-60" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(13,15,20,0.5) 0%, rgba(13,15,20,0.85) 100%)" }} />
+        </div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <p className="text-white/50 text-sm font-semibold uppercase tracking-widest mb-4">Global Markets</p>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+            Trade Anywhere.<br />In Any Market.
+          </h2>
+          <p className="text-white/60 text-base max-w-xl mx-auto mb-10">
+            Access 170+ global markets including stocks, options, futures, currencies, bonds, and funds from a single integrated account.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register"
+              className="inline-flex items-center justify-center gap-2 bg-[#c8102e] text-white font-bold text-sm px-7 py-3 hover:bg-[#a50d25] transition-colors">
+              Open Account
+            </Link>
+            <a href="#why"
+              className="inline-flex items-center justify-center gap-2 border border-white/30 text-white font-semibold text-sm px-7 py-3 hover:border-white/60 hover:bg-white/5 transition-colors">
+              Why Vault Wealth
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Security / Trust ──────────────────────────────────── */}
+      <section style={{ background: "#111115" }} className="text-white py-20 border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-2 text-white/60 text-sm mb-4">
+            <Shield className="w-4 h-4 text-[#3a6fd4]" /> Financial Strength
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Security You Can Trust</h2>
+          <p className="text-white/60 text-base max-w-xl mx-auto mb-4">
+            Your assets are backed by strong capital, automated risk controls, and a commitment to transparency.
+          </p>
+          <a href="#"
+            className="inline-flex items-center gap-2 border border-white/20 text-white text-sm font-semibold px-5 py-2 hover:border-white/50 transition-colors mb-14">
+            Vault at a Glance
+          </a>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+            {STATS.slice(0, 4).map((s, i) => (
+              <div key={i} className={`py-8 px-4 ${i < 3 ? "border-r border-white/8" : ""}`}>
+                <p className="text-white/40 text-xs mb-2 leading-tight">{s.sup}</p>
+                <p className="text-3xl md:text-4xl font-bold text-white leading-tight">{s.val}</p>
+                {s.sub && <p className="text-white/40 text-xs mt-2">{s.sub}</p>}
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-t border-white/8">
+            {STATS.slice(4).map((s, i) => (
+              <div key={i} className={`py-8 px-4 ${i < 3 ? "border-r border-white/8" : ""}`}>
+                <p className="text-white/40 text-xs mb-2 leading-tight">{s.sup}</p>
+                <p className="text-3xl md:text-4xl font-bold text-white leading-tight">{s.val}</p>
+                {s.sub && <p className="text-white/40 text-xs mt-2">{s.sub}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Final CTA ─────────────────────────────────────────── */}
+      <section style={{ background: "#111115" }} className="text-white py-20 border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Start Trading?
+          </h2>
+          <p className="text-white/60 text-base max-w-xl mx-auto mb-8">
+            Join millions of investors who trust Vault Wealth for institutional-grade access to global markets.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/register"
+              className="inline-flex items-center justify-center gap-2 bg-[#c8102e] text-white font-bold text-base px-10 py-3.5 hover:bg-[#a50d25] transition-colors">
+              Open Account
             </Link>
             <Link href="/login"
-              className="inline-flex items-center gap-2 border border-border text-foreground text-xs font-semibold uppercase tracking-[0.1em] px-7 py-3.5 hover:bg-muted/50 transition-colors">
-              Sign In
+              className="inline-flex items-center justify-center gap-2 border border-white/30 text-white font-semibold text-base px-10 py-3.5 hover:border-white/60 hover:bg-white/5 transition-colors">
+              Log In
             </Link>
           </div>
         </div>
