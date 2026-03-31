@@ -1,148 +1,155 @@
 import { useState } from "react";
-import { useGetHoldings, useSearchAssets } from "@workspace/api-client-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, ArrowRightLeft, Loader2 } from "lucide-react";
+import { useListAssets, useSearchAssets } from "@workspace/api-client-react";
+import { Search, Loader2, TrendingUp, TrendingDown } from "lucide-react";
 import { Link } from "wouter";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const ASSET_TYPES = [
+  { key: "all", label: "All Markets" },
+  { key: "crypto", label: "Digital Assets" },
+  { key: "stock", label: "Equities" },
+  { key: "commodity", label: "Commodities" },
+];
 
 export default function Invest() {
   const [search, setSearch] = useState("");
-  const { data: searchResults, isLoading: searchLoading } = useSearchAssets({ q: search }, { query: { enabled: search.length > 1 } });
-  
+  const [filter, setFilter] = useState("all");
+
+  const { data: assets, isLoading } = useListAssets(filter !== "all" ? { type: filter } : undefined);
+  const { data: searchResults, isLoading: sl } = useSearchAssets(
+    { q: search, ...(filter !== "all" ? { type: filter } : {}) },
+    { query: { enabled: search.length > 1 } }
+  );
+
+  const displayed = search.length > 1 ? searchResults : assets;
+  const loading = search.length > 1 ? sl : isLoading;
+
+  const fmtPrice = (p: number) => p >= 1000
+    ? p.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : p.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="max-w-[1200px] mx-auto px-6 py-6 pb-12">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-border">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Invest</h1>
-          <p className="text-muted-foreground">Trade across all asset classes.</p>
+          <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Markets</div>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Trade Instruments</h1>
         </div>
       </div>
 
-      <div className="relative max-w-2xl">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-        <Input 
-          className="w-full pl-10 h-14 text-lg rounded-xl shadow-sm border-border bg-card" 
-          placeholder="Search for symbols, companies, or assets..." 
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        
-        {search.length > 1 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-card border rounded-xl shadow-lg z-50 overflow-hidden">
-            {searchLoading ? (
-              <div className="p-4 text-center text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></div>
-            ) : searchResults?.length ? (
-              <div className="max-h-80 overflow-y-auto">
-                {searchResults.map(asset => (
-                  <Link key={asset.symbol} href={`/assets/${asset.symbol}`} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors border-b last:border-0">
+      {/* Filters + Search */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex gap-0 border border-border">
+          {ASSET_TYPES.map(({ key, label }) => (
+            <button key={key} onClick={() => setFilter(key)}
+              className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wide border-r last:border-0 border-border transition-colors
+                ${filter === key ? "bg-[#0a1628] text-white" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <input
+            className="w-full h-9 bg-card border border-border pl-9 pr-4 text-xs focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+            placeholder="Search instruments…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search.length > 1 && searchResults && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border z-50 shadow-md max-h-64 overflow-y-auto">
+              {sl ? (
+                <div className="p-4 flex justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+              ) : searchResults.length ? (
+                searchResults.map((a) => (
+                  <Link key={a.symbol} href={`/assets/${a.symbol}`}
+                    className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30 transition-colors border-b last:border-0 border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-medium text-xs text-primary">
-                        {asset.symbol.substring(0, 2)}
+                      <div className="w-5 h-5 bg-[#0a1628] flex items-center justify-center text-white text-[8px] font-bold shrink-0">
+                        {a.symbol.substring(0, 2)}
                       </div>
                       <div>
-                        <div className="font-medium text-sm">{asset.name}</div>
-                        <div className="text-xs text-muted-foreground">{asset.symbol} • <span className="capitalize">{asset.assetType}</span></div>
+                        <div className="text-xs font-semibold text-foreground">{a.name}</div>
+                        <div className="text-[10px] text-muted-foreground font-mono">{a.symbol} · <span className="capitalize">{a.assetType}</span></div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium text-sm">${asset.currentPrice.toLocaleString()}</div>
+                      <div className="text-xs font-semibold font-mono">${fmtPrice(a.currentPrice)}</div>
                     </div>
                   </Link>
+                ))
+              ) : (
+                <div className="p-4 text-center text-xs text-muted-foreground">No results for "{search}"</div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Asset table */}
+      <div className="border border-border bg-card">
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-border bg-muted/30">
+                {["Instrument", "Type", "Last Price", "24h Change", "Market Cap", "Action"].map((h, i) => (
+                  <th key={h} className={`py-2.5 px-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground
+                    ${i === 0 ? "text-left pl-5" : i === 5 ? "text-right pr-5" : i >= 2 ? "text-right" : "text-left"}`}>{h}</th>
                 ))}
-              </div>
-            ) : (
-              <div className="p-4 text-center text-sm text-muted-foreground">No results found for "{search}"</div>
-            )}
-          </div>
-        )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {loading ? (
+                <tr><td colSpan={6} className="py-12 text-center"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground mx-auto" /></td></tr>
+              ) : displayed?.map((a) => {
+                const pos = a.changePercent24h >= 0;
+                return (
+                  <tr key={a.symbol} className="hover:bg-muted/20 transition-colors cursor-pointer">
+                    <td className="py-3 pl-5 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-[#0a1628] flex items-center justify-center text-white text-[9px] font-bold shrink-0">
+                          {a.symbol.substring(0, 2)}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-foreground">{a.name}</div>
+                          <div className="text-muted-foreground font-mono text-[10px]">{a.symbol}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground border border-border px-1.5 py-0.5 capitalize">
+                        {a.assetType}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right font-mono font-semibold text-foreground">
+                      ${fmtPrice(a.currentPrice)}
+                    </td>
+                    <td className={`py-3 px-4 text-right font-mono font-semibold ${pos ? "text-emerald-700" : "text-red-700"}`}>
+                      <div className="flex items-center justify-end gap-1">
+                        {pos ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                        {pos ? "+" : ""}{a.changePercent24h?.toFixed(2)}%
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-right text-muted-foreground font-mono">
+                      {a.marketCap ? `$${(a.marketCap / 1e9).toFixed(1)}B` : "—"}
+                    </td>
+                    <td className="py-3 pl-4 pr-5 text-right">
+                      <Link href={`/assets/${a.symbol}`}
+                        className="inline-flex items-center gap-1 border border-border text-[9px] font-bold uppercase tracking-wide px-3 py-1 hover:bg-[#0a1628] hover:text-white hover:border-[#0a1628] transition-colors">
+                        Trade
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+              {!loading && !displayed?.length && (
+                <tr><td colSpan={6} className="py-10 text-center text-xs text-muted-foreground">No instruments found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/assets/stocks" className="block group">
-          <Card className="h-full hover:border-primary/50 transition-colors cursor-pointer shadow-sm">
-            <CardHeader>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <span className="text-primary font-serif font-bold">Eq</span>
-              </div>
-              <CardTitle className="text-xl">Equities</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Trade US and international stocks, ETFs, and indices.</p>
-            </CardContent>
-          </Card>
-        </Link>
-        
-        <Link href="/assets/crypto" className="block group">
-          <Card className="h-full hover:border-primary/50 transition-colors cursor-pointer shadow-sm">
-            <CardHeader>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <span className="text-primary font-serif font-bold">Cr</span>
-              </div>
-              <CardTitle className="text-xl">Crypto</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Access 50+ vetted digital assets with deep liquidity.</p>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link href="/assets/commodities" className="block group">
-          <Card className="h-full hover:border-primary/50 transition-colors cursor-pointer shadow-sm">
-            <CardHeader>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <span className="text-primary font-serif font-bold">Co</span>
-              </div>
-              <CardTitle className="text-xl">Commodities</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Diversify with precious metals, energy, and agriculture.</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-      
-      <Card className="shadow-sm border-border mt-8">
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Convert</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row items-center gap-4 bg-muted/30 p-6 rounded-xl">
-            <div className="flex-1 w-full">
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">From</label>
-              <div className="flex gap-2">
-                <Select defaultValue="USD">
-                  <SelectTrigger className="w-24 bg-card"><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="USD">USD</SelectItem></SelectContent>
-                </Select>
-                <Input type="number" placeholder="0.00" className="flex-1 bg-card" />
-              </div>
-            </div>
-            
-            <div className="w-10 h-10 rounded-full bg-background border flex items-center justify-center shrink-0 z-10 my-2 md:my-0">
-              <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
-            </div>
-
-            <div className="flex-1 w-full">
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">To</label>
-              <div className="flex gap-2">
-                <Select defaultValue="BTC">
-                  <SelectTrigger className="w-28 bg-card"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BTC">BTC</SelectItem>
-                    <SelectItem value="ETH">ETH</SelectItem>
-                    <SelectItem value="AAPL">AAPL</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input type="number" placeholder="0.00" className="flex-1 bg-card" readOnly />
-              </div>
-            </div>
-            
-            <Button size="lg" className="w-full md:w-auto mt-6 md:mt-0">Preview</Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -1,42 +1,46 @@
 import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 
 export function Navbar() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold font-serif text-lg tracking-tighter">
-              V
+    <header className="sticky top-0 z-50 w-full bg-[#0a1628] border-b border-white/8">
+      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-10">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-6 h-6 bg-white flex items-center justify-center">
+              <span className="text-[#0a1628] font-bold text-xs tracking-tighter">VW</span>
             </div>
-            <span className="font-semibold text-lg tracking-tight">Vault Wealth</span>
+            <span className="text-white font-semibold text-sm tracking-wide uppercase">Vault Wealth</span>
           </Link>
-          
-          <nav className="hidden md:flex gap-6">
-            <Link href="#solutions" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Solutions</Link>
-            <Link href="#assets" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Assets</Link>
-            <Link href="#security" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Security</Link>
-            <Link href="#insights" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Insights</Link>
+
+          <nav className="hidden md:flex gap-8">
+            {["Solutions", "Markets", "Security", "Insights"].map((item) => (
+              <a key={item} href={`#${item.toLowerCase()}`}
+                className="text-xs font-medium text-white/50 hover:text-white/90 transition-colors tracking-wide uppercase">
+                {item}
+              </a>
+            ))}
           </nav>
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
-            <Button asChild variant="default" className="rounded-full px-6">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <Link href="/dashboard"
+              className="text-xs font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/15 px-4 py-2 transition-colors tracking-wide uppercase">
+              Go to Platform
+            </Link>
           ) : (
             <>
-              <Button asChild variant="ghost" className="hidden sm:inline-flex">
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild variant="default" className="rounded-full px-6">
-                <Link href="/register">Open Account</Link>
-              </Button>
+              <Link href="/login"
+                className="text-xs font-medium text-white/70 hover:text-white transition-colors tracking-wide uppercase hidden sm:block">
+                Sign In
+              </Link>
+              <Link href="/register"
+                className="text-xs font-semibold text-[#0a1628] bg-white hover:bg-white/90 px-5 py-2 transition-colors tracking-wide uppercase">
+                Open Account
+              </Link>
             </>
           )}
         </div>

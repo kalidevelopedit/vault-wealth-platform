@@ -1,60 +1,76 @@
 import { Link } from "wouter";
 
 export function Footer() {
+  const cols = [
+    {
+      title: "Platform",
+      links: [
+        { label: "Digital Assets", href: "/assets/crypto" },
+        { label: "Equities", href: "/assets/stocks" },
+        { label: "Commodities", href: "/assets/commodities" },
+        { label: "Private Wealth", href: "#" },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About Us", href: "#" },
+        { label: "Careers", href: "#" },
+        { label: "Security", href: "#" },
+        { label: "Press", href: "#" },
+      ],
+    },
+    {
+      title: "Legal",
+      links: [
+        { label: "Terms of Service", href: "#" },
+        { label: "Privacy Policy", href: "#" },
+        { label: "Risk Disclosures", href: "#" },
+        { label: "Regulatory Licenses", href: "#" },
+      ],
+    },
+  ];
+
   return (
-    <footer className="bg-background border-t py-16">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold font-serif text-lg tracking-tighter">
-                V
+    <footer className="bg-[#0a1628] border-t border-white/8">
+      <div className="max-w-7xl mx-auto px-6 py-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 mb-6">
+              <div className="w-6 h-6 bg-white flex items-center justify-center">
+                <span className="text-[#0a1628] font-bold text-[10px] tracking-tighter">VW</span>
               </div>
-              <span className="font-semibold text-lg tracking-tight">Vault Wealth</span>
+              <span className="text-white font-semibold text-sm tracking-wide uppercase">Vault Wealth</span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Institutional-grade investment platform bridging traditional finance and digital assets.
+            <p className="text-xs text-white/30 leading-relaxed max-w-xs">
+              Institutional-grade investment platform bridging traditional finance and digital assets. Regulated, secure, and built for serious investors.
             </p>
           </div>
-          
-          <div>
-            <h4 className="font-medium mb-4">Platform</h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link href="/assets/crypto" className="hover:text-foreground transition-colors">Crypto Trading</Link></li>
-              <li><Link href="/assets/stocks" className="hover:text-foreground transition-colors">Equities</Link></li>
-              <li><Link href="/assets/commodities" className="hover:text-foreground transition-colors">Commodities</Link></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Private Wealth</a></li>
-            </ul>
-          </div>
 
-          <div>
-            <h4 className="font-medium mb-4">Company</h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Security</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Press</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-medium mb-4">Legal</h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Risk Disclosures</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Licenses</a></li>
-            </ul>
-          </div>
+          {cols.map((col) => (
+            <div key={col.title}>
+              <h4 className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-5">{col.title}</h4>
+              <ul className="space-y-3">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-xs text-white/40 hover:text-white/80 transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
+        <div className="pt-8 border-t border-white/8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-[10px] text-white/20">
             © {new Date().getFullYear()} Vault Wealth Management LLC. All rights reserved.
           </p>
-          <div className="flex gap-4">
-            <a href="#" className="text-muted-foreground hover:text-foreground text-sm">Twitter</a>
-            <a href="#" className="text-muted-foreground hover:text-foreground text-sm">LinkedIn</a>
+          <div className="flex items-center gap-6">
+            {["Twitter", "LinkedIn", "Bloomberg"].map((s) => (
+              <a key={s} href="#" className="text-[10px] text-white/25 hover:text-white/60 transition-colors uppercase tracking-widest">{s}</a>
+            ))}
           </div>
         </div>
       </div>
