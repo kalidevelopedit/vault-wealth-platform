@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                     <tr key={u.id} className="hover:bg-muted/10 transition-colors">
                       <td className="py-3 pl-5 pr-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 bg-[#0a1628] flex items-center justify-center text-white text-[9px] font-bold shrink-0">
+                          <div className="w-6 h-6 bg-[#0d1520] flex items-center justify-center text-white text-[9px] font-bold shrink-0">
                             {u.fullName.charAt(0)}
                           </div>
                           <span className="font-semibold text-foreground">{u.fullName}</span>
@@ -166,7 +166,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="py-3 pl-4 pr-5 text-right">
                         <Link href={`/admin/users/${u.id}`}
-                          className="text-[9px] font-bold uppercase tracking-wide border border-border px-3 py-1 hover:bg-[#0a1628] hover:text-white hover:border-[#0a1628] transition-colors">
+                          className="text-[9px] font-bold uppercase tracking-wide border border-border px-3 py-1 hover:bg-[#0d1520] hover:text-white hover:border-[#0d1520] transition-colors">
                           Review
                         </Link>
                       </td>
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
               {pendingApplications.map((u) => (
                 <div key={u.id} className="px-5 py-5 flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-8 h-8 bg-[#0a1628] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    <div className="w-8 h-8 bg-[#0d1520] flex items-center justify-center text-white text-xs font-bold shrink-0">
                       {u.fullName.charAt(0)}
                     </div>
                     <div className="min-w-0">
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                       {actionLoading === u.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Decline"}
                     </button>
                     <button onClick={() => handleApprove(u.id)} disabled={actionLoading === u.id}
-                      className="text-[9px] font-bold uppercase tracking-wide bg-[#0a1628] text-white px-4 py-1.5 hover:bg-[#0a1628]/80 transition-colors disabled:opacity-50">
+                      className="text-[9px] font-bold uppercase tracking-wide bg-[#0d1520] text-white px-4 py-1.5 hover:bg-[#0d1520]/80 transition-colors disabled:opacity-50">
                       {actionLoading === u.id ? <Loader2 className="w-3 h-3 animate-spin" /> : "Approve"}
                     </button>
                   </div>

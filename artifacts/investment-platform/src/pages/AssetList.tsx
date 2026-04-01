@@ -71,8 +71,8 @@ export default function AssetList() {
                     <td className="py-3.5 pl-5 pr-4 text-muted-foreground font-mono text-[10px]">{idx + 1}</td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 bg-[#0a1628] flex items-center justify-center text-white text-[9px] font-bold shrink-0">
-                          {a.symbol.substring(0, 2)}
+                        <div className="w-7 h-7 border border-border bg-muted/20 flex items-center justify-center text-foreground text-[9px] font-semibold shrink-0">
+                          {a.symbol.substring(0, 2).toUpperCase()}
                         </div>
                         <div>
                           <div className="font-semibold text-foreground">{a.name}</div>
@@ -83,13 +83,10 @@ export default function AssetList() {
                     <td className="py-3.5 px-4 text-right font-mono font-semibold text-foreground">
                       ${fmtPrice(a.currentPrice)}
                     </td>
-                    <td className={`py-3.5 px-4 text-right font-mono font-semibold ${pos ? "text-emerald-700" : "text-red-700"}`}>
-                      <div className="flex items-center justify-end gap-1">
-                        {pos ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {pos ? "+" : ""}{a.changePercent24h?.toFixed(2)}%
-                      </div>
+                    <td className="py-3.5 px-4 text-right font-mono font-medium text-[12px]" style={{ color: pos ? "#2b6b4e" : "#943636" }}>
+                      {pos ? "+" : ""}{a.changePercent24h?.toFixed(2)}%
                     </td>
-                    <td className={`py-3.5 px-4 text-right font-mono text-[10px] ${pos ? "text-emerald-700" : "text-red-700"}`}>
+                    <td className="py-3.5 px-4 text-right font-mono text-[11px]" style={{ color: pos ? "#2b6b4e" : "#943636" }}>
                       {pos ? "+" : ""}${Math.abs(a.change24h).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="py-3.5 px-4 text-right text-muted-foreground font-mono text-[10px]">
@@ -97,7 +94,7 @@ export default function AssetList() {
                     </td>
                     <td className="py-3.5 pl-4 pr-5 text-right">
                       <Link href={`/assets/${a.symbol}`}
-                        className="text-[9px] font-bold uppercase tracking-wide border border-border px-3 py-1 hover:bg-[#0a1628] hover:text-white hover:border-[#0a1628] transition-colors">
+                        className="text-[9px] font-medium uppercase tracking-wider border border-border px-3 py-1 hover:bg-[#0d1520] hover:text-white hover:border-[#0d1520] transition-colors">
                         Trade
                       </Link>
                     </td>

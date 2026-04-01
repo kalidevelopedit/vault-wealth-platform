@@ -36,15 +36,12 @@ export default function AdminUserDetail() {
     }
   };
 
-  const kycBadge = (s: string) => {
+  const kycDot = (s: string) => {
     const map: Record<string, string> = {
-      approved: "text-emerald-700 border-emerald-200 bg-emerald-50",
-      pending: "text-amber-700 border-amber-200 bg-amber-50",
-      rejected: "text-red-700 border-red-200 bg-red-50",
-      flagged: "text-orange-700 border-orange-200 bg-orange-50",
-      not_started: "text-muted-foreground border-border bg-muted/30",
+      approved: "#2b6b4e", pending: "#8a6e2f", rejected: "#943636",
+      flagged: "#944a1a", not_started: "#aaa",
     };
-    return map[s] || map.not_started;
+    return map[s] || "#aaa";
   };
 
   return (
@@ -59,7 +56,7 @@ export default function AdminUserDetail() {
       <div className="border border-border bg-card mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#0a1628] flex items-center justify-center text-white font-semibold text-sm shrink-0">
+            <div className="w-10 h-10 border border-border bg-muted/20 flex items-center justify-center text-foreground font-semibold text-sm shrink-0">
               {user.fullName.charAt(0)}
             </div>
             <div>
@@ -68,7 +65,8 @@ export default function AdminUserDetail() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className={`text-[9px] font-bold uppercase tracking-wide px-2 py-1 border ${kycBadge(user.kycStatus)} capitalize`}>
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-foreground capitalize">
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: kycDot(user.kycStatus) }} />
               {user.kycStatus?.replace("_", " ")}
             </span>
             <div className="text-[10px] text-muted-foreground">
@@ -115,7 +113,7 @@ export default function AdminUserDetail() {
               <div className="mt-5 pt-5 border-t border-border">
                 <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Selfie / Video Verification</div>
                 <div className="flex items-center gap-2.5">
-                  {selfieStatus === "approved" ? <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" /> :
+                  {selfieStatus === "approved" ? <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#2b6b4e" }} /> :
                    selfieStatus === "submitted" ? <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" /> :
                    <XCircle className="w-4 h-4 text-muted-foreground shrink-0" />}
                   <span className="text-xs font-medium capitalize">{selfieStatus?.replace("_", " ") || "Not submitted"}</span>
@@ -148,14 +146,16 @@ export default function AdminUserDetail() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => handleStatusUpdate("approved")} disabled={processing}
-                  className="flex items-center gap-1.5 bg-emerald-700 text-white text-xs font-bold uppercase tracking-wide px-4 py-2 hover:bg-emerald-800 transition-colors disabled:opacity-50">
+                  className="flex items-center gap-1.5 text-white text-xs font-semibold uppercase tracking-wider px-4 py-2 transition-colors disabled:opacity-50"
+                  style={{ backgroundColor: "#2b6b4e" }}>
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Approve KYC
                 </button>
                 <button onClick={() => handleStatusUpdate("rejected")} disabled={processing}
-                  className="flex items-center gap-1.5 border border-red-700 text-red-700 text-xs font-bold uppercase tracking-wide px-4 py-2 hover:bg-red-50 transition-colors disabled:opacity-50">
+                  className="flex items-center gap-1.5 border text-xs font-semibold uppercase tracking-wider px-4 py-2 transition-colors disabled:opacity-50"
+                  style={{ borderColor: "#943636", color: "#943636" }}>
                   <XCircle className="w-3.5 h-3.5" />
-                  Reject & Request Updates
+                  Reject
                 </button>
                 <button onClick={() => handleStatusUpdate("flagged")} disabled={processing}
                   className="flex items-center gap-1.5 border border-border text-muted-foreground text-xs font-bold uppercase tracking-wide px-4 py-2 hover:bg-muted/30 transition-colors disabled:opacity-50">

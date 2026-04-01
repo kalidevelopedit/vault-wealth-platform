@@ -61,8 +61,8 @@ export default function AssetDetail() {
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-4 flex-1">
-          <div className="w-8 h-8 bg-[#0a1628] flex items-center justify-center text-white text-xs font-bold shrink-0">
-            {asset.symbol.substring(0, 2)}
+          <div className="w-8 h-8 border border-border bg-muted/20 flex items-center justify-center text-foreground text-xs font-semibold shrink-0">
+            {asset.symbol.substring(0, 2).toUpperCase()}
           </div>
           <div>
             <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">
@@ -72,8 +72,7 @@ export default function AssetDetail() {
           </div>
           <div className="ml-6">
             <div className="text-2xl font-semibold tracking-tight tabular-nums">${fmtP(asset.currentPrice)}</div>
-            <div className={`flex items-center gap-1 text-xs font-semibold ${pos ? "text-emerald-700" : "text-red-700"}`}>
-              {pos ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            <div className="flex items-center gap-1 text-[12px] font-medium" style={{ color: pos ? "#2b6b4e" : "#943636" }}>
               {pos ? "+" : ""}{asset.changePercent24h?.toFixed(2)}% (24h)
             </div>
           </div>
@@ -116,8 +115,8 @@ export default function AssetDetail() {
                   <AreaChart data={chart.data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
                     <defs>
                       <linearGradient id="chartColor" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={pos ? "#166534" : "#991b1b"} stopOpacity={0.1} />
-                        <stop offset="100%" stopColor={pos ? "#166534" : "#991b1b"} stopOpacity={0} />
+                        <stop offset="0%" stopColor={pos ? "#2b6b4e" : "#943636"} stopOpacity={0.08} />
+                        <stop offset="100%" stopColor={pos ? "#2b6b4e" : "#943636"} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="date" tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
@@ -129,7 +128,7 @@ export default function AssetDetail() {
                       labelStyle={{ color: "#6b7280", fontSize: 10 }}
                     />
                     <Area type="monotone" dataKey="value"
-                      stroke={pos ? "#166534" : "#991b1b"} strokeWidth={1.5}
+                      stroke={pos ? "#2b6b4e" : "#943636"} strokeWidth={1.5}
                       fill="url(#chartColor)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -168,10 +167,8 @@ export default function AssetDetail() {
             <div className="flex border-b border-border">
               {(["buy", "sell"] as const).map((s) => (
                 <button key={s} onClick={() => setSide(s)}
-                  className={`flex-1 py-3 text-xs font-bold uppercase tracking-wide transition-colors border-r last:border-0 border-border
-                    ${side === s
-                      ? s === "buy" ? "bg-emerald-700 text-white" : "bg-red-700 text-white"
-                      : "text-muted-foreground hover:bg-muted/30"}`}>
+                  className={`flex-1 py-3 text-[11px] font-semibold uppercase tracking-wider transition-colors border-r last:border-0 border-border
+                    ${side === s ? "bg-[#0d1520] text-white" : "text-muted-foreground hover:bg-muted/20"}`}>
                   {s}
                 </button>
               ))}
@@ -219,8 +216,7 @@ export default function AssetDetail() {
               </div>
 
               <button type="submit" disabled={submitting}
-                className={`w-full text-white text-xs font-bold uppercase tracking-wide py-3 transition-colors disabled:opacity-50 flex items-center justify-center gap-2
-                  ${side === "buy" ? "bg-emerald-700 hover:bg-emerald-800" : "bg-red-700 hover:bg-red-800"}`}>
+                className="w-full text-white text-[11px] font-semibold uppercase tracking-wider py-3 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 bg-[#0d1520] hover:bg-[#1a2d4a]">
                 {submitting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing…</> : `${side === "buy" ? "Buy" : "Sell"} ${asset.symbol}`}
               </button>
 

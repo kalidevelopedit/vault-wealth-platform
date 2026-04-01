@@ -42,8 +42,8 @@ export default function Invest() {
         <div className="flex gap-0 border border-border">
           {ASSET_TYPES.map(({ key, label }) => (
             <button key={key} onClick={() => setFilter(key)}
-              className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wide border-r last:border-0 border-border transition-colors
-                ${filter === key ? "bg-[#0a1628] text-white" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"}`}>
+              className={`px-4 py-2 text-[10px] font-medium uppercase tracking-wider border-r last:border-0 border-border transition-colors
+                ${filter === key ? "bg-[#0d1520] text-white" : "text-muted-foreground hover:text-foreground hover:bg-muted/20"}`}>
               {label}
             </button>
           ))}
@@ -66,8 +66,8 @@ export default function Invest() {
                   <Link key={a.symbol} href={`/assets/${a.symbol}`}
                     className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/30 transition-colors border-b last:border-0 border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-[#0a1628] flex items-center justify-center text-white text-[8px] font-bold shrink-0">
-                        {a.symbol.substring(0, 2)}
+                      <div className="w-5 h-5 border border-border bg-muted/20 flex items-center justify-center text-foreground text-[8px] font-semibold shrink-0">
+                        {a.symbol.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-foreground">{a.name}</div>
@@ -108,8 +108,8 @@ export default function Invest() {
                   <tr key={a.symbol} className="hover:bg-muted/20 transition-colors cursor-pointer">
                     <td className="py-3 pl-5 pr-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-[#0a1628] flex items-center justify-center text-white text-[9px] font-bold shrink-0">
-                          {a.symbol.substring(0, 2)}
+                        <div className="w-6 h-6 border border-border bg-muted/20 flex items-center justify-center text-foreground text-[9px] font-semibold shrink-0">
+                          {a.symbol.substring(0, 2).toUpperCase()}
                         </div>
                         <div>
                           <div className="font-semibold text-foreground">{a.name}</div>
@@ -125,18 +125,15 @@ export default function Invest() {
                     <td className="py-3 px-4 text-right font-mono font-semibold text-foreground">
                       ${fmtPrice(a.currentPrice)}
                     </td>
-                    <td className={`py-3 px-4 text-right font-mono font-semibold ${pos ? "text-emerald-700" : "text-red-700"}`}>
-                      <div className="flex items-center justify-end gap-1">
-                        {pos ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {pos ? "+" : ""}{a.changePercent24h?.toFixed(2)}%
-                      </div>
+                    <td className="py-3 px-4 text-right font-mono font-medium text-[12px]" style={{ color: pos ? "#2b6b4e" : "#943636" }}>
+                      {pos ? "+" : ""}{a.changePercent24h?.toFixed(2)}%
                     </td>
                     <td className="py-3 px-4 text-right text-muted-foreground font-mono">
                       {a.marketCap ? `$${(a.marketCap / 1e9).toFixed(1)}B` : "—"}
                     </td>
                     <td className="py-3 pl-4 pr-5 text-right">
                       <Link href={`/assets/${a.symbol}`}
-                        className="inline-flex items-center gap-1 border border-border text-[9px] font-bold uppercase tracking-wide px-3 py-1 hover:bg-[#0a1628] hover:text-white hover:border-[#0a1628] transition-colors">
+                        className="inline-flex items-center gap-1 border border-border text-[9px] font-medium uppercase tracking-wider px-3 py-1 hover:bg-[#0d1520] hover:text-white hover:border-[#0d1520] transition-colors">
                         Trade
                       </Link>
                     </td>

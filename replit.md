@@ -144,11 +144,37 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly`
 - `pnpm --filter @workspace/scripts run seed` — seed the database with demo data
 
+## Design System (Premium Minimalist)
+
+Completed full UI/UX redesign per the premium-minimalist brief:
+
+**Color Palette:**
+- Background: `#f8f7f4` (warm off-white) — `38 14% 96%` HSL
+- Card: `#ffffff`
+- Border: `#e6e3dc` (warm hairline) — `38 10% 89%` HSL
+- Foreground: `#111111` (charcoal)
+- Muted text: `#707070`
+- Primary navy: `#162d4a` / Sidebar dark: `#0d1520`
+- Gain: `#2b6b4e` (muted institutional green) — no bright emerald
+- Loss: `#943636` (muted institutional red) — no bright red
+
+**Pages redesigned:**
+- Login / Register — white form panel + dark navy left panel split layout
+- AppLayout sidebar — near-black navy (`#0d1520`), refined typography, no section labels
+- Dashboard — muted gain/loss, refined KPI strip, clean data tables
+- Wallet — removed dark navy card, dot-based status indicators (no colored badges)
+- Profile — clean white avatar/identity card (no dark header)
+- AssetList / AssetDetail / Invest — muted colors, bordered symbol icons, clean trade widget
+- Admin pages — cleaned up colored badge references
+
+**Typography:** Inter, thin-line icons (strokeWidth 1.5), spaced label tracking `0.16em`–`0.18em`
+
 ## Key Files
 
 - `lib/api-spec/openapi.yaml` — OpenAPI spec (40+ endpoints)
 - `artifacts/investment-platform/src/App.tsx` — Frontend routing
-- `artifacts/investment-platform/src/index.css` — Global styles
+- `artifacts/investment-platform/src/index.css` — Global styles + design tokens
+- `artifacts/investment-platform/src/components/layout/AppLayout.tsx` — Sidebar nav
 - `artifacts/api-server/src/app.ts` — Express app setup
 - `artifacts/api-server/src/routes/index.ts` — Route mounting
 - `lib/db/src/schema/index.ts` — Database schema

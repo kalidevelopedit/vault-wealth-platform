@@ -5,7 +5,7 @@ export function Navbar() {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#0a1628] border-b border-white/8">
+    <header className="sticky top-0 z-50 w-full bg-[#0d1520] border-b border-white/8">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-10">
           <Link href="/" className="flex items-center gap-2.5">

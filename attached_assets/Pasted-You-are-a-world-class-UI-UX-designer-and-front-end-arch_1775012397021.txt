@@ -1,0 +1,93 @@
+You are a world-class UI/UX designer and front-end architect specializing in high-end financial platforms (e.g., private banking dashboards, institutional investment tools, fintech SaaS).
+
+Your task is to completely redesign an existing “vital coding-style” website into a **premium, minimalistic, professional investment platform**.
+
+CRITICAL DESIGN PRINCIPLES:
+- Absolute minimalism (no clutter, no unnecessary visual noise)
+- No colorful backgrounds, no flashy UI, no bright alert styles
+- Strictly neutral palette (white, off-white, charcoal, soft gray, subtle navy accents if needed)
+- Typography-first design (clean, modern, high readability)
+- Grid-based layout with strong alignment and spacing consistency
+- Every element must feel intentional, calm, and high-value
+- Design should reflect trust, authority, and financial sophistication
+
+STRICT UI CONSTRAINTS:
+- NO colorful icons or gradient-heavy elements
+- NO loud alert banners or attention-grabbing UI patterns
+- NO “developer-style” or “coding dashboard” visuals
+- NO overly rounded playful components
+- Avoid shadows unless extremely subtle and soft
+- Avoid excessive borders; use spacing and hierarchy instead
+
+ICON & COMPONENT QUALITY:
+- Use only premium, thin-line or solid monochrome icon sets (e.g., similar to Lucide, Heroicons refined style)
+- Icons must be consistent in stroke width and visual weight
+- All components must feel like part of a cohesive design system
+- Boxes/cards should be refined, with subtle elevation or hairline borders
+- Tabs inside boxes are allowed and encouraged for structuring content
+
+LAYOUT STRUCTURE:
+Design ALL core pages in detail, including:
+
+1. **Landing Page**
+   - Hero section with strong value proposition (investment-focused)
+   - Clean navigation bar (minimal links, strong hierarchy)
+   - Subtle call-to-action (e.g., “View Portfolio”, “Start Investing”)
+   - Sectioned content blocks using elegant cards
+   - Trust indicators (logos, metrics, testimonials—subtle and refined)
+
+2. **Dashboard (Main App Interface)**
+   - Left sidebar navigation (minimal icons + labels)
+   - Top bar with account info, notifications (very subtle)
+   - Portfolio overview cards (clean, data-focused)
+   - Graphs: simple, thin-line charts with muted colors
+   - Tabs within content areas (e.g., Overview / Performance / Allocation)
+   - No bright green/red—use muted tones for gains/losses
+
+3. **Portfolio Page**
+   - Structured table with refined spacing
+   - Tabs for asset classes (Stocks / Crypto / Funds / etc.)
+   - Expandable rows with clean transitions
+   - Data hierarchy prioritized over decoration
+
+4. **Asset Detail Page**
+   - Large clean chart area (primary focus)
+   - Key metrics displayed in elegant grid cards
+   - Tabs for Overview / Analytics / History
+   - No clutter—only essential data
+
+5. **Transactions Page**
+   - Minimal table design
+   - Filters in compact, elegant dropdowns
+   - Clear but subtle status indicators
+
+6. **Settings / Profile**
+   - Sectioned layout using cards
+   - Clear grouping (Account / Security / Preferences)
+   - Minimal toggles and inputs with consistent styling
+
+7. **Authentication Pages (Login / Signup)**
+   - Centered, distraction-free layout
+   - Strong typography, minimal fields
+   - No illustrations or bright colors
+
+DESIGN SYSTEM REQUIREMENTS:
+- Define spacing system (e.g., 4px or 8px scale)
+- Define typography scale (headings, body, labels)
+- Define color tokens (primary, neutral, borders, subtle accents)
+- Define component states (hover, active, disabled) — all subtle
+- Ensure full consistency across all pages
+
+INTERACTION DESIGN:
+- Smooth, fast, minimal animations (fade, slight slide)
+- No bouncy or playful motion
+- Hover states should be subtle (slight shade or underline)
+
+FINAL OUTPUT REQUIREMENTS:
+- Provide a complete UI redesign description for ALL pages
+- Describe layout, components, spacing, and hierarchy in detail
+- Ensure the design feels like a **high-class financial institution platform**
+- Everything must look premium, calm, and trustworthy
+- Avoid anything that resembles a developer tool or coding interface
+
+Your output should read like a full UI/UX blueprint that a senior designer and developer can directly implement.
