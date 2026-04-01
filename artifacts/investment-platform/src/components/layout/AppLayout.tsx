@@ -40,12 +40,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Sidebar */}
       <aside className="w-52 bg-[#0d1520] hidden md:flex flex-col h-screen sticky top-0 shrink-0">
         {/* Logo */}
-        <div className="px-6 py-5 border-b border-white/[0.06]">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-5 h-5 bg-white flex items-center justify-center shrink-0">
-              <span className="text-[#0d1520] font-bold text-[9px] tracking-tighter">V</span>
-            </div>
-            <span className="text-white/90 font-medium text-[13px] tracking-tight">Vault Wealth</span>
+        <div className="px-4 py-4 border-b border-white/[0.06]">
+          <Link href="/">
+            <img src="/logo.png" alt="INT Brokers" style={{ height: 110, width: "auto", objectFit: "contain", display: "block" }} />
           </Link>
         </div>
 
@@ -95,11 +92,8 @@ export function AppLayout({ children }: AppLayoutProps) {
       <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
         {/* Mobile top bar */}
         <header className="md:hidden h-12 bg-[#0d1520] border-b border-white/[0.06] flex items-center justify-between px-4 sticky top-0 z-10">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-white flex items-center justify-center">
-              <span className="text-[#0d1520] font-bold text-[9px] tracking-tighter">V</span>
-            </div>
-            <span className="text-white/90 font-medium text-[13px] tracking-tight">Vault Wealth</span>
+          <Link href="/">
+            <img src="/logo.png" alt="INT Brokers" style={{ height: 80, width: "auto", objectFit: "contain", display: "block" }} />
           </Link>
           <div className="w-7 h-7 bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-white/70 text-xs font-semibold">
             {initials}

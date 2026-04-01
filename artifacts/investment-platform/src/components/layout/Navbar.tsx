@@ -8,11 +8,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-[#0d1520] border-b border-white/8">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-10">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-6 h-6 bg-white flex items-center justify-center">
-              <span className="text-[#0a1628] font-bold text-xs tracking-tighter">VW</span>
-            </div>
-            <span className="text-white font-semibold text-sm tracking-wide uppercase">Vault Wealth</span>
+          <Link href="/">
+            <img src="/logo.png" alt="INT Brokers" style={{ height: 100, width: "auto", objectFit: "contain", display: "block" }} />
           </Link>
 
           <nav className="hidden md:flex gap-8">

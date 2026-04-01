@@ -185,11 +185,8 @@ export default function Onboarding() {
     <div className="min-h-screen flex flex-col" style={{ background: "#0d0f14" }}>
       {/* Top bar */}
       <div className="border-b border-white/6 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#c8102e] flex items-center justify-center">
-            <span className="text-white font-black text-sm">V</span>
-          </div>
-          <span className="text-white font-semibold text-sm">Vault Wealth</span>
+        <div className="flex items-center">
+          <img src="/logo.png" alt="INT Brokers" style={{ height: 100, width: "auto", objectFit: "contain", display: "block" }} />
         </div>
         <span className="text-white/20 text-xs">Account Application</span>
       </div>

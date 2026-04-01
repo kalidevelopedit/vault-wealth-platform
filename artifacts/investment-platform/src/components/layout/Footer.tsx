@@ -101,11 +101,8 @@ export function Footer() {
 
           {/* Brand column */}
           <div>
-            <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 32, height: 32, background: "linear-gradient(135deg,#e8192c,#c8102e)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(200,16,46,0.4)" }}>
-                <span style={{ color: "#fff", fontSize: 16, fontWeight: 900, lineHeight: 1 }}>V</span>
-              </div>
-              <span style={{ fontSize: 16, color: "#fff", lineHeight: 1, letterSpacing: "-0.02em", fontWeight: 700 }}>Vault Wealth</span>
+            <Link href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 16 }}>
+              <img src="/logo.png" alt="INT Brokers" style={{ height: 140, width: "auto", objectFit: "contain", display: "block" }} />
             </Link>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", lineHeight: 1.75, marginBottom: 20, maxWidth: 200 }}>
               Institutional-grade investment platform. Regulated, secure, and built for serious investors since 1977.

@@ -290,14 +290,10 @@ export function HomeNavbar() {
       {/* Top row: Logo + actions */}
       <div style={{ borderBottom: "1px solid #f0f0f0" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "60px" }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "34px", height: "34px", background: "#c8102e", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ color: "#fff", fontSize: "17px", fontWeight: 900, lineHeight: 1 }}>V</span>
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <div style={{ background: "#1a1f2e", borderRadius: 8, padding: "2px 8px", display: "flex", alignItems: "center", justifyContent: "center", height: 52 }}>
+              <img src="/logo.png" alt="INT Brokers" style={{ height: 52, width: "auto", objectFit: "contain", display: "block" }} />
             </div>
-            <span style={{ fontSize: "21px", color: "#111", lineHeight: 1, letterSpacing: "-0.02em" }}>
-              <strong style={{ fontWeight: 900 }}>Vault</strong>
-              <span style={{ fontWeight: 300 }}> Wealth</span>
-            </span>
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>

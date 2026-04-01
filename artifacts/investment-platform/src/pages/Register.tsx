@@ -45,11 +45,8 @@ export default function Register() {
     <div className="min-h-screen flex" style={{ background: "#F5F6F7" }}>
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-[380px] shrink-0 bg-[#0d1520] p-12">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-5 h-5 bg-white rounded flex items-center justify-center shrink-0">
-            <span className="text-[#0d1520] font-bold text-[9px] tracking-tighter">V</span>
-          </div>
-          <span className="text-white/90 font-medium text-[13px] tracking-tight">Vault Wealth</span>
+        <Link href="/">
+          <img src="/logo.png" alt="INT Brokers" style={{ height: 150, width: "auto", objectFit: "contain", display: "block" }} />
         </Link>
 
         <div className="space-y-6">
@@ -84,11 +81,10 @@ export default function Register() {
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
           <div className="mb-8 lg:hidden">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-5 h-5 bg-[#0d1520] rounded flex items-center justify-center shrink-0">
-                <span className="text-white font-bold text-[9px] tracking-tighter">V</span>
+            <Link href="/">
+              <div style={{ background: "#1a1f2e", borderRadius: 8, padding: "4px 10px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <img src="/logo.png" alt="INT Brokers" style={{ height: 110, width: "auto", objectFit: "contain", display: "block" }} />
               </div>
-              <span className="text-[#0F172A] font-medium text-[13px] tracking-tight">Vault Wealth</span>
             </Link>
           </div>
 
