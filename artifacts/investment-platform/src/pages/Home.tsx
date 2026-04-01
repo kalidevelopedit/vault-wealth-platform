@@ -331,20 +331,21 @@ function RetirementSection() {
             </p>
 
             {/* Feature list */}
-            <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:36}}>
+            <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:36}}>
               {[
                 {icon:Shield,title:"SIPC & FDIC Protected",desc:"Up to $500K SIPC protection. Cash balances FDIC insured up to $2.5M through bank sweeps."},
                 {icon:Lock,title:"Senior Fraud Protection",desc:"Two-factor authentication, withdrawal whitelisting, and 24/7 fraud monitoring purpose-built for seniors."},
                 {icon:Clock,title:"Dedicated Senior Support",desc:"Speak to a real person, Monday to Friday. Our senior specialists understand your unique needs."},
                 {icon:TrendingUp,title:"Inflation-Beating Returns",desc:"Earn up to 3.14% on cash, plus exposure to dividend stocks, REITs and Treasury bonds."},
               ].map(({icon:Icon,title,desc},i)=>(
-                <div key={i} style={{display:"flex",gap:16,alignItems:"flex-start",padding:"16px 20px",borderRadius:14,background:"#F5F6F7",border:"1px solid #E6E8EB"}}>
-                  <div style={{width:40,height:40,borderRadius:12,background:"rgba(200,16,46,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    <Icon size={18} color="#c8102e" strokeWidth={1.5} />
+                <div key={i} style={{display:"flex",gap:16,alignItems:"flex-start",padding:"16px 20px",borderRadius:14,background:"linear-gradient(135deg,#080a0f,#0f1320)",border:"1px solid rgba(255,255,255,0.07)",position:"relative",overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.05)"}} />
+                  <div style={{width:40,height:40,borderRadius:12,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(8px)"}}>
+                    <Icon size={18} color="rgba(255,255,255,0.75)" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <div style={{fontSize:14,fontWeight:700,color:"#0F172A",marginBottom:3}}>{title}</div>
-                    <div style={{fontSize:13,color:"#6B7280",lineHeight:1.6}}>{desc}</div>
+                    <div style={{fontSize:14,fontWeight:700,color:"#fff",marginBottom:3}}>{title}</div>
+                    <div style={{fontSize:13,color:"rgba(255,255,255,0.38)",lineHeight:1.6}}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -671,20 +672,21 @@ export default function Home() {
           <TestimonialCarousel />
 
           {/* Trust badges row */}
-          <div style={{display:"flex",flexWrap:"wrap",gap:20,justifyContent:"center",marginTop:60}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginTop:60}}>
             {[
               {icon:Shield,label:"SIPC Member",sub:"Up to $500K protected"},
               {icon:Lock,label:"Bank-Grade Security",sub:"256-bit AES encryption"},
               {icon:Star,label:"4.9/5 App Store",sub:"50,000+ ratings"},
               {icon:TrendingUp,label:"$2.4T+ AUM",sub:"Assets under management"},
             ].map(({icon:Icon,label,sub},i)=>(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"16px 24px",background:"#fff",borderRadius:16,border:"1px solid #E6E8EB",boxShadow:"0 1px 3px rgba(0,0,0,0.04)"}}>
-                <div style={{width:40,height:40,borderRadius:12,background:"rgba(200,16,46,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                  <Icon size={18} color="#c8102e" strokeWidth={1.5} />
+              <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 22px",background:"linear-gradient(135deg,#080a0f,#0f1320)",borderRadius:16,border:"1px solid rgba(255,255,255,0.08)",boxShadow:"0 4px 20px rgba(0,0,0,0.15)",position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
+                <div style={{width:38,height:38,borderRadius:11,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.09)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(8px)"}}>
+                  <Icon size={17} color="rgba(255,255,255,0.75)" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <div style={{fontSize:13,fontWeight:700,color:"#0F172A"}}>{label}</div>
-                  <div style={{fontSize:11,color:"#9CA3AF"}}>{sub}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{label}</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.35)"}}>{sub}</div>
                 </div>
               </div>
             ))}
@@ -718,8 +720,8 @@ export default function Home() {
                   {bold:"Earn extra income",rest:" on your lendable shares through Stock Yield Enhancement."},
                 ].map((item,i)=>(
                   <li key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-                    <div style={{width:20,height:20,borderRadius:6,background:"rgba(200,16,46,0.1)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                      <Check size={12} color="#c8102e" strokeWidth={2.5} />
+                    <div style={{width:20,height:20,borderRadius:6,background:"linear-gradient(135deg,rgba(43,107,78,0.18),rgba(43,107,78,0.08))",border:"1px solid rgba(43,107,78,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
+                      <Check size={12} color="#2b6b4e" strokeWidth={2.5} />
                     </div>
                     <span style={{fontSize:14,color:"#374151",lineHeight:1.7}}>
                       <strong style={{color:"#0F172A",fontWeight:700}}>{item.bold}</strong>{item.rest}
@@ -814,8 +816,8 @@ export default function Home() {
               {Icon:Building2,label:"Institutional Accounts",sub:"Advisors, hedge funds & brokers"},
             ].map(({Icon,label,sub})=>(
               <a key={label} href="#" className="acct-card" style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"28px 24px",border:"1px solid #E6E8EB",textDecoration:"none",width:175,borderRadius:16,transition:"border-color .18s,background .18s",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",background:"#fff"}}>
-                <div style={{width:48,height:48,borderRadius:14,background:"#F5F6F7",border:"1px solid #E6E8EB",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
-                  <Icon size={20} color="#374151" strokeWidth={1.5} />
+                <div style={{width:48,height:48,borderRadius:14,background:"linear-gradient(135deg,#080a0f,#131a26)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,boxShadow:"0 4px 12px rgba(0,0,0,0.15)"}}>
+                  <Icon size={20} color="rgba(255,255,255,0.7)" strokeWidth={1.5} />
                 </div>
                 <span style={{fontSize:13,fontWeight:700,color:"#0F172A",marginBottom:4,textAlign:"center",lineHeight:1.3}}>{label}</span>
                 <span style={{fontSize:11,color:"#9CA3AF",textAlign:"center",lineHeight:1.4}}>{sub}</span>

@@ -15,6 +15,13 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 
+// Marketing Pages
+import WhyVault from "@/pages/marketing/WhyVault";
+import Pricing from "@/pages/marketing/Pricing";
+import Security from "@/pages/marketing/Security";
+import RetirementPage from "@/pages/marketing/RetirementPage";
+import CryptoPage from "@/pages/marketing/CryptoPage";
+
 // App Pages
 import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
@@ -110,6 +117,13 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+
+      {/* Marketing Pages */}
+      <Route path="/why-vault" component={WhyVault} />
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/security" component={Security} />
+      <Route path="/retirement" component={RetirementPage} />
+      <Route path="/crypto" component={CryptoPage} />
       
       {/* Admin Routes */}
       <Route path="/admin" component={AdminLogin} />
