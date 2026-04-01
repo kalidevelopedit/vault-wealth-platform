@@ -77,40 +77,40 @@
   --elevate-2: rgba(0,0,0,.05);
 
   /* Premium minimalist palette — warm off-white, charcoal, hairline borders */
-  --background: 38 14% 96%;        /* #f8f7f4 warm off-white */
-  --foreground: 0 0% 7%;           /* #111111 charcoal */
+  --background: 210 9% 96%;         /* #F5F6F7 cool light gray */
+  --foreground: 222 47% 7%;         /* #0F172A almost black */
 
-  --border: 38 10% 89%;            /* #e6e3dc warm hairline */
-  --input: 38 10% 89%;
+  --border: 210 11% 91%;            /* #E6E8EB cool hairline */
+  --input: 210 11% 91%;
   --ring: 215 50% 20%;
 
-  --card: 0 0% 100%;               /* #ffffff */
-  --card-foreground: 0 0% 7%;
-  --card-border: 38 10% 90%;
+  --card: 0 0% 100%;                /* #ffffff */
+  --card-foreground: 222 47% 7%;
+  --card-border: 210 11% 91%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 7%;
-  --popover-border: 38 10% 89%;
+  --popover-foreground: 222 47% 7%;
+  --popover-border: 210 11% 91%;
 
-  --primary: 215 50% 18%;          /* #162d4a deep navy */
+  --primary: 215 50% 18%;           /* #162d4a deep navy */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 38 10% 93%;         /* #ede9e1 warm gray */
+  --secondary: 210 9% 93%;          /* soft cool gray */
   --secondary-foreground: 215 50% 18%;
 
-  --muted: 38 10% 93%;
-  --muted-foreground: 0 0% 44%;    /* #707070 refined gray */
+  --muted: 210 9% 93%;
+  --muted-foreground: 218 11% 55%;  /* #6B7280 */
 
-  --accent: 38 10% 93%;
+  --accent: 210 9% 93%;
   --accent-foreground: 215 50% 18%;
 
-  --destructive: 0 52% 38%;        /* #943636 muted institutional red */
+  --destructive: 0 52% 38%;         /* #943636 muted institutional red */
   --destructive-foreground: 0 0% 100%;
 
-  --success: 150 38% 28%;          /* #2b6b4e muted institutional green */
+  --success: 150 38% 28%;           /* #2b6b4e muted institutional green */
   --success-foreground: 0 0% 100%;
 
-  --sidebar: 222 36% 10%;          /* #0d1520 near-black navy */
+  --sidebar: 222 36% 10%;           /* #0d1520 near-black navy */
   --sidebar-foreground: 215 15% 72%;
   --sidebar-border: 222 28% 14%;
   --sidebar-primary: 215 50% 18%;
@@ -130,13 +130,13 @@
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'SF Mono', 'Fira Mono', Menlo, monospace;
 
-  /* SHARP radius — institutional, not consumer */
-  --radius: 0.125rem; /* 2px */
+  /* Layered radius system — modern fintech */
+  --radius: 1rem; /* 16px — base for cards */
 
-  --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
-  --shadow-xs: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-  --shadow-sm: 0 1px 4px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-  --shadow: 0 2px 8px -2px rgb(0 0 0 / 0.08), 0 1px 3px -1px rgb(0 0 0 / 0.06);
+  --shadow-2xs: 0 1px 2px 0 rgba(16, 24, 40, 0.04);
+  --shadow-xs:  0 1px 3px 0 rgba(16, 24, 40, 0.06);
+  --shadow-sm:  0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow:     0 4px 10px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
   --shadow-md: 0 4px 12px -3px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
   --shadow-lg: 0 8px 20px -4px rgb(0 0 0 / 0.10), 0 4px 8px -4px rgb(0 0 0 / 0.06);
   --shadow-xl: 0 16px 32px -8px rgb(0 0 0 / 0.12);

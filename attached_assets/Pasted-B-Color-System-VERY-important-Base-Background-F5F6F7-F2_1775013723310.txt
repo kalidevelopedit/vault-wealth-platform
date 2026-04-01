@@ -1,0 +1,235 @@
+B. Color System (VERY important)
+Base
+Background: #F5F6F7 / #F2F3F5
+Cards: #FFFFFF
+Borders: #E6E8EB
+Primary text: #0F172A (almost black)
+Secondary text: #6B7280 / #8A9199
+Accents (STRICT)
+Green (gains): muted, not neon
+Red (loss): muted, not bright
+Blue: only for actions (buttons), not everywhere
+
+❌ NO:
+
+colored icons backgrounds
+gradients everywhere
+purple / pink / neon
+C. Depth (Why your UI feels “flat” right now)
+
+Your current issue = missing micro-depth layers
+
+What your references use:
+1. Card Elevation (subtle)
+box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04),
+            0 1px 3px rgba(16, 24, 40, 0.06);
+2. Inner softness
+border: 1px solid #E6E8EB;
+3. Hover elevation (very slight)
+transform: translateY(-1px);
+box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+
+👉 This creates “barely noticeable depth” = premium feel
+
+D. Border Radius System (THIS is what you asked about)
+
+This is where your UI wins or loses.
+
+Your references use a layered radius system
+Element	Radius
+Main cards	16px – 20px
+Inner cards	12px – 16px
+Inputs	10px – 12px
+Buttons	10px – 14px
+Pills (tabs)	999px
+
+👉 The trick:
+Outer containers = softer / larger radius
+Inner elements = slightly tighter
+
+That creates hierarchy.
+
+E. Spacing System (why it feels premium)
+
+Everything follows a strict 8px grid
+
+Card padding: 20–24px
+Section spacing: 24–32px
+Element spacing: 12–16px
+
+❌ What breaks premium feel:
+
+uneven spacing
+cramped UI
+inconsistent padding
+F. Typography (this is HUGE)
+Style:
+Clean, neutral, no personality fonts
+No playful weights
+Structure:
+Use	Style
+Main numbers	bold, large
+Section titles	medium
+Labels	small, muted
+Metadata	very subtle gray
+
+👉 Numbers (balances, prices) are the hero, not colors.
+
+G. Charts (why yours might feel off)
+
+Your references:
+
+thin lines
+muted grid
+no heavy fills
+soft highlight points
+
+👉 Charts are data-first, not decorative
+
+2. 🧠 WHY YOUR UI FEELS FLAT (and how to fix it)
+
+Right now you're likely missing:
+
+❌ Problem 1: No depth hierarchy
+
+Everything sits on same plane.
+
+✅ Fix:
+background (light gray)
+cards (white)
+inner elements (slightly inset look)
+❌ Problem 2: Too uniform radius
+
+Everything same rounded corners = amateur feel
+
+✅ Fix:
+
+Use tiered radius system (above)
+
+❌ Problem 3: No contrast layers
+
+Everything same tone
+
+✅ Fix:
+background vs card contrast
+border usage
+subtle shadows
+❌ Problem 4: Over-simplified buttons
+
+Flat buttons = cheap look
+
+✅ Fix:
+
+Primary button style:
+
+background: #111827;
+color: white;
+border-radius: 12px;
+padding: 12px 16px;
+
+Secondary:
+
+background: white;
+border: 1px solid #E5E7EB;
+3. 🎯 APPLY THIS TO YOUR PLATFORM (exact instructions)
+A. Dashboard Layout (based on your images)
+
+Use modular card system:
+
+[ Balance Card ]
+[ Chart Card ]      [ Transactions ]
+[ Buy/Sell Panel ]  [ News ]
+
+Each = independent white card with:
+
+padding 20–24px
+radius 16px
+subtle border
+B. Buy / Sell / Convert Panel (your first image)
+
+Make it feel like:
+
+isolated module
+clean hierarchy
+no color noise
+
+Structure:
+
+segmented tabs (pill style)
+amount input (large)
+asset selector
+payment method
+CTA button (strong contrast)
+C. Transactions List
+
+Your reference is perfect:
+
+left: icon (NO colored background blocks)
+center: asset + action
+right: amount + date
+
+Spacing:
+
+row height: ~64px
+divider: ultra light
+D. News Section
+
+This is editorial style, not UI style.
+
+Each item:
+
+small thumbnail
+headline
+source + date
+
+👉 looks like Bloomberg / FT, not a blog
+
+E. Watchlist / Assets
+
+Use:
+
+compact rows
+price + % change
+minimal icons
+F. Payment Cards / Methods
+
+Very important:
+
+clean card UI
+no branding overload
+subtle logos only
+4. 🧾 LANDING PAGE STYLE (matching this UI)
+
+Your landing page should feel like:
+
+“Institutional fintech meets product dashboard”
+
+Structure:
+Hero
+white / light gray
+UI preview (NOT illustration)
+serious copy
+Sections
+card-based layouts (same as dashboard)
+same spacing system
+same typography
+NO:
+gradients
+playful illustrations
+marketing fluff
+big colorful icons
+5. 📸 STOCK IMAGE RULES (strict)
+
+ONLY use:
+
+Good:
+financial professionals
+trading setups
+clean office environments
+macro finance imagery
+commodities (gold, oil) — editorial style
+Avoid:
+crypto cartoons
+glowing coins
+neon tech visuals
+startup “team laughing” photos

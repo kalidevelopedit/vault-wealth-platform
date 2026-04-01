@@ -9,6 +9,8 @@ const KYC_STATUS = {
   not_started: { label: "Not Started", dot: "#aaa", Icon: Shield },
 };
 
+const CARD = "bg-white rounded-2xl border border-[#E6E8EB] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_1px_3px_rgba(16,24,40,0.06)]";
+
 export default function Profile() {
   const { user } = useAuth();
   const { data: profile, isLoading } = useGetUserProfile();
@@ -21,7 +23,6 @@ export default function Profile() {
 
   const kycKey = (profile?.kycStatus || "not_started") as keyof typeof KYC_STATUS;
   const kyc = KYC_STATUS[kycKey] || KYC_STATUS.not_started;
-  const KycIcon = kyc.Icon;
 
   const initials = user?.fullName
     ? user.fullName.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
@@ -51,49 +52,50 @@ export default function Profile() {
   return (
     <div className="max-w-[1000px] mx-auto px-6 py-8 pb-16">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8 pb-6 border-b border-border">
+      <div className="flex items-start justify-between mb-8">
         <div>
-          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-1.5">Account</div>
-          <h1 className="text-[20px] font-semibold tracking-tight text-foreground">Profile</h1>
+          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-1">Account</div>
+          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Profile</h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Left column */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Identity card */}
-          <div className="border border-border bg-card">
-            <div className="p-6 border-b border-border flex flex-col items-center text-center">
-              <div className="w-12 h-12 border border-border bg-muted/20 flex items-center justify-center text-[18px] font-semibold text-foreground mb-3">
+          <div className={CARD}>
+            <div className="p-6 border-b border-[#E6E8EB] flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-[#F2F3F5] border border-[#E6E8EB] flex items-center justify-center text-[18px] font-bold text-foreground mb-3">
                 {initials}
               </div>
-              <div className="text-[14px] font-semibold text-foreground tracking-tight">{user?.fullName || "—"}</div>
+              <div className="text-[15px] font-semibold text-foreground tracking-tight">{user?.fullName || "—"}</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">{user?.email}</div>
             </div>
             <div className="p-4">
               <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground mb-2.5">Identity Status</div>
               <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: kyc.dot }} />
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: kyc.dot }} />
                 <span className="text-[12px] font-medium text-foreground">{kyc.label}</span>
               </div>
             </div>
           </div>
 
           {/* KYC progress */}
-          <div className="border border-border bg-card">
-            <div className="px-4 pt-4 pb-3 border-b border-border">
+          <div className={CARD}>
+            <div className="px-5 pt-5 pb-3 border-b border-[#E6E8EB]">
               <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground mb-0.5">Verification</div>
               <div className="text-[12px] font-semibold text-foreground">KYC Progress</div>
             </div>
-            <div className="p-4 space-y-2.5">
+            <div className="p-5 space-y-3">
               {onboardingSteps.map((step, i) => {
                 const done = i < completedSteps;
                 return (
                   <div key={step} className="flex items-center gap-2.5">
-                    <div className={`w-4 h-4 border flex items-center justify-center shrink-0 ${done ? "border-[#2b6b4e] bg-[#2b6b4e]" : "border-border"}`}>
+                    <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ${done ? "bg-[#2b6b4e]" : "border border-[#E6E8EB] bg-white"}`}
+                      style={{ width: 18, height: 18 }}>
                       {done && <span className="text-white text-[8px] font-bold">✓</span>}
                     </div>
-                    <span className={`text-[11px] ${done ? "text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                    <span className={`text-[11px] ${done ? "text-foreground font-medium" : "text-muted-foreground"}`}>{step}</span>
                   </div>
                 );
               })}
@@ -101,16 +103,16 @@ export default function Profile() {
           </div>
 
           {/* Security */}
-          <div className="border border-border bg-card p-4">
+          <div className={`${CARD} p-5`}>
             <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground mb-3">Security</div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between py-2 border-b border-border">
+              <div className="flex items-center justify-between py-2 border-b border-[#E6E8EB]">
                 <span className="text-[12px] text-foreground">Two-Factor Auth</span>
                 <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Disabled</span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span className="text-[12px] text-foreground">Password</span>
-                <button className="text-[10px] font-medium uppercase tracking-wider border border-border px-2.5 py-1 text-muted-foreground hover:bg-muted/20 transition-colors">
+                <button className="text-[10px] font-medium uppercase tracking-wider border border-[#E6E8EB] px-3 py-1.5 rounded-lg text-muted-foreground hover:bg-[#F5F6F7] transition-colors">
                   Update
                 </button>
               </div>
@@ -119,16 +121,16 @@ export default function Profile() {
         </div>
 
         {/* Right columns */}
-        <div className="md:col-span-2 space-y-5">
+        <div className="md:col-span-2 space-y-4">
           {/* Personal information */}
-          <div className="border border-border bg-card">
-            <div className="px-6 pt-5 pb-4 border-b border-border">
+          <div className={`${CARD} overflow-hidden`}>
+            <div className="px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
               <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Personal</div>
               <div className="text-[13px] font-semibold text-foreground">Account Information</div>
             </div>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-[#E6E8EB]">
               {infoRows.map(({ label, value }) => (
-                <div key={label} className="flex items-start justify-between px-6 py-4">
+                <div key={label} className="flex items-start justify-between px-6 py-3.5">
                   <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground pt-0.5 w-36 shrink-0">{label}</div>
                   <div className="text-[12px] text-foreground font-medium text-right">{value || "—"}</div>
                 </div>
@@ -138,12 +140,12 @@ export default function Profile() {
 
           {/* Investment profile */}
           {profile?.investmentExperience && (
-            <div className="border border-border bg-card">
-              <div className="px-6 pt-5 pb-4 border-b border-border">
+            <div className={`${CARD} overflow-hidden`}>
+              <div className="px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
                 <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Investment Profile</div>
                 <div className="text-[13px] font-semibold text-foreground">Preferences & Risk</div>
               </div>
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-[#E6E8EB]">
                 {[
                   { label: "Experience Level", value: profile.investmentExperience },
                   { label: "Risk Tolerance", value: profile.riskTolerance },
@@ -151,7 +153,7 @@ export default function Profile() {
                   { label: "Annual Income", value: profile.annualIncome },
                   { label: "Net Worth", value: profile.netWorth },
                 ].filter(r => r.value).map(({ label, value }) => (
-                  <div key={label} className="flex items-start justify-between px-6 py-4">
+                  <div key={label} className="flex items-start justify-between px-6 py-3.5">
                     <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground pt-0.5 w-36 shrink-0">{label}</div>
                     <div className="text-[12px] text-foreground font-medium text-right capitalize">{value}</div>
                   </div>

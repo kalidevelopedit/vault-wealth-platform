@@ -4,6 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+const INPUT = "w-full bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-3.5 py-2.5 rounded-xl placeholder:text-[#bbb] focus:outline-none focus:border-[#0d1520] transition-colors";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,11 +27,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#f8f7f4" }}>
+    <div className="min-h-screen flex" style={{ background: "#F5F6F7" }}>
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0d1520] p-12">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-5 h-5 bg-white flex items-center justify-center shrink-0">
+          <div className="w-5 h-5 bg-white rounded flex items-center justify-center shrink-0">
             <span className="text-[#0d1520] font-bold text-[9px] tracking-tighter">V</span>
           </div>
           <span className="text-white/90 font-medium text-[13px] tracking-tight">Vault Wealth</span>
@@ -40,21 +42,21 @@ export default function Login() {
             "Vault Wealth has transformed how we manage our multi-asset portfolio. The institutional tools and reporting are unmatched."
           </p>
           <div>
-            <div className="text-white/70 text-[12px] font-medium">Sarah M.</div>
+            <div className="text-white/70 text-[12px] font-semibold">Sarah M.</div>
             <div className="text-white/25 text-[10px] uppercase tracking-widest mt-0.5">Chief Investment Officer</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-px bg-white/[0.06]">
+        <div className="grid grid-cols-2 gap-3">
           {[
             { val: "$2.4B+", label: "Assets Under Management" },
             { val: "50K+", label: "Institutional Investors" },
             { val: "99.98%", label: "Platform Uptime" },
             { val: "SOC 2", label: "Type II Certified" },
           ].map((s, i) => (
-            <div key={i} className="p-5 bg-[#0d1520]">
-              <div className="text-white/80 text-lg font-semibold tabular-nums tracking-tight">{s.val}</div>
-              <div className="text-white/25 text-[9px] uppercase tracking-widest mt-1">{s.label}</div>
+            <div key={i} className="p-4 rounded-xl bg-white/[0.05]">
+              <div className="text-white/80 text-[17px] font-bold tabular-nums tracking-tight">{s.val}</div>
+              <div className="text-white/30 text-[9px] uppercase tracking-widest mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -66,67 +68,67 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="mb-10 lg:hidden">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-5 h-5 bg-[#0d1520] flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 bg-[#0d1520] rounded flex items-center justify-center shrink-0">
                 <span className="text-white font-bold text-[9px] tracking-tighter">V</span>
               </div>
-              <span className="text-[#111] font-medium text-[13px] tracking-tight">Vault Wealth</span>
+              <span className="text-[#0F172A] font-medium text-[13px] tracking-tight">Vault Wealth</span>
             </Link>
           </div>
 
           <div className="mb-9">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#999] mb-3">Client Portal</div>
-            <h1 className="text-[22px] font-semibold tracking-tight text-[#111] leading-snug">Sign in to your account</h1>
-            <p className="text-[13px] text-[#888] mt-2">Enter your credentials to access your portfolio.</p>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">Client Portal</div>
+            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Sign in to your account</h1>
+            <p className="text-[13px] text-[#6B7280] mt-2">Enter your credentials to access your portfolio.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-semibold text-[#999] uppercase tracking-widest mb-1.5">Email Address</label>
+              <label className="block text-[10px] font-semibold text-[#6B7280] uppercase tracking-widest mb-1.5">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
                 required
-                className="w-full bg-white border border-[#e6e3dc] text-[#111] text-[13px] px-3.5 py-2.5 placeholder:text-[#bbb] focus:outline-none focus:border-[#0d1520] transition-colors"
+                className={INPUT}
               />
             </div>
 
             <div>
               <div className="flex justify-between mb-1.5">
-                <label className="block text-[10px] font-semibold text-[#999] uppercase tracking-widest">Password</label>
-                <a href="#" className="text-[10px] text-[#999] hover:text-[#111] transition-colors">Forgot password?</a>
+                <label className="block text-[10px] font-semibold text-[#6B7280] uppercase tracking-widest">Password</label>
+                <a href="#" className="text-[10px] text-[#6B7280] hover:text-[#0F172A] transition-colors">Forgot password?</a>
               </div>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white border border-[#e6e3dc] text-[#111] text-[13px] px-3.5 py-2.5 focus:outline-none focus:border-[#0d1520] transition-colors"
+                className={INPUT}
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#0d1520] text-white text-[11px] font-semibold uppercase tracking-[0.12em] py-3 hover:bg-[#1a2d4a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-1"
+              className="w-full bg-[#0d1520] text-white text-[11px] font-semibold uppercase tracking-[0.12em] py-3 rounded-xl hover:bg-[#1a2d4a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Signing in…</> : "Sign In"}
             </button>
           </form>
 
-          <div className="mt-8 pt-7 border-t border-[#e6e3dc]">
-            <p className="text-[12px] text-[#999]">
+          <div className="mt-8 pt-7 border-t border-[#E6E8EB]">
+            <p className="text-[12px] text-[#6B7280]">
               No account?{" "}
-              <Link href="/register" className="text-[#111] font-medium hover:underline">
+              <Link href="/register" className="text-[#0F172A] font-semibold hover:underline">
                 Open an account
               </Link>
             </p>
           </div>
 
-          <div className="mt-6 p-4 border border-[#e6e3dc] bg-white">
-            <div className="text-[9px] font-semibold uppercase tracking-widest text-[#bbb] mb-1.5">Demo Access</div>
-            <div className="text-[11px] text-[#999] font-mono">demo@vestplatform.com / demo1234</div>
+          <div className="mt-5 p-4 rounded-xl border border-[#E6E8EB] bg-white">
+            <div className="text-[9px] font-semibold uppercase tracking-widest text-[#9ca3af] mb-1.5">Demo Access</div>
+            <div className="text-[11px] text-[#6B7280] font-mono">demo@vestplatform.com / demo1234</div>
           </div>
         </div>
       </div>
