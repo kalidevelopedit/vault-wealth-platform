@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "oTzXAHtk0knmWpU2LdpGa"
@@ -18,3 +17,51 @@ id = "sGra3zpMvrKLgmc_1R2ix"
 uri = "file://artifacts/investment-platform/public/feature-security.png"
 type = "image"
 title = "Secure vault abstract concept"
+
+[[generated]]
+id = "3cl-dICwZG3tmBRWRdYGn"
+uri = "file://artifacts/investment-platform/public/testimonial-sarah.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "iTplznuj6yEH2XdNFMg3s"
+uri = "file://artifacts/investment-platform/public/testimonial-robert.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "IA0f1JaQT4Gu_iCkyphGP"
+uri = "file://artifacts/investment-platform/public/testimonial-james.png"
+type = "image"
+title = "generated_image"
+
+[[outputs]]
+id = "-yrvEYUDpT1nyt6yV3mpS"
+uri = "file://attached_assets/stock_images/diverse_investors.jpg"
+type = "image"
+title = "diverse group of young professionals investors celebrating success in modern office finance"
+
+[[outputs]]
+id = "ZrqtxJgYISYpzdh22YQf8"
+uri = "file://attached_assets/stock_images/city_financial_district.jpg"
+type = "image"
+title = "dramatic city skyline financial district skyscrapers glass buildings sunrise wealth prosperity"
+
+[[outputs]]
+id = "X3mok0cV-CUqfZ91hrRXq"
+uri = "file://attached_assets/stock_images/senior_retirement.jpg"
+type = "image"
+title = "senior woman financial advisor meeting retirement planning wealth"
+
+[[outputs]]
+id = "p4SEY688iqSQHYDaDYdZA"
+uri = "file://attached_assets/stock_images/crypto_investment.jpg"
+type = "image"
+title = "cryptocurrency bitcoin ethereum trading investment digital finance"
+
+[[outputs]]
+id = "HU5eN5t6VPrIebu6Eo8Gu"
+uri = "file://attached_assets/stock_images/market_charts.jpg"
+type = "image"
+title = "stock market trading charts graphs investment growth success"
