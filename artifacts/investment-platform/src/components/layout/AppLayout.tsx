@@ -42,7 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Logo */}
         <div className="px-4 py-4 border-b border-white/[0.06]">
           <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 55, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 160, height: "auto", display: "block", mixBlendMode: "screen" }} />
           </Link>
         </div>
 

@@ -31,7 +31,7 @@ export default function Login() {
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0d1520] p-12">
         <Link href="/">
-          <img src="/logo-white.png" alt="INT Brokers" style={{ height: 80, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 220, height: "auto", display: "block", mixBlendMode: "screen" }} />
         </Link>
 
         <div>
