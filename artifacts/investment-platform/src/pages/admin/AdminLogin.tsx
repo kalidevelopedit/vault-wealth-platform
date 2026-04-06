@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAdminLogin } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AdminLogin() {
@@ -30,9 +30,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#0d1520] flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-xs">
         <div className="flex flex-col items-center mb-10">
-          <div className="w-10 h-10 bg-white flex items-center justify-center mb-6">
-            <Shield className="w-5 h-5 text-[#0a1628]" />
-          </div>
+          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen", marginBottom: 24 }} />
           <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/25 mb-2">Restricted Access</div>
           <h1 className="text-lg font-semibold text-white tracking-tight text-center">Administration Portal</h1>
           <p className="text-white/35 text-xs mt-2 text-center">Enter your secure passcode to continue</p>

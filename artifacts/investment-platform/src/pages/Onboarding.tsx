@@ -82,6 +82,7 @@ export default function Onboarding() {
   const [dir, setDir] = useState<"right" | "left">("right");
   const [loading, setLoading] = useState(false);
   const [slideKey, setSlideKey] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
 
   const savePrefs = useSaveInvestmentPreferences();
   const saveProfile = useSaveUserProfile();
@@ -173,7 +174,7 @@ export default function Onboarding() {
     setLoading(true);
     try {
       await submitKyc.mutateAsync();
-      window.location.href = "/dashboard";
+      setSubmitted(true);
     } catch { } finally { setLoading(false); }
   };
 
@@ -181,12 +182,37 @@ export default function Onboarding() {
     setPreferences(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   };
 
+  if (submitted) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#0d0f14", fontFamily: "'Inter',system-ui,sans-serif" }}>
+        <img src="/logo-white.png" alt="INT Brokers" style={{ width: 220, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen", marginBottom: 48 }} />
+        <div style={{ textAlign: "center", maxWidth: 520, padding: "0 24px" }}>
+          <div style={{ width: 72, height: 72, background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 28px" }}>
+            <Check size={32} color="#4ade80" strokeWidth={2} />
+          </div>
+          <h2 style={{ fontSize: 28, fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", marginBottom: 16 }}>Application Received</h2>
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.5)", lineHeight: 1.75, marginBottom: 40 }}>
+            Thank you for submitting your account opening request. Someone from our team will be in touch with you shortly regarding the next steps.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, padding: "13px 32px", textDecoration: "none", borderRadius: 12, boxShadow: "0 4px 24px rgba(200,16,46,0.35)" }}>
+              Return to Home
+            </a>
+            <a href="/login" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: 15, padding: "13px 32px", textDecoration: "none", borderRadius: 12 }}>
+              Sign In
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0d0f14" }}>
       {/* Top bar */}
       <div className="border-b border-white/6 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center">
-          <img src="/logo-white.png" alt="INT Brokers" style={{ height: 52, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
         </div>
         <span className="text-white/20 text-xs">Account Application</span>
       </div>

@@ -1,10 +1,62 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Shield, Users, LogOut, LayoutDashboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Users, LogOut, LayoutDashboard, Menu } from "lucide-react";
+
+const NAV = [
+  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/users", icon: Users, label: "Users & KYC" },
+];
+
+function Sidebar({ location, onClose, onLogout }: { location: string; onClose?: () => void; onLogout: () => void }) {
+  return (
+    <aside style={{ width: 240, background: "#0d1520", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", height: "100vh" }}>
+      <div style={{ padding: "24px 24px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <img src="/logo-white.png" alt="INT Brokers" style={{ width: 160, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", marginTop: 6 }}>Admin Portal</div>
+      </div>
+
+      <nav style={{ flex: 1, padding: "16px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
+        {NAV.map(({ href, icon: Icon, label }) => {
+          const active = href === "/admin/dashboard" ? location === href : location.startsWith(href);
+          return (
+            <Link key={href} href={href}
+              onClick={onClose}
+              style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10,
+                fontSize: 13, fontWeight: 600, textDecoration: "none",
+                background: active ? "rgba(200,16,46,0.15)" : "transparent",
+                color: active ? "#f87171" : "rgba(255,255,255,0.45)",
+                border: active ? "1px solid rgba(200,16,46,0.25)" : "1px solid transparent",
+                transition: "all 0.15s",
+              }}
+            >
+              <Icon size={16} strokeWidth={1.5} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div style={{ padding: "12px 12px 20px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <button
+          onClick={onLogout}
+          style={{
+            display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "10px 14px",
+            borderRadius: 10, fontSize: 13, fontWeight: 600, background: "transparent",
+            color: "rgba(255,255,255,0.3)", border: "none", cursor: "pointer",
+          }}
+        >
+          <LogOut size={16} strokeWidth={1.5} />
+          Exit Admin
+        </button>
+      </div>
+    </aside>
+  );
+}
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [location, setLocation] = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const isAuth = localStorage.getItem("adminAuthenticated");
@@ -21,41 +73,38 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   if (location === "/admin") return <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col md:flex-row">
-      <aside className="w-64 border-r bg-card hidden md:flex flex-col h-screen sticky top-0">
-        <div className="p-6 border-b">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-zinc-900 flex items-center justify-center text-white">
-              <Shield className="w-4 h-4" />
-            </div>
-            <span className="font-semibold text-lg tracking-tight">Admin Ops</span>
+    <div style={{ minHeight: "100vh", background: "#080c14", fontFamily: "'Inter',system-ui,sans-serif" }} className="flex">
+
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex md:flex-col" style={{ position: "sticky", top: 0, height: "100vh" }}>
+        <Sidebar location={location} onLogout={handleLogout} />
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex" }}>
+          <div style={{ background: "rgba(0,0,0,0.65)", position: "absolute", inset: 0 }} onClick={() => setMobileOpen(false)} />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <Sidebar location={location} onClose={() => setMobileOpen(false)} onLogout={handleLogout} />
           </div>
         </div>
-        
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/admin/dashboard" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${location === '/admin/dashboard' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>
-            <LayoutDashboard className="w-4 h-4" /> Dashboard
-          </Link>
-          <Link href="/admin/users" className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${location.startsWith('/admin/users') ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'}`}>
-            <Users className="w-4 h-4" /> Users & KYC
-          </Link>
-        </nav>
-        
-        <div className="p-4 border-t">
-          <Button variant="ghost" className="w-full justify-start text-muted-foreground" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" /> Exit Admin
-          </Button>
-        </div>
-      </aside>
+      )}
 
-      <main className="flex-1 overflow-auto">
-        <header className="h-16 border-b bg-card flex items-center px-8 sticky top-0 z-10">
-          <h2 className="font-medium">Ops Center</h2>
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-auto">
+        {/* Mobile top bar */}
+        <header className="flex md:hidden items-center gap-3 px-4 sticky top-0 z-20"
+          style={{ height: 56, background: "#0d1520", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <button onClick={() => setMobileOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.6)", padding: 4 }}>
+            <Menu size={20} />
+          </button>
+          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 130, height: "auto", mixBlendMode: "screen" }} />
         </header>
-        <div className="p-8">
+
+        <div style={{ flex: 1, padding: "28px 32px" }}>
           {children}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

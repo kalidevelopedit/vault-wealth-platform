@@ -295,9 +295,7 @@ function InvestmentCategories() {
             <ul style={{listStyle:"none",padding:0,margin:"0 0 32px",display:"flex",flexDirection:"column",gap:12}}>
               {cat.bullets.map((b,i)=>(
                 <li key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-                  <div style={{width:20,height:20,borderRadius:6,background:`${cat.color}20`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                    <Check size={12} color={cat.color} strokeWidth={2.5} />
-                  </div>
+                  <Check size={15} color="rgba(255,255,255,0.4)" strokeWidth={2} style={{flexShrink:0,marginTop:2}} />
                   <span style={{fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.6}}>{b}</span>
                 </li>
               ))}
@@ -457,9 +455,7 @@ function CryptoSection() {
                 "Tax-loss harvesting & crypto tax reports included",
               ].map((b,i)=>(
                 <li key={i} style={{display:"flex",gap:12,alignItems:"center"}}>
-                  <div style={{width:20,height:20,borderRadius:6,background:"rgba(245,158,11,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    <Check size={12} color="#f59e0b" strokeWidth={2.5} />
-                  </div>
+                  <Check size={15} color="rgba(255,255,255,0.4)" strokeWidth={2} style={{flexShrink:0}} />
                   <span style={{fontSize:13,color:"rgba(255,255,255,0.55)",lineHeight:1.5}}>{b}</span>
                 </li>
               ))}
@@ -630,19 +626,19 @@ export default function Home() {
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
             {[
-              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)",iconBg:"rgba(59,130,246,0.2)",iconColor:"#60a5fa"},
-              {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)",iconBg:"rgba(74,222,128,0.2)",iconColor:"#4ade80"},
-              {Icon:Zap,title:"Premier Technology",desc:"Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",gradient:"linear-gradient(135deg,#2d1f0a,#1e1505)",iconBg:"rgba(251,191,36,0.2)",iconColor:"#fbbf24"},
-              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",gradient:"linear-gradient(135deg,#1f0a0a,#150505)",iconBg:"rgba(248,113,113,0.2)",iconColor:"#f87171"},
-            ].map(({Icon,title,desc,gradient,iconBg,iconColor})=>(
+              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)"},
+              {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)"},
+              {Icon:Zap,title:"Premier Technology",desc:"Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",gradient:"linear-gradient(135deg,#2d1f0a,#1e1505)"},
+              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",gradient:"linear-gradient(135deg,#1f0a0a,#150505)"},
+            ].map(({Icon,title,desc,gradient})=>(
               <div key={title} className="feat-card" style={{background:gradient,borderRadius:20,padding:"32px 28px 28px",cursor:"pointer",transition:"transform .22s ease,box-shadow .22s ease",boxShadow:"0 4px 20px rgba(0,0,0,0.08)",border:"1px solid rgba(255,255,255,0.04)",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
-                <div style={{width:46,height:46,borderRadius:13,background:iconBg,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20}}>
-                  <Icon size={20} color={iconColor} strokeWidth={1.5} />
+                <div style={{marginBottom:20}}>
+                  <Icon size={26} color="rgba(255,255,255,0.55)" strokeWidth={1.5} />
                 </div>
                 <h3 style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:10,letterSpacing:"-0.01em"}}>{title}</h3>
                 <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",lineHeight:1.75,marginBottom:20}}>{desc}</p>
-                <a href="#" style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:iconColor,textDecoration:"none"}}>
+                <a href="#" style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>
                   Learn More <ChevronRight size={13} />
                 </a>
               </div>
@@ -720,9 +716,7 @@ export default function Home() {
                   {bold:"Earn extra income",rest:" on your lendable shares through Stock Yield Enhancement."},
                 ].map((item,i)=>(
                   <li key={i} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-                    <div style={{width:20,height:20,borderRadius:6,background:"linear-gradient(135deg,rgba(43,107,78,0.18),rgba(43,107,78,0.08))",border:"1px solid rgba(43,107,78,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>
-                      <Check size={12} color="#2b6b4e" strokeWidth={2.5} />
-                    </div>
+                    <Check size={16} color="#2b6b4e" strokeWidth={2} style={{flexShrink:0,marginTop:3}} />
                     <span style={{fontSize:14,color:"#374151",lineHeight:1.7}}>
                       <strong style={{color:"#0F172A",fontWeight:700}}>{item.bold}</strong>{item.rest}
                     </span>
