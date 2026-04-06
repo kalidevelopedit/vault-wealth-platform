@@ -31,7 +31,7 @@ export default function Login() {
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0d1520] p-12">
         <Link href="/">
-          <img src="/logo.png" alt="INT Brokers" style={{ height: 150, width: "auto", objectFit: "contain", display: "block" }} />
+          <img src="/logo-white.png" alt="INT Brokers" style={{ height: 80, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
         </Link>
 
         <div>
@@ -65,9 +65,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="mb-10 lg:hidden">
             <Link href="/">
-              <div style={{ background: "#1a1f2e", borderRadius: 8, padding: "4px 10px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                <img src="/logo.png" alt="INT Brokers" style={{ height: 110, width: "auto", objectFit: "contain", display: "block" }} />
-              </div>
+              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 40, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
             </Link>
           </div>
 

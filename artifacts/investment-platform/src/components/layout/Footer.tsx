@@ -102,7 +102,7 @@ export function Footer() {
           {/* Brand column */}
           <div>
             <Link href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 16 }}>
-              <img src="/logo.png" alt="INT Brokers" style={{ height: 140, width: "auto", objectFit: "contain", display: "block" }} />
+              <img src="/logo-white.png" alt="INT Brokers" style={{ height: 80, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
             </Link>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", lineHeight: 1.75, marginBottom: 20, maxWidth: 200 }}>
               Institutional-grade investment platform. Regulated, secure, and built for serious investors since 1977.

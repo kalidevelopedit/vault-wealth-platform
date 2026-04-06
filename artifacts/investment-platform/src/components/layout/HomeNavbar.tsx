@@ -291,9 +291,7 @@ export function HomeNavbar() {
       <div style={{ borderBottom: "1px solid #f0f0f0" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "60px" }}>
           <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <div style={{ background: "#1a1f2e", borderRadius: 8, padding: "2px 8px", display: "flex", alignItems: "center", justifyContent: "center", height: 52 }}>
-              <img src="/logo.png" alt="INT Brokers" style={{ height: 52, width: "auto", objectFit: "contain", display: "block" }} />
-            </div>
+            <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 42, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>

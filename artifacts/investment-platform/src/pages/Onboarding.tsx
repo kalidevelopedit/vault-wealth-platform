@@ -186,7 +186,7 @@ export default function Onboarding() {
       {/* Top bar */}
       <div className="border-b border-white/6 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center">
-          <img src="/logo.png" alt="INT Brokers" style={{ height: 100, width: "auto", objectFit: "contain", display: "block" }} />
+          <img src="/logo-white.png" alt="INT Brokers" style={{ height: 52, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
         </div>
         <span className="text-white/20 text-xs">Account Application</span>
       </div>

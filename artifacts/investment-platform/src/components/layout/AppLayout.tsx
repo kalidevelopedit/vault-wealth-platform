@@ -42,7 +42,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Logo */}
         <div className="px-4 py-4 border-b border-white/[0.06]">
           <Link href="/">
-            <img src="/logo.png" alt="INT Brokers" style={{ height: 110, width: "auto", objectFit: "contain", display: "block" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 55, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
           </Link>
         </div>
 
@@ -93,7 +93,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Mobile top bar */}
         <header className="md:hidden h-12 bg-[#0d1520] border-b border-white/[0.06] flex items-center justify-between px-4 sticky top-0 z-10">
           <Link href="/">
-            <img src="/logo.png" alt="INT Brokers" style={{ height: 80, width: "auto", objectFit: "contain", display: "block" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 44, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
           </Link>
           <div className="w-7 h-7 bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-white/70 text-xs font-semibold">
             {initials}
