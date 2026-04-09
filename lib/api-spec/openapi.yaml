@@ -27,6 +27,8 @@ tags:
     description: Market data and news
   - name: admin
     description: Admin operations
+  - name: Storage
+    description: Object storage upload and serving endpoints.
 
 paths:
   /healthz:
@@ -1458,3 +1460,28 @@ components:
           type: string
           nullable: true
       required: [status]
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        size:
+          type: integer
+          minimum: 1
+        contentType:
+          type: string
+          minLength: 1
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+          format: uri
+        objectPath:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/UploadUrlRequest'

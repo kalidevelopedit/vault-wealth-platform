@@ -44,35 +44,41 @@ export default function Register() {
   return (
     <div className="min-h-screen flex" style={{ background: "#F5F6F7" }}>
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[380px] shrink-0 bg-[#0d1520] p-12">
-        <Link href="/">
-          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 220, height: "auto", display: "block", mixBlendMode: "screen" }} />
-        </Link>
-
-        <div className="space-y-6">
-          <div className="text-white/30 text-[13px] leading-relaxed font-light">
-            Account opening takes 5 minutes. Identity verification is completed in a guided step after registration.
-          </div>
-          <div className="space-y-3">
-            {[
-              "Institutional-grade portfolio tools",
-              "Real-time market data & analytics",
-              "Multi-asset class access",
-              "Bank-level security & custody",
-              "Dedicated client support",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full bg-white/[0.10] flex items-center justify-center shrink-0">
-                  <Check className="w-2.5 h-2.5 text-white/60" strokeWidth={2.5} />
-                </div>
-                <span className="text-white/45 text-[12px]">{item}</span>
-              </div>
-            ))}
-          </div>
+      <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0d1520] p-12 relative overflow-hidden">
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.035)'/%3E%3C/svg%3E")`, zIndex: 0, pointerEvents: "none" }} />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <Link href="/">
+            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 300, height: "auto", display: "block", mixBlendMode: "screen" }} />
+          </Link>
+          <div style={{ marginTop: 10, height: 1, background: "rgba(255,255,255,0.06)", width: "100%" }} />
+          <p style={{ marginTop: 12, fontSize: 12, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.06em" }}>Open Your Account — Free</p>
         </div>
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div className="space-y-6">
+            <div className="text-white/30 text-[13px] leading-relaxed font-light">
+              Account opening takes 5 minutes. Identity verification is completed in a guided step after registration.
+            </div>
+            <div className="space-y-3">
+              {[
+                "Institutional-grade portfolio tools",
+                "Real-time market data & analytics",
+                "Multi-asset class access",
+                "Bank-level security & custody",
+                "Dedicated client support",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-white/[0.10] flex items-center justify-center shrink-0">
+                    <Check className="w-2.5 h-2.5 text-white/60" strokeWidth={2.5} />
+                  </div>
+                  <span className="text-white/45 text-[12px]">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <div className="text-white/20 text-[10px] leading-relaxed">
-          By opening an account you agree to our Terms of Service and Privacy Policy. Vault Wealth is a regulated financial services platform.
+          <div className="text-white/20 text-[10px] leading-relaxed">
+            By opening an account you agree to our Terms of Service and Privacy Policy. Vault Wealth is a regulated financial services platform.
+          </div>
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import watchlistRouter from "./watchlist";
 import marketRouter from "./market";
 import usersRouter from "./users";
 import adminRouter from "./admin";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use("/watchlist", watchlistRouter);
 router.use("/market", marketRouter);
 router.use("/users", usersRouter);
 router.use("/admin", adminRouter);
+router.use(storageRouter);
 
 export default router;

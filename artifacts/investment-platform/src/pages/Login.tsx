@@ -29,12 +29,21 @@ export default function Login() {
   return (
     <div className="min-h-screen flex" style={{ background: "#F5F6F7" }}>
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[420px] shrink-0 bg-[#0d1520] p-12">
-        <Link href="/">
-          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 220, height: "auto", display: "block", mixBlendMode: "screen" }} />
-        </Link>
+      <div className="hidden lg:flex flex-col justify-between w-[460px] shrink-0 bg-[#0d1520] p-12 relative overflow-hidden">
+        {/* Subtle dot grid */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.035)'/%3E%3C/svg%3E")`, zIndex: 0, pointerEvents: "none" }} />
+        {/* Red glow */}
+        <div style={{ position: "absolute", top: -80, left: "50%", transform: "translateX(-50%)", width: 400, height: 300, background: "radial-gradient(ellipse,rgba(200,16,46,0.07) 0%,transparent 70%)", zIndex: 0, pointerEvents: "none" }} />
 
-        <div>
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <Link href="/">
+            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 340, height: "auto", display: "block", mixBlendMode: "screen" }} />
+          </Link>
+          <div style={{ marginTop: 10, height: 1, background: "rgba(255,255,255,0.06)", width: "100%" }} />
+          <p style={{ marginTop: 12, fontSize: 12, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.06em" }}>Institutional Investment Platform</p>
+        </div>
+
+        <div style={{ position: "relative", zIndex: 1 }}>
           <p className="text-white/30 text-[13px] leading-relaxed font-light max-w-xs mb-8">
             "Vault Wealth has transformed how we manage our multi-asset portfolio. The institutional tools and reporting are unmatched."
           </p>
@@ -44,14 +53,14 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3" style={{ position: "relative", zIndex: 1 }}>
           {[
             { val: "$2.4B+", label: "Assets Under Management" },
             { val: "50K+", label: "Institutional Investors" },
             { val: "99.98%", label: "Platform Uptime" },
             { val: "SOC 2", label: "Type II Certified" },
           ].map((s, i) => (
-            <div key={i} className="p-4 rounded-xl bg-white/[0.05]">
+            <div key={i} className="p-4 rounded-xl bg-white/[0.05]" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
               <div className="text-white/80 text-[17px] font-bold tabular-nums tracking-tight">{s.val}</div>
               <div className="text-white/30 text-[9px] uppercase tracking-widest mt-1">{s.label}</div>
             </div>
