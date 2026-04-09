@@ -74,7 +74,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="mb-10 lg:hidden">
             <Link href="/">
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 40, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
+              <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 220, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
             </Link>
           </div>
 
