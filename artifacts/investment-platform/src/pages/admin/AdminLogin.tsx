@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAdminLogin } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AdminLogin() {
   const [passcode, setPasscode] = useState("");
+  const [showPasscode, setShowPasscode] = useState(false);
   const [loading, setLoading] = useState(false);
   const adminLogin = useAdminLogin();
   const [_, setLocation] = useLocation();
@@ -39,14 +40,20 @@ export default function AdminLogin() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[9px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Passcode</label>
-            <input
-              type="password"
-              value={passcode}
-              onChange={(e) => setPasscode(e.target.value)}
-              placeholder="••••••••"
-              required
-              className="w-full bg-white/5 border border-white/12 text-white text-sm px-3.5 py-2.5 placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors text-center tracking-[0.3em] font-mono"
-            />
+            <div className="relative">
+              <input
+                type={showPasscode ? "text" : "password"}
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full bg-white/5 border border-white/12 text-white text-sm px-3.5 py-2.5 placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors text-center tracking-[0.3em] font-mono pr-10"
+              />
+              <button type="button" onClick={() => setShowPasscode(s => !s)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
+                {showPasscode ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" disabled={loading}
