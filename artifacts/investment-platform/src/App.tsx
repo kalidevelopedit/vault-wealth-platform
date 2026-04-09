@@ -40,38 +40,88 @@ const queryClient = new QueryClient();
 
 // Pending Approval Screen
 function PendingApproval({ user }: { user: any }) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#0d0f14" }}>
-      <div className="w-full max-w-md text-center">
-        <div className="w-12 h-12 border border-white/10 flex items-center justify-center mx-auto mb-6">
-          <Loader2 className="w-5 h-5 text-white/30 animate-spin" />
-        </div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/25 mb-3">INT Brokers · Application Status</p>
-        <h1 className="text-2xl font-bold text-white mb-3">Application Under Review</h1>
-        <p className="text-white/40 text-sm leading-relaxed mb-8">
-          Your INT Brokers account application has been submitted and is currently under review by our compliance team. You will receive an email at the address provided once your account is approved — typically within 24–48 hours. If you don't see our email, please check your spam or junk folder.
-        </p>
+  const submittedDate = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+    : "—";
 
-        <div style={{ background: "#161a24" }} className="border border-white/8 mb-6">
-          <div className="px-5 py-3 border-b border-white/6">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/25">Your Details</p>
+  return (
+    <div style={{ minHeight: "100vh", background: "#F5F6F7", display: "flex", flexDirection: "column" }}>
+      {/* Top bar */}
+      <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="/">
+          <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, height: "auto", mixBlendMode: "multiply" }} />
+        </a>
+        <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Application Status</span>
+      </div>
+
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+        <div style={{ width: "100%", maxWidth: 480 }}>
+
+          {/* Header */}
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid #E6E8EB", borderRadius: 99, padding: "5px 14px", marginBottom: 18 }}>
+              <Loader2 size={11} className="animate-spin" style={{ color: "#d97706" }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }}>Review In Progress</span>
+            </div>
+            <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em", marginBottom: 8 }}>Your application is being reviewed</h1>
+            <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.7, maxWidth: 380, margin: "0 auto" }}>
+              Welcome back, <strong style={{ color: "#0F172A" }}>{user.fullName}</strong>. Your account is pending approval from our compliance team.
+            </p>
           </div>
-          <div className="divide-y divide-white/4">
+
+          {/* Status card */}
+          <div style={{ background: "white", border: "1px solid #E6E8EB", borderRadius: 14, marginBottom: 14, overflow: "hidden" }}>
+            <div style={{ padding: "12px 18px", borderBottom: "1px solid #F5F6F7" }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>Account Details</span>
+            </div>
             {[
-              { label: "Full Name", value: user.fullName },
+              { label: "Name", value: user.fullName },
               { label: "Email", value: user.email },
-              { label: "Account Status", value: "Pending Review" },
-              { label: "Submitted", value: user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { dateStyle: "medium" }) : "—" },
-            ].map(row => (
-              <div key={row.label} className="flex items-center justify-between px-5 py-3">
-                <span className="text-white/35 text-xs">{row.label}</span>
-                <span className={`text-xs font-medium ${row.label === "Account Status" ? "text-amber-400" : "text-white"}`}>{row.value}</span>
+              { label: "Submitted", value: submittedDate },
+              { label: "Status", value: "Pending compliance review", amber: true },
+              { label: "Estimated approval", value: "24–48 business hours" },
+            ].map((row, i, arr) => (
+              <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 18px", borderBottom: i < arr.length - 1 ? "1px solid #F5F6F7" : "none", gap: 16 }}>
+                <span style={{ fontSize: 12, color: "#9ca3af" }}>{row.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: (row as any).amber ? "#d97706" : "#0F172A", textAlign: "right" }}>{row.value}</span>
               </div>
             ))}
           </div>
-        </div>
 
-        <a href="/" className="text-white/25 text-xs hover:text-white/50 transition-colors">Return to home</a>
+          {/* What's happening */}
+          <div style={{ background: "white", border: "1px solid #E6E8EB", borderRadius: 14, marginBottom: 24, overflow: "hidden" }}>
+            <div style={{ padding: "12px 18px", borderBottom: "1px solid #F5F6F7" }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>What's Happening</span>
+            </div>
+            {[
+              { label: "Documents submitted", desc: "Your ID and biometric verification have been received", done: true },
+              { label: "Compliance review", desc: "Our team is verifying your application — this takes 24–48 hrs", done: false },
+              { label: "Account activation", desc: "You'll receive an email confirmation when approved", done: false },
+            ].map((s, i) => (
+              <div key={s.label} style={{ display: "flex", gap: 13, padding: "12px 18px", borderBottom: i < 2 ? "1px solid #F5F6F7" : "none" }}>
+                <div style={{ width: 20, height: 20, borderRadius: "50%", border: `1.5px solid ${s.done ? "#0F172A" : "#E6E8EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                  {s.done
+                    ? <svg width="10" height="10" viewBox="0 0 10 10"><polyline points="2,5 4,7 8,3" stroke="#0F172A" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    : <span style={{ fontSize: 9, color: "#9ca3af", fontWeight: 700 }}>{i + 1}</span>}
+                </div>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>{s.label}</p>
+                  <p style={{ fontSize: 12, color: "#9ca3af", lineHeight: 1.5 }}>{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Email reminder */}
+          <p style={{ fontSize: 12, color: "#9ca3af", textAlign: "center", lineHeight: 1.6, marginBottom: 24 }}>
+            Confirmation will be sent to <strong style={{ color: "#6B7280" }}>{user.email}</strong>.
+            If you don't see it, check your <strong style={{ color: "#6B7280" }}>spam or junk folder</strong>.
+          </p>
+
+          <a href="/" style={{ display: "block", textAlign: "center", fontSize: 12, color: "#9ca3af" }}>
+            ← Return to home
+          </a>
+        </div>
       </div>
     </div>
   );

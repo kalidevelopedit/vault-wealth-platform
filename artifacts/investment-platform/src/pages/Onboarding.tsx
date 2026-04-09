@@ -551,26 +551,78 @@ export default function Onboarding() {
 
   // ── Success screen ──
   if (submitted) {
+    const refNo = `INB-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+    const submittedDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#F5F6F7" }}>
-        <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 220, mixBlendMode: "multiply", marginBottom: 48 }} />
-        <div style={{ textAlign: "center", maxWidth: 520, padding: "0 24px" }}>
-          <div style={{ width: 68, height: 68, background: "#f0fdf4", border: "2px solid #bbf7d0", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-            <Check size={30} color="#22c55e" strokeWidth={2.5} />
-          </div>
-          <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em", marginBottom: 14 }}>Application Submitted</h2>
-          <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.8, marginBottom: 10 }}>
-            Thank you, <strong>{user?.fullName || "there"}</strong>. Your INT Brokers account application is now under review by our compliance team.
-          </p>
-          <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.8, marginBottom: 8 }}>
-            You will receive a confirmation email at <strong style={{ color: "#0F172A" }}>{user?.email}</strong> once approved. This typically takes 24–48 hours.
-          </p>
-          <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 40 }}>
-            If you don't see our email, please check your <strong style={{ color: "#6B7280" }}>spam or junk folder</strong>.
-          </p>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-            <a href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#0d1520", color: "white", fontWeight: 700, fontSize: 13, padding: "12px 28px", textDecoration: "none", borderRadius: 12 }}>Return to Home</a>
-            <a href="/login" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid #E6E8EB", color: "#374151", fontWeight: 600, fontSize: 13, padding: "12px 24px", textDecoration: "none", borderRadius: 12 }}>Sign In</a>
+      <div style={{ minHeight: "100vh", background: "#F5F6F7", display: "flex", flexDirection: "column" }}>
+        {/* Minimal top bar */}
+        <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, mixBlendMode: "multiply" }} />
+          <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Application Status</span>
+        </div>
+
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+          <div style={{ width: "100%", maxWidth: 500 }}>
+
+            {/* Header */}
+            <div style={{ textAlign: "center", marginBottom: 32 }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid #E6E8EB", borderRadius: 99, padding: "5px 14px", marginBottom: 20 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#f59e0b" }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }}>Under Review</span>
+              </div>
+              <h1 style={{ fontSize: 28, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em", marginBottom: 10 }}>Application Submitted</h1>
+              <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.7 }}>
+                Thank you, <strong style={{ color: "#0F172A" }}>{user?.fullName || "there"}</strong>. Our compliance team is reviewing your application.
+              </p>
+            </div>
+
+            {/* Summary card */}
+            <div style={{ background: "white", border: "1px solid #E6E8EB", borderRadius: 14, marginBottom: 16, overflow: "hidden" }}>
+              <div style={{ padding: "12px 18px", borderBottom: "1px solid #F5F6F7" }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>Application Summary</span>
+              </div>
+              {[
+                { label: "Reference Number", value: refNo, mono: true },
+                { label: "Full Name", value: user?.fullName || "—" },
+                { label: "Email Address", value: user?.email || "—" },
+                { label: "Date Submitted", value: submittedDate },
+                { label: "Review Status", value: "Pending compliance review", amber: true },
+                { label: "Estimated Timeline", value: "24–48 business hours" },
+              ].map((row, i, arr) => (
+                <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 18px", borderBottom: i < arr.length - 1 ? "1px solid #F5F6F7" : "none", gap: 16 }}>
+                  <span style={{ fontSize: 12, color: "#9ca3af", flexShrink: 0 }}>{row.label}</span>
+                  <span style={{ fontSize: 12, color: row.amber ? "#d97706" : "#0F172A", fontWeight: row.mono ? 600 : 500, fontFamily: row.mono ? "monospace" : "inherit", textAlign: "right" }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Next steps */}
+            <div style={{ background: "white", border: "1px solid #E6E8EB", borderRadius: 14, marginBottom: 24, overflow: "hidden" }}>
+              <div style={{ padding: "12px 18px", borderBottom: "1px solid #F5F6F7" }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase" }}>What Happens Next</span>
+              </div>
+              {[
+                { step: 1, label: "Document verification", desc: "Our team reviews your identity documents and KYC submission", done: true },
+                { step: 2, label: "Compliance approval", desc: "Your application is assessed against regulatory requirements", done: false },
+                { step: 3, label: "Account activation", desc: "You'll receive an email confirmation — check spam if not received", done: false },
+              ].map(s => (
+                <div key={s.step} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "12px 18px", borderBottom: s.step < 3 ? "1px solid #F5F6F7" : "none" }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `1.5px solid ${s.done ? "#0F172A" : "#E6E8EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                    {s.done ? <Check size={12} color="#0F172A" strokeWidth={2.5} /> : <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700 }}>{s.step}</span>}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>{s.label}</p>
+                    <p style={{ fontSize: 12, color: "#9ca3af", lineHeight: 1.5 }}>{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <a href="/" style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#0d1520", color: "white", fontWeight: 700, fontSize: 13, padding: "13px", textDecoration: "none", borderRadius: 12 }}>Return to Home</a>
+              <a href="/login" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "white", border: "1px solid #E6E8EB", color: "#374151", fontWeight: 600, fontSize: 13, padding: "13px 20px", textDecoration: "none", borderRadius: 12 }}>Sign In</a>
+            </div>
           </div>
         </div>
       </div>
