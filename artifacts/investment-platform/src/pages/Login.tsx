@@ -72,7 +72,7 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
-          <div className="mb-10 lg:hidden">
+          <div className="mb-10 lg:hidden flex justify-center">
             <Link href="/">
               <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 220, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
             </Link>

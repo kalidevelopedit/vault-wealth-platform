@@ -86,7 +86,7 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center p-8 py-12">
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
-          <div className="mb-8 lg:hidden">
+          <div className="mb-8 lg:hidden flex justify-center">
             <Link href="/">
               <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
             </Link>
