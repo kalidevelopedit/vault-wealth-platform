@@ -88,10 +88,8 @@ export default function Register() {
                 "Dedicated client support",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-white/[0.10] flex items-center justify-center shrink-0">
-                    <Check className="w-2.5 h-2.5 text-white/60" strokeWidth={2.5} />
-                  </div>
-                  <span className="text-white/45 text-[12px]">{item}</span>
+                  <div className="w-1 h-1 rounded-full bg-white/30 shrink-0" />
+                  <span className="text-white/40 text-[12px]">{item}</span>
                 </div>
               ))}
             </div>

@@ -136,6 +136,37 @@ function SecondaryBtn({ onClick, children }: any) {
 }
 
 // ── Biometric Recorder ──────────────────────────────────────────────────────
+function FaceOvalSvg({ color = "white", pulsing = false }: { color?: string; pulsing?: boolean }) {
+  return (
+    <svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+      <defs>
+        <mask id="bio-mask">
+          <rect width="100" height="120" fill="white" />
+          <ellipse cx="50" cy="58" rx="32" ry="42" fill="black" />
+        </mask>
+      </defs>
+      <rect width="100" height="120" fill="rgba(0,0,0,0.52)" mask="url(#bio-mask)" />
+      <ellipse cx="50" cy="58" rx="32" ry="42" fill="none"
+        stroke={color} strokeWidth={pulsing ? "1.2" : "0.9"}
+        style={pulsing ? { animation: "bio-pulse 1.4s ease-in-out infinite" } : {}} />
+    </svg>
+  );
+}
+
+function ArrowOverlay({ icon, color }: { icon: string; color: string }) {
+  return (
+    <div style={{
+      position: "absolute", top: "50%", left: "50%",
+      transform: "translate(-50%, -50%)",
+      fontSize: 52, fontWeight: 900, color,
+      textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+      pointerEvents: "none",
+      animation: "bio-arrow 0.5s ease-out",
+    }}>{icon}</div>
+  );
+}
+
 function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [phase, setPhase] = useState<"intro" | "camera" | "countdown" | "recording" | "done" | "error">("intro");
@@ -207,13 +238,12 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
         setProgress(0);
         timerRef.current = setTimeout(advanceStep, STEP_DURATION);
       } else {
-        timerRef.current = setTimeout(() => recorder.stop(), 1000);
+        timerRef.current = setTimeout(() => recorder.stop(), 800);
       }
     };
     timerRef.current = setTimeout(advanceStep, STEP_DURATION);
   };
 
-  // Progress bar animation per step
   useEffect(() => {
     if (phase !== "recording") return;
     if (progRef.current) clearInterval(progRef.current);
@@ -228,143 +258,154 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
 
   const currentBStep = BIOMETRIC_STEPS[bStep] || BIOMETRIC_STEPS[0];
 
+  // ── done state ──
   if (phase === "done") {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 12 }}>
-        <div style={{ width: 36, height: 36, background: "#22c55e", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Check size={18} color="white" strokeWidth={2.5} />
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", background: "white", border: "1px solid #E6E8EB", borderRadius: 12 }}>
+        <div style={{ width: 38, height: 38, border: "1.5px solid #0F172A", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Check size={17} color="#0F172A" strokeWidth={2.5} />
         </div>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 700, color: "#15803d" }}>Biometric check complete</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-            <img src="/sumsub-logo.png" alt="Sumsub" style={{ height: 14, mixBlendMode: "multiply", opacity: 0.5 }} />
-            <span style={{ fontSize: 10, color: "#6B7280" }}>Powered by Sumsub Biometric Verification</span>
-          </div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>Biometric check complete</p>
+          <p style={{ fontSize: 11, color: "#6B7280", marginTop: 2 }}>Powered by Sumsub Biometric Verification</p>
         </div>
       </div>
     );
   }
 
+  // ── error state ──
   if (phase === "error") {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12 }}>
-        <AlertCircle size={20} color="#ef4444" />
+      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "white", border: "1px solid #E6E8EB", borderRadius: 12 }}>
+        <AlertCircle size={18} color="#6B7280" />
         <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#dc2626" }}>Camera access denied</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Please allow camera access in your browser settings and try again.</p>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Camera access required</p>
+          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Allow camera access in your browser settings, then reload.</p>
         </div>
       </div>
     );
   }
+
+  // ── intro state ──
+  if (phase === "intro") {
+    return (
+      <div className={CARD} style={{ overflow: "hidden" }}>
+        <div style={{ padding: "13px 16px", borderBottom: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <Video size={15} color="#6B7280" />
+            <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>Biometric selfie verification</span>
+          </div>
+          <span style={{ fontSize: 10, color: "#9ca3af", letterSpacing: "0.05em" }}>Sumsub KYC</span>
+        </div>
+        <div style={{ padding: 16 }}>
+          <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
+            {[["↔", "Look left & right"], ["↕", "Look up & down"], ["↻", "Rotate slowly"]].map(([icon, tip], i) => (
+              <div key={i} style={{ flex: 1, textAlign: "center", padding: "10px 6px", background: "#F5F6F7", borderRadius: 8, border: "1px solid #E6E8EB" }}>
+                <div style={{ fontSize: 16, marginBottom: 5, color: "#374151" }}>{icon}</div>
+                <p style={{ fontSize: 10, color: "#6B7280", lineHeight: 1.4, fontWeight: 500 }}>{tip}</p>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 14, lineHeight: 1.65 }}>
+            Position your face within the oval guide. Good lighting required — remove glasses, hats and ensure your full face is visible. The check takes about 15 seconds.
+          </p>
+          <button onClick={startCamera}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
+            <Camera size={14} /> Enable Camera & Start
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── camera / countdown / recording ──
+  const ovalColor = phase === "recording" ? currentBStep.color : phase === "countdown" ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.75)";
 
   return (
     <div className={CARD} style={{ overflow: "hidden" }}>
-      <div style={{ padding: "14px 16px", borderBottom: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Video size={16} color="#6B7280" />
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>Biometric selfie verification</span>
+      {/* Header */}
+      <div style={{ padding: "13px 16px", borderBottom: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <Video size={15} color="#6B7280" />
+          <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>
+            {phase === "camera" ? "Position your face in the oval" :
+             phase === "countdown" ? "Get ready…" :
+             currentBStep.label}
+          </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <img src="/sumsub-logo.png" alt="Sumsub" style={{ height: 14, mixBlendMode: "multiply", opacity: 0.45 }} />
-          <span style={{ fontSize: 10, color: "#9ca3af" }}>Sumsub KYC</span>
-        </div>
+        {phase === "recording" && (
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#ef4444" }} />
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", letterSpacing: "0.05em" }}>REC</span>
+          </div>
+        )}
       </div>
 
-      <div style={{ padding: 16 }}>
-        {phase === "intro" && (
-          <div>
-            <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-              {[
-                "Look left and right",
-                "Look up and down",
-                "Rotate your head slowly",
-              ].map((tip, i) => (
-                <div key={i} style={{ flex: 1, textAlign: "center", padding: "10px 8px", background: "#F5F6F7", borderRadius: 8 }}>
-                  <div style={{ fontSize: 18, marginBottom: 4 }}>{["↔", "↕", "↻"][i]}</div>
-                  <p style={{ fontSize: 11, color: "#6B7280", lineHeight: 1.4 }}>{tip}</p>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 14, lineHeight: 1.6 }}>
-              Position your face in good lighting. Remove glasses, hats, and ensure all 4 corners of your face are visible. The check takes about 15 seconds.
-            </p>
-            <button onClick={startCamera}
-              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
-              <Camera size={15} /> Enable Camera & Start
-            </button>
+      {/* Camera viewport */}
+      <div style={{ position: "relative", background: "#0a0a0a", overflow: "hidden", aspectRatio: "4/3" }}>
+        <video ref={videoRef} muted playsInline
+          style={{ width: "100%", height: "100%", display: "block", transform: "scaleX(-1)", objectFit: "cover" }} />
+
+        {/* Face oval SVG overlay */}
+        <FaceOvalSvg color={ovalColor} pulsing={phase === "camera"} />
+
+        {/* Guidance tip bar at bottom of video */}
+        {phase === "camera" && (
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 16px", background: "linear-gradient(transparent, rgba(0,0,0,0.7))", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 500, textAlign: "center" }}>
+              Centre your face · Look directly at the camera
+            </span>
           </div>
         )}
 
-        {(phase === "camera" || phase === "countdown" || phase === "recording") && (
-          <div>
-            {/* Video preview */}
-            <div style={{ position: "relative", borderRadius: 8, overflow: "hidden", marginBottom: 14, background: "#000" }}>
-              <video ref={videoRef} muted playsInline style={{ width: "100%", display: "block", transform: "scaleX(-1)", maxHeight: 200, objectFit: "cover" }} />
+        {/* Countdown overlay */}
+        {phase === "countdown" && (
+          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <div style={{ fontSize: 72, fontWeight: 900, color: "white", lineHeight: 1, textShadow: "0 4px 24px rgba(0,0,0,0.5)" }}>{countdown}</div>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>Hold still…</span>
+          </div>
+        )}
 
-              {/* Corner brackets overlay */}
-              <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                {[["top:8px;left:8px", "borderTop", "borderLeft"], ["top:8px;right:8px", "borderTop", "borderRight"],
-                  ["bottom:8px;left:8px", "borderBottom", "borderLeft"], ["bottom:8px;right:8px", "borderBottom", "borderRight"]].map(([pos], i) => (
+        {/* Recording: direction arrow overlaid on video */}
+        {phase === "recording" && (
+          <>
+            <ArrowOverlay key={bStep} icon={currentBStep.icon} color={currentBStep.color} />
+            {/* Instruction banner at bottom */}
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px 16px", background: "linear-gradient(transparent, rgba(0,0,0,0.78))", textAlign: "center" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "white", marginBottom: 2 }}>{currentBStep.label}</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.65)" }}>{currentBStep.hint}</p>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Below video: step progress / start button */}
+      <div style={{ padding: "14px 16px" }}>
+        {phase === "recording" && (
+          <>
+            <div style={{ height: 2, background: "#E6E8EB", borderRadius: 99, overflow: "hidden", marginBottom: 12 }}>
+              <div style={{ height: "100%", width: `${progress}%`, background: currentBStep.color, borderRadius: 99, transition: "width 0.08s linear" }} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", gap: 6 }}>
+                {BIOMETRIC_STEPS.map((s, i) => (
                   <div key={i} style={{
-                    position: "absolute", width: 20, height: 20,
-                    ...(i === 0 ? { top: 8, left: 8, borderTop: "2px solid #c8102e", borderLeft: "2px solid #c8102e" } :
-                       i === 1 ? { top: 8, right: 8, borderTop: "2px solid #c8102e", borderRight: "2px solid #c8102e" } :
-                       i === 2 ? { bottom: 8, left: 8, borderBottom: "2px solid #c8102e", borderLeft: "2px solid #c8102e" } :
-                       { bottom: 8, right: 8, borderBottom: "2px solid #c8102e", borderRight: "2px solid #c8102e" }),
+                    width: i === bStep ? 20 : 7, height: 7, borderRadius: 99,
+                    background: i < bStep ? "#0F172A" : i === bStep ? currentBStep.color : "#E6E8EB",
+                    transition: "all 0.35s ease",
                   }} />
                 ))}
               </div>
-
-              {/* Countdown overlay */}
-              {phase === "countdown" && (
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)" }}>
-                  <div style={{ fontSize: 64, fontWeight: 900, color: "white", lineHeight: 1 }}>{countdown}</div>
-                </div>
-              )}
-
-              {/* Recording indicator */}
-              {phase === "recording" && (
-                <div style={{ position: "absolute", top: 10, left: 10, display: "flex", alignItems: "center", gap: 6, background: "rgba(0,0,0,0.6)", padding: "4px 8px", borderRadius: 20 }}>
-                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#ef4444", animation: "pulse 1s infinite" }} />
-                  <span style={{ fontSize: 10, color: "white", fontWeight: 600 }}>REC</span>
-                </div>
-              )}
+              <span style={{ fontSize: 10, color: "#9ca3af" }}>Step {bStep + 1} of {BIOMETRIC_STEPS.length}</span>
             </div>
+          </>
+        )}
 
-            {/* Step guidance */}
-            {phase === "recording" && (
-              <div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 12, padding: "12px", background: "#F5F6F7", borderRadius: 10 }}>
-                  <div style={{ fontSize: 36, color: currentBStep.color, fontWeight: 900, minWidth: 48, textAlign: "center" }}>
-                    {currentBStep.icon}
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 16, fontWeight: 800, color: "#0F172A", marginBottom: 2 }}>{currentBStep.label}</p>
-                    <p style={{ fontSize: 12, color: "#6B7280" }}>{currentBStep.hint}</p>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                <div style={{ height: 3, background: "#E6E8EB", borderRadius: 99, overflow: "hidden", marginBottom: 10 }}>
-                  <div style={{ height: "100%", width: `${progress}%`, background: currentBStep.color, borderRadius: 99, transition: "width 0.1s linear" }} />
-                </div>
-
-                {/* Step dots */}
-                <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                  {BIOMETRIC_STEPS.map((s, i) => (
-                    <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i < bStep ? "#22c55e" : i === bStep ? currentBStep.color : "#E6E8EB", transition: "background 0.3s" }} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {phase === "camera" && (
-              <button onClick={startCountdown}
-                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#c8102e", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
-                <Video size={15} /> Start Recording
-              </button>
-            )}
-          </div>
+        {phase === "camera" && (
+          <button onClick={startCountdown}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#c8102e", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
+            <Video size={14} /> I'm ready — Start Verification
+          </button>
         )}
       </div>
     </div>
