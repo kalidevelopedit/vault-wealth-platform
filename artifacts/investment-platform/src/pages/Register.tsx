@@ -56,7 +56,7 @@ export default function Register() {
         <div style={{ position: "relative", zIndex: 1 }}>
           <div className="space-y-6">
             <div className="text-white/30 text-[13px] leading-relaxed font-light">
-              Account opening takes 5 minutes. Identity verification is completed in a guided step after registration.
+              Opening an INT Brokers account takes under 5 minutes. Complete your profile and identity verification in a guided step after registration.
             </div>
             <div className="space-y-3">
               {[
@@ -88,14 +88,14 @@ export default function Register() {
           {/* Mobile logo */}
           <div className="mb-8 lg:hidden">
             <Link href="/">
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 40, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
+              <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
             </Link>
           </div>
 
           <div className="mb-8">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">New Account</div>
-            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Open your account</h1>
-            <p className="text-[13px] text-[#6B7280] mt-2">Start with institutional-grade investment tools.</p>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">INT Brokers · New Account</div>
+            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Open a brokerage account</h1>
+            <p className="text-[13px] text-[#6B7280] mt-2">Join 50,000+ investors on INT Brokers — trade stocks, crypto, commodities, and more with institutional-grade tools and no hidden fees.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

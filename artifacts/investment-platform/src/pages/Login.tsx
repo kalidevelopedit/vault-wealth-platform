@@ -79,9 +79,9 @@ export default function Login() {
           </div>
 
           <div className="mb-9">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">Client Portal</div>
-            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Sign in to your account</h1>
-            <p className="text-[13px] text-[#6B7280] mt-2">Enter your credentials to access your portfolio.</p>
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">INT Brokers · Secure Login</div>
+            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Welcome back</h1>
+            <p className="text-[13px] text-[#6B7280] mt-2">Sign in to your INT Brokers brokerage account to access your portfolio, markets, and account tools.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

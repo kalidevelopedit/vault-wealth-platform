@@ -46,10 +46,10 @@ function PendingApproval({ user }: { user: any }) {
         <div className="w-12 h-12 border border-white/10 flex items-center justify-center mx-auto mb-6">
           <Loader2 className="w-5 h-5 text-white/30 animate-spin" />
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/25 mb-3">Application Status</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/25 mb-3">INT Brokers · Application Status</p>
         <h1 className="text-2xl font-bold text-white mb-3">Application Under Review</h1>
         <p className="text-white/40 text-sm leading-relaxed mb-8">
-          Your application has been submitted and is currently under review by our compliance team. You will receive an email once approved — typically within 24–48 hours.
+          Your INT Brokers account application has been submitted and is currently under review by our compliance team. You will receive an email at the address provided once your account is approved — typically within 24–48 hours. If you don't see our email, please check your spam or junk folder.
         </p>
 
         <div style={{ background: "#161a24" }} className="border border-white/8 mb-6">

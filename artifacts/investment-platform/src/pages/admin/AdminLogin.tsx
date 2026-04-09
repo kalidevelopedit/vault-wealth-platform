@@ -31,9 +31,9 @@ export default function AdminLogin() {
       <div className="w-full max-w-xs">
         <div className="flex flex-col items-center mb-10">
           <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen", marginBottom: 24 }} />
-          <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/25 mb-2">Restricted Access</div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/25 mb-2">INT Brokers · Restricted Access</div>
           <h1 className="text-lg font-semibold text-white tracking-tight text-center">Administration Portal</h1>
-          <p className="text-white/35 text-xs mt-2 text-center">Enter your secure passcode to continue</p>
+          <p className="text-white/35 text-xs mt-2 text-center">Authorised staff only — enter your secure passcode to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

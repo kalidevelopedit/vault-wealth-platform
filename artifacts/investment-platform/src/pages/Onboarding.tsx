@@ -338,7 +338,7 @@ export default function Onboarding() {
       {/* Top bar */}
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>Account Application</span>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>INT Brokers · Account Application</span>
       </div>
 
       <div className="flex-1 flex items-start justify-center py-12 px-4">
