@@ -22,6 +22,44 @@ import Security from "@/pages/marketing/Security";
 import RetirementPage from "@/pages/marketing/RetirementPage";
 import CryptoPage from "@/pages/marketing/CryptoPage";
 
+// Why Vault subpages
+import LowerCosts from "@/pages/marketing/LowerCosts";
+import GlobalAccess from "@/pages/marketing/GlobalAccess";
+import Technology from "@/pages/marketing/Technology";
+import AwardsPage from "@/pages/marketing/AwardsPage";
+
+// Product pages
+import StocksETFs from "@/pages/marketing/StocksETFs";
+import Options from "@/pages/marketing/Options";
+import Futures from "@/pages/marketing/Futures";
+import Forex from "@/pages/marketing/Forex";
+import Bonds from "@/pages/marketing/Bonds";
+import PreciousMetals from "@/pages/marketing/PreciousMetals";
+
+// Account pages
+import IndividualAccounts from "@/pages/marketing/IndividualAccounts";
+import IRA from "@/pages/marketing/IRA";
+import SEPIRA from "@/pages/marketing/SEPIRA";
+import Rollover401k from "@/pages/marketing/Rollover401k";
+import JointAccounts from "@/pages/marketing/JointAccounts";
+import TrustAccounts from "@/pages/marketing/TrustAccounts";
+import Institutional from "@/pages/marketing/Institutional";
+
+// Pricing subpages
+import Commissions from "@/pages/marketing/Commissions";
+import MarginRates from "@/pages/marketing/MarginRates";
+import InterestOnCash from "@/pages/marketing/InterestOnCash";
+import CryptoSpreads from "@/pages/marketing/CryptoSpreads";
+import NoHiddenFees from "@/pages/marketing/NoHiddenFees";
+
+// Company pages
+import About from "@/pages/marketing/About";
+import Careers from "@/pages/marketing/Careers";
+import Press from "@/pages/marketing/Press";
+import Terms from "@/pages/marketing/Terms";
+import Privacy from "@/pages/marketing/Privacy";
+import RiskDisclosures from "@/pages/marketing/RiskDisclosures";
+
 // App Pages
 import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
@@ -168,12 +206,48 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
 
-      {/* Marketing Pages */}
+      {/* Marketing Pages — Why Vault */}
       <Route path="/why-vault" component={WhyVault} />
-      <Route path="/pricing" component={Pricing} />
-      <Route path="/security" component={Security} />
-      <Route path="/retirement" component={RetirementPage} />
+      <Route path="/why-vault/lower-costs" component={LowerCosts} />
+      <Route path="/why-vault/global-access" component={GlobalAccess} />
+      <Route path="/why-vault/technology" component={Technology} />
+      <Route path="/why-vault/awards" component={AwardsPage} />
+
+      {/* Marketing Pages — Products */}
+      <Route path="/products/stocks" component={StocksETFs} />
+      <Route path="/products/options" component={Options} />
+      <Route path="/products/futures" component={Futures} />
+      <Route path="/products/forex" component={Forex} />
+      <Route path="/products/bonds" component={Bonds} />
+      <Route path="/products/precious-metals" component={PreciousMetals} />
       <Route path="/crypto" component={CryptoPage} />
+      <Route path="/retirement" component={RetirementPage} />
+
+      {/* Marketing Pages — Accounts */}
+      <Route path="/accounts/individual" component={IndividualAccounts} />
+      <Route path="/accounts/ira" component={IRA} />
+      <Route path="/accounts/sep-ira" component={SEPIRA} />
+      <Route path="/accounts/401k" component={Rollover401k} />
+      <Route path="/accounts/joint" component={JointAccounts} />
+      <Route path="/accounts/trust" component={TrustAccounts} />
+      <Route path="/accounts/institutional" component={Institutional} />
+
+      {/* Marketing Pages — Pricing */}
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/pricing/commissions" component={Commissions} />
+      <Route path="/pricing/margin-rates" component={MarginRates} />
+      <Route path="/pricing/interest-on-cash" component={InterestOnCash} />
+      <Route path="/pricing/crypto-spreads" component={CryptoSpreads} />
+      <Route path="/pricing/no-hidden-fees" component={NoHiddenFees} />
+
+      {/* Marketing Pages — Company */}
+      <Route path="/about" component={About} />
+      <Route path="/security" component={Security} />
+      <Route path="/careers" component={Careers} />
+      <Route path="/press" component={Press} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/risk-disclosures" component={RiskDisclosures} />
       
       {/* Admin Routes */}
       <Route path="/admin" component={AdminLogin} />

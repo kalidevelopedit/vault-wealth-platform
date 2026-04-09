@@ -2,7 +2,21 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. This is the **Vault Wealth** institutional investment platform — a full-stack financial application with auth, KYC onboarding, a trading dashboard, and admin portal.
+pnpm workspace monorepo using TypeScript. This is the **INT Brokers / Vault Wealth** institutional investment platform — a full-stack financial application with auth, KYC onboarding, a trading dashboard, and admin portal.
+
+### Marketing Site — 28+ Pages (fully routed)
+
+**Why Vault:** `/why-vault`, `/why-vault/lower-costs`, `/why-vault/global-access`, `/why-vault/technology`, `/why-vault/awards`
+
+**Products:** `/products/stocks`, `/products/options`, `/products/futures`, `/products/forex`, `/products/bonds`, `/products/precious-metals`, `/crypto`, `/retirement`
+
+**Accounts:** `/accounts/individual`, `/accounts/ira`, `/accounts/sep-ira`, `/accounts/401k`, `/accounts/joint`, `/accounts/trust`, `/accounts/institutional`
+
+**Pricing:** `/pricing`, `/pricing/commissions`, `/pricing/margin-rates`, `/pricing/interest-on-cash`, `/pricing/crypto-spreads`, `/pricing/no-hidden-fees`
+
+**Company:** `/about`, `/security`, `/careers`, `/press`, `/terms`, `/privacy`, `/risk-disclosures`
+
+All marketing pages use the shared `MarketingPage` component at `src/components/marketing/MarketingPage.tsx` — dark hero + dot pattern + stats bar + Unsplash images. No colored icon backgrounds anywhere.
 
 ## Stack
 

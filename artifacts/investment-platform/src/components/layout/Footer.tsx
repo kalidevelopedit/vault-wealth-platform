@@ -8,58 +8,58 @@ const COLS = [
     title: "Why Vault",
     links: [
       { label: "Why Vault Wealth", href: "/why-vault" },
-      { label: "Lower Costs", href: "/pricing" },
-      { label: "Global Access", href: "/why-vault" },
-      { label: "Premier Technology", href: "/why-vault" },
+      { label: "Lower Costs", href: "/why-vault/lower-costs" },
+      { label: "Global Access", href: "/why-vault/global-access" },
+      { label: "Premier Technology", href: "/why-vault/technology" },
       { label: "Strength & Security", href: "/security" },
-      { label: "Awards", href: "/why-vault" },
+      { label: "Awards", href: "/why-vault/awards" },
     ],
   },
   {
     title: "Products",
     links: [
-      { label: "Stocks & ETFs", href: "/assets/stocks" },
+      { label: "Stocks & ETFs", href: "/products/stocks" },
       { label: "Cryptocurrency", href: "/crypto" },
       { label: "Retirement Accounts", href: "/retirement" },
-      { label: "Options", href: "/invest" },
-      { label: "Futures", href: "/invest" },
-      { label: "Forex / Currencies", href: "/invest" },
-      { label: "Bonds", href: "/invest" },
-      { label: "Precious Metals", href: "/assets/commodities" },
+      { label: "Options", href: "/products/options" },
+      { label: "Futures", href: "/products/futures" },
+      { label: "Forex / Currencies", href: "/products/forex" },
+      { label: "Bonds", href: "/products/bonds" },
+      { label: "Precious Metals", href: "/products/precious-metals" },
     ],
   },
   {
     title: "Accounts",
     links: [
-      { label: "Individual Accounts", href: "/register" },
-      { label: "IRA / Roth IRA", href: "/retirement" },
-      { label: "SEP-IRA", href: "/retirement" },
-      { label: "401(k) Rollover", href: "/retirement" },
-      { label: "Joint Accounts", href: "/register" },
-      { label: "Trust Accounts", href: "/register" },
-      { label: "Institutional", href: "/register" },
+      { label: "Individual Accounts", href: "/accounts/individual" },
+      { label: "IRA / Roth IRA", href: "/accounts/ira" },
+      { label: "SEP-IRA", href: "/accounts/sep-ira" },
+      { label: "401(k) Rollover", href: "/accounts/401k" },
+      { label: "Joint Accounts", href: "/accounts/joint" },
+      { label: "Trust Accounts", href: "/accounts/trust" },
+      { label: "Institutional", href: "/accounts/institutional" },
     ],
   },
   {
     title: "Pricing",
     links: [
-      { label: "Commission Rates", href: "/pricing" },
-      { label: "Margin Rates", href: "/pricing" },
-      { label: "Interest on Cash", href: "/pricing" },
-      { label: "Crypto Spreads", href: "/pricing" },
-      { label: "No Hidden Fees", href: "/pricing" },
+      { label: "Commission Rates", href: "/pricing/commissions" },
+      { label: "Margin Rates", href: "/pricing/margin-rates" },
+      { label: "Interest on Cash", href: "/pricing/interest-on-cash" },
+      { label: "Crypto Spreads", href: "/pricing/crypto-spreads" },
+      { label: "No Hidden Fees", href: "/pricing/no-hidden-fees" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About Us", href: "/why-vault" },
+      { label: "About Us", href: "/about" },
       { label: "Security", href: "/security" },
-      { label: "Careers", href: "#" },
-      { label: "Press", href: "#" },
-      { label: "Terms of Service", href: "#" },
-      { label: "Privacy Policy", href: "#" },
-      { label: "Risk Disclosures", href: "#" },
+      { label: "Careers", href: "/careers" },
+      { label: "Press", href: "/press" },
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Risk Disclosures", href: "/risk-disclosures" },
     ],
   },
 ];
@@ -156,16 +156,16 @@ export function Footer() {
           </p>
           <div style={{ display: "flex", gap: 24 }}>
             {[
-              { label: "Privacy", href: "#" },
-              { label: "Terms", href: "#" },
-              { label: "Disclosures", href: "#" },
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+              { label: "Disclosures", href: "/risk-disclosures" },
               { label: "Accessibility", href: "#" },
             ].map(l => (
-              <a key={l.label} href={l.href} style={{ fontSize: 10, color: "rgba(255,255,255,0.22)", textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.1em", transition: "color .15s" }}
+              <Link key={l.label} href={l.href} style={{ fontSize: 10, color: "rgba(255,255,255,0.22)", textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.1em", transition: "color .15s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}
                 onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.22)")}>
                 {l.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

@@ -9,185 +9,86 @@ const NAV = [
       {
         items: [
           { label: "Why Vault Wealth", sub: "Overview of our advantages", href: "/why-vault" },
-          { label: "Lower Costs", sub: "Professional pricing for everyone", href: "/pricing" },
-          { label: "Global Access", sub: "170+ markets worldwide", href: "/why-vault" },
-          { label: "Premier Technology", sub: "Award-winning platforms", href: "/why-vault" },
+          { label: "Lower Costs", sub: "Professional pricing for everyone", href: "/why-vault/lower-costs" },
+          { label: "Global Access", sub: "170+ markets worldwide", href: "/why-vault/global-access" },
+          { label: "Premier Technology", sub: "Award-winning platforms", href: "/why-vault/technology" },
           { label: "Strength & Security", sub: "$19.5B equity capital", href: "/security" },
-          { label: "Awards", sub: "Industry recognition", href: "/why-vault" },
-          { label: "Free Trial", href: "/register" },
+          { label: "Awards", sub: "Industry recognition", href: "/why-vault/awards" },
         ],
       },
     ],
   },
   {
     label: "Products",
-    wide: true,
     sections: [
       {
-        title: "SECURITIES",
         items: [
-          { label: "Stocks", href: "/assets/stocks" },
-          { label: "ETFs", href: "/assets/stocks" },
-          { label: "Options", href: "/invest" },
-          { label: "Futures", href: "/invest" },
-          { label: "Currencies / Forex", href: "/invest" },
-          { label: "Bonds", href: "/invest" },
-          { label: "Mutual Funds", href: "/invest" },
-          { label: "Cryptocurrency", href: "/crypto" },
-          { label: "Precious Metals", href: "/assets/commodities" },
-        ],
-      },
-      {
-        title: "TRADING TOOLS",
-        items: [
-          { label: "Smart Order Routing", href: "/why-vault" },
-          { label: "Probability Lab", href: "/why-vault" },
-          { label: "PortfolioAnalyst", href: "/why-vault" },
-          { label: "GlobalAnalyst", href: "/why-vault" },
-          { label: "Algorithmic Trading", href: "/why-vault" },
-          { label: "100+ Order Types", href: "/why-vault" },
-          { label: "Stock Screener", href: "/assets/stocks" },
-          { label: "Options Screener", href: "/invest" },
-        ],
-      },
-      {
-        title: "SERVICES",
-        items: [
-          { label: "Bonds Marketplace", href: "/invest" },
-          { label: "Mutual Funds Marketplace", href: "/invest" },
-          { label: "No-Fee ETFs", href: "/assets/stocks" },
-          { label: "Cash Management", href: "/pricing" },
-          { label: "Stock Yield Enhancement", href: "/pricing" },
-          { label: "Short Securities", href: "/invest" },
-          { label: "Securities Financing", href: "/invest" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Platforms",
-    sections: [
-      {
-        title: "TRADING PLATFORMS",
-        items: [
-          { label: "Vault Desktop", sub: "Advanced desktop trading", href: "/why-vault" },
-          { label: "Client Portal", sub: "Web-based trading & account mgmt", href: "/dashboard" },
-          { label: "Vault Mobile", sub: "Full-featured iOS & Android app", href: "/why-vault" },
-          { label: "Vault API", sub: "Algorithmic & automated trading", href: "/why-vault" },
-          { label: "ForecastTrader", sub: "Event contract trading", href: "/invest" },
-        ],
-      },
-      {
-        title: "TOOLS & ANALYTICS",
-        items: [
-          { label: "GlobalAnalyst", sub: "Global stock comparison", href: "/why-vault" },
-          { label: "PortfolioAnalyst", sub: "Performance reporting", href: "/dashboard" },
-          { label: "Risk Navigator", sub: "Portfolio risk management", href: "/why-vault" },
-          { label: "Option Strategy Lab", href: "/invest" },
-          { label: "Research & News", href: "/why-vault" },
-          { label: "Free Trading Tools", href: "/why-vault" },
+          { label: "Stocks & ETFs", sub: "170+ global markets, $0 commission", href: "/products/stocks" },
+          { label: "Cryptocurrency", sub: "60+ coins, 24/7, cold storage", href: "/crypto" },
+          { label: "Retirement Accounts", sub: "IRA, Roth IRA, SEP-IRA", href: "/retirement" },
+          { label: "Options", sub: "$0.65/contract, 100+ strategies", href: "/products/options" },
+          { label: "Futures", sub: "$0.85/contract, 30+ exchanges", href: "/products/futures" },
+          { label: "Forex / Currencies", sub: "100+ pairs, 0.1 pip spreads", href: "/products/forex" },
+          { label: "Bonds", sub: "1M+ bonds, 30+ countries", href: "/products/bonds" },
+          { label: "Precious Metals", sub: "Gold, Silver, Platinum & more", href: "/products/precious-metals" },
         ],
       },
     ],
   },
   {
     label: "Accounts",
-    wide: true,
     sections: [
       {
         title: "FOR INDIVIDUALS",
         items: [
-          { label: "Individual, Joint or IRA", href: "/register" },
-          { label: "Retirement (IRA, Roth)", href: "/retirement" },
-          { label: "Non-Professional Advisors", href: "/register" },
-          { label: "Trust Accounts", href: "/register" },
-          { label: "UGMA / UTMA Accounts", href: "/register" },
+          { label: "Individual Accounts", href: "/accounts/individual" },
+          { label: "IRA / Roth IRA", href: "/accounts/ira" },
+          { label: "SEP-IRA", href: "/accounts/sep-ira" },
+          { label: "401(k) Rollover", href: "/accounts/401k" },
+          { label: "Joint Accounts", href: "/accounts/joint" },
+          { label: "Trust Accounts", href: "/accounts/trust" },
         ],
       },
       {
         title: "FOR INSTITUTIONS",
         items: [
-          { label: "Institutions Home", href: "/register" },
-          { label: "Registered Investment Advisors", href: "/register" },
-          { label: "Family Offices", href: "/register" },
-          { label: "Proprietary Trading Groups", href: "/register" },
-          { label: "Hedge Funds", href: "/register" },
-          { label: "Introducing Brokers", href: "/register" },
-          { label: "Small Businesses", href: "/register" },
-          { label: "Money Managers", href: "/register" },
-        ],
-      },
-      {
-        title: "ADMINISTRATIVE",
-        items: [
-          { label: "Compliance Officers", href: "/register" },
-          { label: "Employee Plan Administrator", href: "/register" },
-          { label: "Fund Administrators", href: "/register" },
-          { label: "Hedge Fund Allocators", href: "/register" },
-          { label: "Educators", href: "/register" },
-          { label: "A Guide to Account Types", href: "/why-vault" },
+          { label: "Institutional", href: "/accounts/institutional" },
+          { label: "Registered Investment Advisors", href: "/accounts/institutional" },
+          { label: "Family Offices", href: "/accounts/institutional" },
+          { label: "Hedge Funds", href: "/accounts/institutional" },
+          { label: "Introducing Brokers", href: "/accounts/institutional" },
+          { label: "Small Businesses", href: "/accounts/institutional" },
         ],
       },
     ],
+    wide: true,
   },
   {
     label: "Pricing",
     sections: [
       {
-        title: "PRICING",
         items: [
-          { label: "Commissions", sub: "Starting at $0 on US stocks & ETFs", href: "/pricing" },
-          { label: "Margin Rates", sub: "As low as USD 4.14%", href: "/pricing" },
-          { label: "Interest Rates", sub: "Earn up to USD 3.14% on cash", href: "/pricing" },
-          { label: "Short Sale Cost", href: "/pricing" },
-          { label: "Market Data Pricing", href: "/pricing" },
-          { label: "Stock Yield Enhancement", href: "/pricing" },
-          { label: "Other Fees", href: "/pricing" },
+          { label: "Commission Rates", sub: "Starting at $0 on US stocks & ETFs", href: "/pricing/commissions" },
+          { label: "Margin Rates", sub: "As low as USD 4.14%", href: "/pricing/margin-rates" },
+          { label: "Interest on Cash", sub: "Earn up to USD 3.14% on cash", href: "/pricing/interest-on-cash" },
+          { label: "Crypto Spreads", sub: "0.12–0.18% on notional", href: "/pricing/crypto-spreads" },
+          { label: "No Hidden Fees", sub: "Full transparency guaranteed", href: "/pricing/no-hidden-fees" },
         ],
       },
     ],
   },
   {
-    label: "Education",
-    wide: true,
+    label: "Company",
     sections: [
       {
-        title: "LEARN",
         items: [
-          { label: "Vault Campus", sub: "Courses and learning center", href: "/why-vault" },
-          { label: "Traders' Academy", sub: "Structured curriculum", href: "/why-vault" },
-          { label: "Traders' Insight", sub: "News and analysis", href: "/why-vault" },
-          { label: "Webinars", sub: "Live and on-demand", href: "/why-vault" },
-          { label: "Quant Blog", href: "/why-vault" },
-          { label: "Podcasts", href: "/why-vault" },
-        ],
-      },
-      {
-        title: "RESOURCES",
-        items: [
-          { label: "Student Trading Lab", href: "/why-vault" },
-          { label: "Vault Forum", href: "/why-vault" },
-          { label: "Traders' Glossary", href: "/why-vault" },
-          { label: "Traders' Calendar", href: "/why-vault" },
-          { label: "Investors' Marketplace", href: "/invest" },
-          { label: "Free Trial", href: "/register" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Support",
-    sections: [
-      {
-        title: "SUPPORT",
-        items: [
-          { label: "FeatureExplorer", href: "/why-vault" },
-          { label: "Fund Your Account", href: "/wallet" },
-          { label: "Support for Individuals", href: "/security" },
-          { label: "Support for Institutions", href: "/security" },
-          { label: "Institutional Sales Contacts", href: "/security" },
-          { label: "Browse FAQs", href: "/why-vault" },
-          { label: "Tax Information", href: "/pricing" },
+          { label: "About Us", sub: "Our story, mission & leadership", href: "/about" },
+          { label: "Security", sub: "How we protect your assets", href: "/security" },
+          { label: "Careers", sub: "Join our global team", href: "/careers" },
+          { label: "Press", sub: "Media resources & announcements", href: "/press" },
+          { label: "Terms of Service", href: "/terms" },
+          { label: "Privacy Policy", href: "/privacy" },
+          { label: "Risk Disclosures", href: "/risk-disclosures" },
         ],
       },
     ],
@@ -206,7 +107,7 @@ function NavDropdown({ nav, onClose }: { nav: typeof NAV[0]; onClose: () => void
         boxShadow: "0 12px 48px rgba(0,0,0,0.13)",
         border: "1px solid #e5e7eb",
         borderTop: "2px solid #c8102e",
-        minWidth: nav.wide ? "680px" : "280px",
+        minWidth: nav.wide ? "640px" : "300px",
         zIndex: 200,
         padding: "28px 28px 24px",
         display: "flex",
@@ -280,11 +181,11 @@ export function HomeNavbar() {
           <strong style={{ color: "#93c5fd" }}>Yes 11%</strong>,&nbsp;
           <strong style={{ color: "#fca5a5" }}>No 83%</strong>
         </span>
-        <a href="#" style={{
+        <a href="/crypto" style={{
           background: "#1d6fc4", color: "#fff", fontSize: "12px", fontWeight: 700,
           padding: "3px 14px", textDecoration: "none", whiteSpace: "nowrap",
-        }}>View Markets</a>
-        <a href="#" style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px", textDecoration: "underline" }}>Disclosure</a>
+        }}>View Crypto Markets</a>
+        <a href="/risk-disclosures" style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px", textDecoration: "underline" }}>Disclosure</a>
       </div>
 
       {/* Top row: Logo + actions */}
