@@ -97,6 +97,259 @@ function baseLayout(content: string): string {
 </html>`;
 }
 
+const LOGO_URL = "https://20c145d0-7ea9-42f0-b115-f223a4c4ea88-00-2rfqdxecvl3ty.kirk.replit.dev/investment-platform/logo-dark.png";
+
+export async function sendApplicationReceivedEmail(user: { email: string; fullName: string; applicationNumber: string }): Promise<void> {
+  const firstName = user.fullName.split(" ")[0];
+  const submittedDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+  const submittedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit", minute: "2-digit", timeZoneName: "short",
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Received — Vault Wealth</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e5ea;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#0d1520;padding:32px 40px 28px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <img src="${LOGO_URL}" alt="Vault Wealth" height="34" style="display:block;height:34px;" />
+                  </td>
+                  <td align="right" style="vertical-align:middle;">
+                    <span style="color:#8b9aae;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Institutional Investment</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Status Banner -->
+          <tr>
+            <td style="background:#0a3d2e;padding:18px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="display:inline-block;width:8px;height:8px;background:#22c55e;border-radius:50%;margin-right:10px;vertical-align:middle;"></span>
+                    <span style="color:#bbf7d0;font-size:13px;font-weight:600;letter-spacing:0.3px;vertical-align:middle;">Application Successfully Received</span>
+                  </td>
+                  <td align="right">
+                    <span style="color:#86efac;font-size:12px;font-weight:500;">Ref: ${user.applicationNumber}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+
+              <p style="margin:0 0 6px;font-size:13px;color:#8b9aae;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Dear ${firstName},</p>
+              <h1 style="margin:0 0 20px;font-size:26px;font-weight:700;color:#0d1520;line-height:1.25;letter-spacing:-0.5px;">Your application has<br/>been received.</h1>
+              <p style="margin:0 0 28px;font-size:15px;line-height:1.7;color:#4a5568;">Thank you for applying to open an account with <strong>Vault Wealth</strong>. We have received all your submitted materials and our compliance team has begun the review process.</p>
+
+              <!-- Application Summary Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px 24px 12px;">
+                    <p style="margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8b9aae;">Application Summary</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 24px 20px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Applicant Name</td>
+                              <td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;">${user.fullName}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Application Number</td>
+                              <td style="font-size:13px;color:#0d1520;font-weight:700;text-align:right;font-family:monospace;">${user.applicationNumber}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Submission Date</td>
+                              <td style="font-size:13px;color:#0d1520;font-weight:500;text-align:right;">${submittedDate}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Submission Time</td>
+                              <td style="font-size:13px;color:#0d1520;font-weight:500;text-align:right;">${submittedTime}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Review Timeline</td>
+                              <td style="font-size:13px;color:#0d1520;font-weight:500;text-align:right;">1–3 business days</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e2e5ea;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#8b9aae;font-weight:500;width:45%;">Status</td>
+                              <td style="text-align:right;">
+                                <span style="display:inline-block;background:#fef9ec;color:#b45309;font-size:11px;font-weight:700;letter-spacing:0.5px;padding:3px 10px;border-radius:20px;border:1px solid #fde68a;">UNDER REVIEW</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- What Happens Next -->
+              <p style="margin:0 0 14px;font-size:13px;font-weight:700;letter-spacing:0.5px;color:#0d1520;text-transform:uppercase;">What happens next</p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="padding:12px 0;border-top:1px solid #e2e5ea;">
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px;">
+                          <span style="display:inline-block;width:20px;height:20px;background:#0d1520;border-radius:50%;text-align:center;line-height:20px;font-size:10px;font-weight:700;color:#ffffff;">1</span>
+                        </td>
+                        <td style="padding-left:10px;">
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#0d1520;">Document Review</p>
+                          <p style="margin:4px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">Our compliance team verifies your submitted identity documents against global databases.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-top:1px solid #e2e5ea;">
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px;">
+                          <span style="display:inline-block;width:20px;height:20px;background:#0d1520;border-radius:50%;text-align:center;line-height:20px;font-size:10px;font-weight:700;color:#ffffff;">2</span>
+                        </td>
+                        <td style="padding-left:10px;">
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#0d1520;">Background & AML Checks</p>
+                          <p style="margin:4px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">Standard anti-money laundering and regulatory checks are performed in accordance with applicable laws.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-top:1px solid #e2e5ea;">
+                    <table cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="width:28px;vertical-align:top;padding-top:2px;">
+                          <span style="display:inline-block;width:20px;height:20px;background:#0d1520;border-radius:50%;text-align:center;line-height:20px;font-size:10px;font-weight:700;color:#ffffff;">3</span>
+                        </td>
+                        <td style="padding-left:10px;">
+                          <p style="margin:0;font-size:14px;font-weight:600;color:#0d1520;">Account Activation</p>
+                          <p style="margin:4px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">Once approved, you'll receive a confirmation email and your account will be fully activated for trading.</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+                <tr>
+                  <td>
+                    <a href="https://vaultwealth.com/dashboard" style="display:inline-block;background:#0d1520;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;">Track Your Application</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0;font-size:14px;line-height:1.7;color:#6b7280;">If you have any questions about your application, please quote your application number <strong style="color:#0d1520;font-family:monospace;">${user.applicationNumber}</strong> when contacting support at <a href="mailto:support@vaultwealth.com" style="color:#0d1520;font-weight:600;text-decoration:none;">support@vaultwealth.com</a>.</p>
+
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <hr style="border:none;border-top:1px solid #e2e5ea;margin:0;" />
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 6px;font-size:12px;color:#8b9aae;line-height:1.6;">
+                      <strong style="color:#0d1520;">Vault Wealth</strong> &nbsp;·&nbsp; INT Brokers LLC<br/>
+                      Regulated institutional investment platform
+                    </p>
+                    <p style="margin:0;font-size:11px;color:#b0bac6;line-height:1.6;">
+                      This email was sent to ${user.email} because you submitted an application with Vault Wealth.
+                      &nbsp;<a href="#" style="color:#8b9aae;text-decoration:underline;">Unsubscribe</a>
+                      &nbsp;·&nbsp;<a href="#" style="color:#8b9aae;text-decoration:underline;">Privacy Policy</a>
+                    </p>
+                  </td>
+                  <td align="right" style="vertical-align:top;white-space:nowrap;">
+                    <p style="margin:0;font-size:11px;color:#b0bac6;">© ${new Date().getFullYear()} Vault Wealth</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  await sendEmail({
+    to: [{ email: user.email, name: user.fullName }],
+    subject: `Application Received — Ref: ${user.applicationNumber}`,
+    htmlContent: html,
+    textContent: `Dear ${user.fullName}, your application (Ref: ${user.applicationNumber}) has been received and is under review. Our team will respond within 1-3 business days.`,
+  });
+}
+
 export async function sendWelcomeEmail(user: { email: string; fullName: string }): Promise<void> {
   const html = baseLayout(`
     <h1>Welcome to Vault Wealth, ${user.fullName.split(" ")[0]}!</h1>
