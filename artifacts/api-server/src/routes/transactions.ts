@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { transactionsTable, usersTable, assetsTable, holdingsTable, activityLogTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
+import { sendDepositConfirmationEmail, sendWithdrawalConfirmationEmail, sendTradeConfirmationEmail } from "../lib/email.js";
 
 const router: IRouter = Router();
 
@@ -81,6 +82,8 @@ router.post("/", requireAuth, async (req, res) => {
         description: `Deposited $${amount.toFixed(2)}`,
       });
 
+      sendDepositConfirmationEmail({ email: user.email, fullName: user.fullName }, amount).catch(() => {});
+
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: null, name: null, quantity: null,
         price: null, amount: parseFloat(tx.amount), status: tx.status,
@@ -108,6 +111,8 @@ router.post("/", requireAuth, async (req, res) => {
         eventType: "withdrawal",
         description: `Withdrew $${amount.toFixed(2)}`,
       });
+
+      sendWithdrawalConfirmationEmail({ email: user.email, fullName: user.fullName }, amount).catch(() => {});
 
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: null, name: null, quantity: null,
@@ -176,6 +181,11 @@ router.post("/", requireAuth, async (req, res) => {
         description: `Bought ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)}`,
       });
 
+      sendTradeConfirmationEmail(
+        { email: user.email, fullName: user.fullName },
+        { type: "buy", symbol: asset.symbol, name: asset.name, quantity: qty, price, total: totalCost }
+      ).catch(() => {});
+
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: tx.symbol, name: tx.name,
         quantity: tx.quantity ? parseFloat(tx.quantity) : null,
@@ -236,6 +246,11 @@ router.post("/", requireAuth, async (req, res) => {
         eventType: "sell",
         description: `Sold ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)}`,
       });
+
+      sendTradeConfirmationEmail(
+        { email: user.email, fullName: user.fullName },
+        { type: "sell", symbol: asset.symbol, name: asset.name, quantity: qty, price, total: proceeds }
+      ).catch(() => {});
 
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: tx.symbol, name: tx.name,

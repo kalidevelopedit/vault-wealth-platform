@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { usersTable, kycDocumentsTable, activityLogTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+import { sendKycSubmittedEmail } from "../lib/email.js";
 
 const router: IRouter = Router();
 
@@ -153,6 +154,10 @@ router.post("/kyc/submit", requireAuth, async (req, res) => {
       eventType: "kyc_submitted",
       description: "KYC verification submitted for review",
     });
+
+    const [user] = await db.select({ email: usersTable.email, fullName: usersTable.fullName })
+      .from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (user) sendKycSubmittedEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
 
     res.json({ message: "KYC submitted for review" });
   } catch (err) {

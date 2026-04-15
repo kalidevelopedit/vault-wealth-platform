@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { usersTable, activityLogTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
+import { sendWelcomeEmail } from "../lib/email.js";
 
 const router: IRouter = Router();
 
@@ -45,6 +46,8 @@ router.post("/register", async (req, res) => {
       eventType: "account_created",
       description: "Account registered",
     });
+
+    sendWelcomeEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
 
     (req.session as any).userId = user.id;
     res.status(201).json({
