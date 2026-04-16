@@ -1,7 +1,7 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
-const FROM_EMAIL = "noreply@vaultwealth.com";
+const FROM_EMAIL = "support@intbrokers.app";
 const FROM_NAME = "Vault Wealth";
 
 interface EmailPayload {
