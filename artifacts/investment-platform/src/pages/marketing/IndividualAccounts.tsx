@@ -27,7 +27,7 @@ export default function IndividualAccounts() {
   return (
     <MarketingPage
       eyebrow="Individual Accounts"
-      title={<>Your Personal<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Investment Account</span></>}
+      title={<>Your Personal<br /><span style={{ color: "#fff" }}>Investment Account</span></>}
       subtitle="Individual brokerage accounts with no minimum balance, no platform fees, and access to 170+ global markets. Choose between a cash account or a full-featured margin account."
       heroImage={IMG}
       stats={[
@@ -62,7 +62,7 @@ export default function IndividualAccounts() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 680, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", padding: "14px 20px" }}>
               {["Feature", "Cash Account", "Margin Account"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {COMPARE.map((r, i) => (

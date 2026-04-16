@@ -106,7 +106,7 @@ function NavDropdown({ nav, onClose }: { nav: typeof NAV[0]; onClose: () => void
         background: "#fff",
         boxShadow: "0 12px 48px rgba(0,0,0,0.13)",
         border: "1px solid #e5e7eb",
-        borderTop: "2px solid #c8102e",
+        borderTop: "2px solid #0d1520",
         minWidth: nav.wide ? "640px" : "300px",
         zIndex: 200,
         padding: "28px 28px 24px",
@@ -134,7 +134,7 @@ function NavDropdown({ nav, onClose }: { nav: typeof NAV[0]; onClose: () => void
                   transition: "color 0.12s",
                   lineHeight: 1.4,
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#c8102e")}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#0d1520")}
                   onMouseLeave={e => (e.currentTarget.style.color = "#1f2937")}>
                   {item.label}
                   {(item as any).sub && (
@@ -215,17 +215,17 @@ export function HomeNavbar() {
               textDecoration: "none", padding: "8px 18px",
               transition: "color 0.12s",
             }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#c8102e")}
+              onMouseEnter={e => (e.currentTarget.style.color = "#0d1520")}
               onMouseLeave={e => (e.currentTarget.style.color = "#111")}>
               Log In
             </Link>
             <Link href="/register" style={{
               fontSize: "14px", fontWeight: 700, color: "#fff",
-              background: "#c8102e", textDecoration: "none", padding: "9px 22px",
+              background: "#0d1520", textDecoration: "none", padding: "9px 22px",
               transition: "background 0.12s", whiteSpace: "nowrap",
             }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#a50d25")}
-              onMouseLeave={e => (e.currentTarget.style.background = "#c8102e")}>
+              onMouseEnter={e => (e.currentTarget.style.background = "#1a2d4a")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#0d1520")}>
               Open Account
             </Link>
           </div>
@@ -245,10 +245,10 @@ export function HomeNavbar() {
                   display: "flex", alignItems: "center", gap: "3px",
                   padding: "0 14px", height: "44px",
                   fontSize: "13.5px", fontWeight: 500,
-                  color: openMenu === nav.label ? "#c8102e" : "#374151",
+                  color: openMenu === nav.label ? "#0d1520" : "#374151",
                   transition: "color 0.12s",
                   whiteSpace: "nowrap",
-                  borderBottom: openMenu === nav.label ? "2px solid #c8102e" : "2px solid transparent",
+                  borderBottom: openMenu === nav.label ? "2px solid #0d1520" : "2px solid transparent",
                   marginBottom: "-1px",
                 }}>
                 {nav.label}

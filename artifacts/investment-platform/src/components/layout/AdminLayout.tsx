@@ -24,9 +24,9 @@ function Sidebar({ location, onClose, onLogout }: { location: string; onClose?: 
               style={{
                 display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10,
                 fontSize: 13, fontWeight: 600, textDecoration: "none",
-                background: active ? "rgba(200,16,46,0.15)" : "transparent",
-                color: active ? "#f87171" : "rgba(255,255,255,0.45)",
-                border: active ? "1px solid rgba(200,16,46,0.25)" : "1px solid transparent",
+                background: active ? "rgba(255,255,255,0.08)" : "transparent",
+                color: active ? "#fff" : "rgba(255,255,255,0.45)",
+                border: active ? "1px solid rgba(255,255,255,0.12)" : "1px solid transparent",
                 transition: "all 0.15s",
               }}
             >

@@ -27,7 +27,7 @@ export default function CryptoSpreads() {
   return (
     <MarketingPage
       eyebrow="Crypto Pricing"
-      title={<>Transparent Crypto<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Pricing</span></>}
+      title={<>Transparent Crypto<br /><span style={{ color: "#fff" }}>Pricing</span></>}
       subtitle="INT Brokers charges 0.12–0.18% on the notional value of each crypto trade — with no hidden spread markups, no maker/taker complexity, and cold storage custody included."
       heroImage={IMG}
       stats={[
@@ -62,7 +62,7 @@ export default function CryptoSpreads() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", padding: "13px 24px" }}>
               {["Cryptocurrency", "Ticker", "Spread", "24h Volume", "Custody"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {SPREADS.map((r, i) => (

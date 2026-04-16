@@ -36,7 +36,7 @@ export default function LowerCosts() {
   return (
     <MarketingPage
       eyebrow="Cost Advantage"
-      title={<>Professional Pricing.<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Zero Compromise.</span></>}
+      title={<>Professional Pricing.<br /><span style={{ color: "#fff" }}>Zero Compromise.</span></>}
       subtitle="INT Brokers passes more of the savings of scale directly to you than any other broker. From $0 commissions on US stocks to the industry's lowest margin rates — your money works harder here."
       heroImage={IMG}
       stats={[
@@ -54,7 +54,7 @@ export default function LowerCosts() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Why It Matters</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Why It Matters</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 14 }}>Fees compound just like returns — only in reverse</h2>
             <p style={{ fontSize: 15, color: "#6B7280", maxWidth: 640, margin: "0 auto", lineHeight: 1.8 }}>Every dollar spent on commissions, platform fees, and inflated spreads is a dollar that never compounds. Over 10–20 years of investing, fee drag costs the average investor tens of thousands of dollars.</p>
           </div>
@@ -75,7 +75,7 @@ export default function LowerCosts() {
         <div style={{ ...INNER }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Commission Schedule</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Commission Schedule</p>
               <h2 style={{ fontSize: "clamp(24px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 16 }}>Competitive rates across every asset class</h2>
               <p style={{ fontSize: 14.5, color: "#6B7280", lineHeight: 1.8, marginBottom: 28 }}>INT Brokers does not add payment for order flow or hidden markups. Our commissions are the full price you pay — no surprises, no fine print.</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -90,7 +90,7 @@ export default function LowerCosts() {
             <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden" }}>
               <div style={{ background: "#0F172A", padding: "14px 20px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Product</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#c8102e", textTransform: "uppercase", letterSpacing: "0.1em" }}>Our Rate</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", textTransform: "uppercase", letterSpacing: "0.1em" }}>Our Rate</span>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Note</span>
               </div>
               {COMMISSIONS.map((r, i) => (
@@ -110,7 +110,7 @@ export default function LowerCosts() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(8,10,15,0.88) 40%,rgba(8,10,15,0.55))" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", padding: "0 64px", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ maxWidth: 500 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>The INT Brokers Advantage</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>The INT Brokers Advantage</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 16 }}>We profit from your trades, not from you.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.8 }}>Our business model is based on trading activity and scale — not inflated commissions. When you trade more, we benefit. That alignment means your interests are our interests.</p>
           </div>
@@ -122,14 +122,14 @@ export default function LowerCosts() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Margin Rates</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Margin Rates</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 12 }}>Up to 55% below the industry average</h2>
             <p style={{ fontSize: 14.5, color: "#6B7280", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>Interest rates are tiered by balance. The larger your portfolio, the lower your margin rate.</p>
           </div>
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 760, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", padding: "14px 24px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
               {["Balance Tier", "INT Brokers Rate", "Industry Average"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 1 ? "#c8102e" : "rgba(255,255,255,0.45)" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 1 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.45)" }}>{h}</span>
               ))}
             </div>
             {MARGIN.map((r, i) => (

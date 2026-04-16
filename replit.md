@@ -18,6 +18,8 @@ pnpm workspace monorepo using TypeScript. This is the **INT Brokers / Vault Weal
 
 All marketing pages use the shared `MarketingPage` component at `src/components/marketing/MarketingPage.tsx` — dark hero + dot pattern + stats bar + Unsplash images. No colored icon backgrounds anywhere.
 
+**UI Design**: Strictly neutral institutional palette — ZERO red/amber/blue/green accent colors. All CTAs on dark backgrounds are white pill buttons, CTAs on light backgrounds use `#0d1520` solid. Section eyebrows: `rgba(255,255,255,0.35)` on dark, `#6B7280` on light. Navbar active/hover = `#0d1520`. All 28+ marketing pages fully neutralized. Admin sidebar active state = `rgba(255,255,255,0.08)` glass (no red).
+
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces

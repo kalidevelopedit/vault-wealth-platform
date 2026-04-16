@@ -54,7 +54,7 @@ export default function Technology() {
   return (
     <MarketingPage
       eyebrow="Premier Technology"
-      title={<>Award-Winning Platforms<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Built for Every Investor</span></>}
+      title={<>Award-Winning Platforms<br /><span style={{ color: "#fff" }}>Built for Every Investor</span></>}
       subtitle="From ultra-low latency desktop trading to seamless mobile apps and algorithmic APIs — INT Brokers technology has been recognised as the best in the industry for six consecutive years."
       heroImage={IMG}
       stats={[
@@ -71,7 +71,7 @@ export default function Technology() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Trading Platforms</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Trading Platforms</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Four ways to access your account</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(480px,1fr))", gap: 24 }}>
@@ -81,7 +81,7 @@ export default function Technology() {
                   <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                     <Icon size={24} color="rgba(255,255,255,0.7)" strokeWidth={1.5} />
                     <div>
-                      <p style={{ fontSize: 11, color: "rgba(200,16,46,0.8)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{tagline}</p>
+                      <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>{tagline}</p>
                       <h3 style={{ fontSize: 20, fontWeight: 800, color: "#fff" }}>{name}</h3>
                     </div>
                   </div>
@@ -106,7 +106,7 @@ export default function Technology() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(8,10,15,0.9) 50%,rgba(8,10,15,0.5))" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", padding: "0 64px", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ maxWidth: 480 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>SmartRouting™</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>SmartRouting™</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 16 }}>We scan 70+ venues to find your best fill — in under a millisecond.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.8 }}>Our SmartRouting technology continuously scans competing market venues for the best price and executes your order — typically saving clients more than the cost of commissions on their own.</p>
           </div>
@@ -117,7 +117,7 @@ export default function Technology() {
       <section style={{ background: "#fff", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Under the Hood</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Under the Hood</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Technology that works as hard as you do</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 20 }}>

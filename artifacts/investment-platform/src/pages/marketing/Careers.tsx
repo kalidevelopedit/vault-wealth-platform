@@ -24,7 +24,7 @@ export default function Careers() {
   return (
     <MarketingPage
       eyebrow="Join Our Team"
-      title={<>Build the Future<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>of Investing</span></>}
+      title={<>Build the Future<br /><span style={{ color: "#fff" }}>of Investing</span></>}
       subtitle="INT Brokers is one of the world's most technologically advanced financial firms. We employ 3,000+ professionals across 28 countries, united by a mission to give every investor access to the best tools and lowest costs on the planet."
       heroImage={IMG}
       stats={[
@@ -40,7 +40,7 @@ export default function Careers() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Open Roles</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Open Roles</p>
             <h2 style={{ fontSize: "clamp(22px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>We're hiring across six departments</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
@@ -62,7 +62,7 @@ export default function Careers() {
         <div style={{ ...INNER }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Benefits & Perks</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Benefits & Perks</p>
               <h2 style={{ fontSize: "clamp(22px,3.5vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 20 }}>We invest in our people</h2>
               <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.8 }}>INT Brokers is a meritocracy. We hire the best talent, give them responsibility, and reward performance. Our benefits reflect the long-term relationships we want to build with every team member.</p>
             </div>

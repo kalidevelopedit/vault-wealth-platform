@@ -35,7 +35,7 @@ export default function GlobalAccess() {
   return (
     <MarketingPage
       eyebrow="Global Markets"
-      title={<>Trade Anywhere.<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>In Any Market.</span></>}
+      title={<>Trade Anywhere.<br /><span style={{ color: "#fff" }}>In Any Market.</span></>}
       subtitle="Access 170+ market centres across 33 countries — stocks, options, futures, forex, bonds, and crypto — all from a single INT Brokers account. No international brokerage accounts required."
       heroImage={IMG}
       stats={[
@@ -52,7 +52,7 @@ export default function GlobalAccess() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 56 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>One Account. Every Market.</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>One Account. Every Market.</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 14 }}>True global access in a single platform</h2>
             <p style={{ fontSize: 15, color: "#6B7280", maxWidth: 600, margin: "0 auto", lineHeight: 1.8 }}>Most brokers restrict you to a handful of markets. INT Brokers was built from day one to give every investor access to every major market on the planet.</p>
           </div>
@@ -72,7 +72,7 @@ export default function GlobalAccess() {
       <section style={{ background: "#fff", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Market Coverage</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Market Coverage</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Four regions. 33+ countries. Every major exchange.</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }}>
@@ -103,7 +103,7 @@ export default function GlobalAccess() {
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.82)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div style={{ maxWidth: 640 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>Market Hours</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Market Hours</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 16 }}>Somewhere in the world, a market is always open.</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", lineHeight: 1.8 }}>With global coverage spanning Asia, Europe, and the Americas, combined with 24/7 crypto trading, INT Brokers gives you access to opportunities whenever they arise.</p>
           </div>
@@ -119,7 +119,7 @@ export default function GlobalAccess() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 800, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", padding: "14px 24px", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr" }}>
               {["Product", "Americas", "Europe", "Asia-Pacific", "ME & Africa"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.6)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {PRODUCTS.map((r, i) => (

@@ -25,7 +25,7 @@ export default function Press() {
   return (
     <MarketingPage
       eyebrow="Media & Press"
-      title={<>INT Brokers<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Press Centre</span></>}
+      title={<>INT Brokers<br /><span style={{ color: "#fff" }}>Press Centre</span></>}
       subtitle="News, announcements, and media resources for journalists, analysts, and partners. For urgent press inquiries, contact our media relations team at press@intbrokers.com."
       heroImage={IMG}
       stats={[
@@ -38,7 +38,7 @@ export default function Press() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Press Releases</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Press Releases</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Recent announcements</h2>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

@@ -23,7 +23,7 @@ export default function SEPIRA() {
   return (
     <MarketingPage
       eyebrow="Self-Employed Retirement"
-      title={<>Maximum Savings for<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Self-Employed Professionals</span></>}
+      title={<>Maximum Savings for<br /><span style={{ color: "#fff" }}>Self-Employed Professionals</span></>}
       subtitle="The SEP-IRA is the most powerful retirement account for freelancers, consultants, and small business owners. Contribute up to $69,000 annually — fully tax-deductible — with zero annual fees at INT Brokers."
       heroImage={IMG}
       stats={[
@@ -58,7 +58,7 @@ export default function SEPIRA() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 680, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "1fr 1fr 1fr 2fr", padding: "13px 20px" }}>
               {["Year", "Max Contribution", "Max %", "Contribution Deadline"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {LIMITS.map((r, i) => (

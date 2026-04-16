@@ -36,10 +36,10 @@ const css = `
   .stat-chip:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.45)!important}
   .feat-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.13)!important}
   .rate-card:hover{transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.5)!important}
-  .acct-card:hover{border-color:#c8102e!important;background:#fef2f2!important}
-  .award-card:hover{border-color:rgba(200,16,46,.4)!important;background:rgba(200,16,46,.05)!important}
+  .acct-card:hover{border-color:#0d1520!important;background:#f9fafb!important}
+  .award-card:hover{border-color:#0d1520!important;background:#f5f6f7!important}
   .step-card:hover{background:#fff!important;box-shadow:0 4px 20px rgba(0,0,0,.06)!important}
-  .inv-tab:hover{border-color:#c8102e!important;color:#c8102e!important}
+  .inv-tab:hover{border-color:rgba(255,255,255,0.25)!important;color:rgba(255,255,255,0.85)!important}
   .testi-card{transition:opacity .4s ease,transform .4s ease}
 `;
 
@@ -95,7 +95,7 @@ const INV_CATEGORIES = [
     id: "stocks",
     icon: BarChart3,
     label: "Stocks & ETFs",
-    color: "#2563eb",
+    color: "rgba(255,255,255,0.7)",
     bg: "linear-gradient(135deg,#1e3a5f,#0f2040)",
     image: "/market-charts.jpg",
     headline: "Access 170+ Global Stock Markets",
@@ -107,8 +107,8 @@ const INV_CATEGORIES = [
     id: "crypto",
     icon: Bitcoin,
     label: "Cryptocurrency",
-    color: "#f59e0b",
-    bg: "linear-gradient(135deg,#1c1400,#0f0c00)",
+    color: "rgba(255,255,255,0.7)",
+    bg: "linear-gradient(135deg,#1c1a12,#0f0e08)",
     image: "/crypto-investment.jpg",
     headline: "Invest in Bitcoin, Ethereum & 60+ Coins",
     sub: "Trade crypto 24/7 with institutional-grade security, cold storage protection, and competitive spreads. No wallet required.",
@@ -119,8 +119,8 @@ const INV_CATEGORIES = [
     id: "retirement",
     icon: Landmark,
     label: "Retirement",
-    color: "#10b981",
-    bg: "linear-gradient(135deg,#0a2118,#041510)",
+    color: "rgba(255,255,255,0.7)",
+    bg: "linear-gradient(135deg,#0a1e18,#040f0c)",
     image: "/senior-retirement.jpg",
     headline: "Secure Your Future With Smart Retirement Planning",
     sub: "IRA, Roth IRA, SEP-IRA and pension accounts with tax-advantaged growth, personalized allocation, and expert guidance for seniors.",
@@ -131,8 +131,8 @@ const INV_CATEGORIES = [
     id: "commodities",
     icon: Wheat,
     label: "Commodities",
-    color: "#ef4444",
-    bg: "linear-gradient(135deg,#200a0a,#150505)",
+    color: "rgba(255,255,255,0.7)",
+    bg: "linear-gradient(135deg,#1a1510,#100d08)",
     image: "/city-skyline.jpg",
     headline: "Gold, Oil, Silver & Agricultural Markets",
     sub: "Hedge inflation and diversify with real assets. Trade gold, crude oil, natural gas, silver and agricultural futures with low margin rates.",
@@ -177,7 +177,7 @@ function TestimonialCarousel() {
         style={{background:"#fff",borderRadius:24,padding:"48px 52px",border:"1px solid #E6E8EB",boxShadow:"0 8px 40px rgba(0,0,0,0.06)",position:"relative",overflow:"hidden"}}>
 
         {/* Quote mark */}
-        <div style={{position:"absolute",top:24,right:36,fontSize:120,color:"rgba(200,16,46,0.05)",fontWeight:900,lineHeight:1,fontFamily:"Georgia,serif",pointerEvents:"none"}}>"</div>
+        <div style={{position:"absolute",top:24,right:36,fontSize:120,color:"rgba(0,0,0,0.04)",fontWeight:900,lineHeight:1,fontFamily:"Georgia,serif",pointerEvents:"none"}}>"</div>
 
         <div style={{display:"flex",gap:32,alignItems:"flex-start",flexWrap:"wrap"}}>
           {/* Avatar */}
@@ -191,7 +191,7 @@ function TestimonialCarousel() {
           <div style={{flex:1,minWidth:280}}>
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
               <StarRating n={t.stars} />
-              <span style={{fontSize:11,fontWeight:600,background:"rgba(200,16,46,0.08)",color:"#c8102e",padding:"2px 10px",borderRadius:999,border:"1px solid rgba(200,16,46,0.15)"}}>{t.tag}</span>
+              <span style={{fontSize:11,fontWeight:600,background:"rgba(13,21,32,0.06)",color:"#374151",padding:"2px 10px",borderRadius:999,border:"1px solid rgba(13,21,32,0.10)"}}>{t.tag}</span>
             </div>
 
             <p style={{fontSize:16,color:"#374151",lineHeight:1.8,fontStyle:"italic",marginBottom:20}}>
@@ -209,16 +209,16 @@ function TestimonialCarousel() {
       {/* Controls */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:16,marginTop:24}}>
         <button onClick={() => go(idx-1,"l")} style={{width:40,height:40,borderRadius:"50%",border:"1px solid #E6E8EB",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(0,0,0,0.04)",transition:"border-color .15s"}}
-          onMouseEnter={e=>(e.currentTarget.style.borderColor="#c8102e")} onMouseLeave={e=>(e.currentTarget.style.borderColor="#E6E8EB")}>
+          onMouseEnter={e=>(e.currentTarget.style.borderColor="#0d1520")} onMouseLeave={e=>(e.currentTarget.style.borderColor="#E6E8EB")}>
           <ChevronLeft size={18} color="#374151" />
         </button>
         <div style={{display:"flex",gap:8}}>
           {TESTIMONIALS.map((_,i)=>(
-            <button key={i} onClick={() => go(i, i > idx ? "r" : "l")} style={{width:i===idx?24:8,height:8,borderRadius:999,background:i===idx?"#c8102e":"#E6E8EB",border:"none",cursor:"pointer",transition:"width .3s,background .3s",padding:0}} />
+            <button key={i} onClick={() => go(i, i > idx ? "r" : "l")} style={{width:i===idx?24:8,height:8,borderRadius:999,background:i===idx?"#0d1520":"#E6E8EB",border:"none",cursor:"pointer",transition:"width .3s,background .3s",padding:0}} />
           ))}
         </div>
         <button onClick={() => go(idx+1,"r")} style={{width:40,height:40,borderRadius:"50%",border:"1px solid #E6E8EB",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(0,0,0,0.04)",transition:"border-color .15s"}}
-          onMouseEnter={e=>(e.currentTarget.style.borderColor="#c8102e")} onMouseLeave={e=>(e.currentTarget.style.borderColor="#E6E8EB")}>
+          onMouseEnter={e=>(e.currentTarget.style.borderColor="#0d1520")} onMouseLeave={e=>(e.currentTarget.style.borderColor="#E6E8EB")}>
           <ChevronRight size={18} color="#374151" />
         </button>
       </div>
@@ -239,12 +239,12 @@ function InvestmentCategories() {
   return (
     <section style={{background:"#080a0f",padding:"96px 0",position:"relative",overflow:"hidden"}}>
       <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
-      <div style={{position:"absolute",top:-100,left:"30%",width:600,height:400,background:"radial-gradient(ellipse,rgba(200,16,46,0.06) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
+      <div style={{position:"absolute",top:-100,left:"30%",width:600,height:400,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
 
       <div style={{position:"relative",zIndex:1,maxWidth:1160,margin:"0 auto",padding:"0 24px"}}>
         {/* Heading */}
         <div style={{textAlign:"center",marginBottom:48}}>
-          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(200,16,46,0.8)",marginBottom:10}}>What You Can Trade</p>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:10}}>What You Can Trade</p>
           <h2 style={{fontSize:"clamp(28px,4vw,44px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,margin:0}}>
             Every Asset Class. One Platform.
           </h2>
@@ -258,8 +258,8 @@ function InvestmentCategories() {
             const isActive = i === active;
             return (
               <button key={c.id} onClick={()=>setActive(i)} className="inv-tab"
-                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,border:`1px solid ${isActive ? c.color+"80" : "rgba(255,255,255,0.08)"}`,background:isActive ? c.color+"15" : "rgba(255,255,255,0.03)",color:isActive ? "#fff" : "rgba(255,255,255,0.45)",fontWeight:600,fontSize:13,cursor:"pointer",transition:"all .2s"}}>
-                <Icon size={16} color={isActive ? c.color : "rgba(255,255,255,0.4)"} />
+                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:12,border:`1px solid ${isActive ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)"}`,background:isActive ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.03)",color:isActive ? "#fff" : "rgba(255,255,255,0.45)",fontWeight:600,fontSize:13,cursor:"pointer",transition:"all .2s"}}>
+                <Icon size={16} color={isActive ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.4)"} />
                 {c.label}
               </button>
             );
@@ -286,9 +286,9 @@ function InvestmentCategories() {
 
           {/* Content */}
           <div style={{background:"linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))",padding:"44px 44px",backdropFilter:"blur(4px)"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:8,marginBottom:16,background:`${cat.color}18`,borderRadius:8,padding:"4px 12px",border:`1px solid ${cat.color}30`}}>
-              {<cat.icon size={14} color={cat.color} />}
-              <span style={{fontSize:11,fontWeight:700,color:cat.color,textTransform:"uppercase",letterSpacing:"0.12em"}}>{cat.label}</span>
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,marginBottom:16,background:"rgba(255,255,255,0.07)",borderRadius:8,padding:"4px 12px",border:"1px solid rgba(255,255,255,0.12)"}}>
+              {<cat.icon size={14} color="rgba(255,255,255,0.7)" />}
+              <span style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.7)",textTransform:"uppercase",letterSpacing:"0.12em"}}>{cat.label}</span>
             </div>
             <h3 style={{fontSize:"clamp(20px,3vw,28px)",fontWeight:900,color:"#fff",letterSpacing:"-0.025em",lineHeight:1.2,marginBottom:14}}>{cat.headline}</h3>
             <p style={{fontSize:14,color:"rgba(255,255,255,0.45)",lineHeight:1.8,marginBottom:28}}>{cat.sub}</p>
@@ -300,7 +300,7 @@ function InvestmentCategories() {
                 </li>
               ))}
             </ul>
-            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 28px",borderRadius:12,background:`linear-gradient(135deg,${cat.color},${cat.color}cc)`,color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none",boxShadow:`0 4px 20px ${cat.color}40`,transition:"transform .15s"}}>
+            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"12px 28px",borderRadius:12,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none",transition:"background .15s"}}>
               Start Investing <ArrowUpRight size={15} />
             </Link>
           </div>
@@ -317,7 +317,7 @@ function RetirementSection() {
       <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
           <div>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:12}}>For Retirees & Seniors</p>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:12}}>For Retirees & Seniors</p>
             <h2 style={{fontSize:"clamp(28px,4vw,42px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>
               Your Retirement Deserves More Than a Savings Account
             </h2>
@@ -350,7 +350,7 @@ function RetirementSection() {
             </div>
 
             <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-              <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 32px",borderRadius:12,background:"linear-gradient(135deg,#e8192c,#c8102e)",color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none",boxShadow:"0 4px 20px rgba(200,16,46,0.3)"}}>
+              <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 32px",borderRadius:12,background:"#0d1520",color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none",boxShadow:"0 4px 16px rgba(13,21,32,0.2)"}}>
                 Open Retirement Account
               </Link>
               <a href="#" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 24px",borderRadius:12,border:"1px solid #E6E8EB",color:"#374151",fontWeight:600,fontSize:14,textDecoration:"none"}}>
@@ -388,8 +388,8 @@ function CryptoSection() {
   return (
     <section style={{background:"#080a0f",padding:"96px 0",position:"relative",overflow:"hidden"}}>
       <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
-      <div style={{position:"absolute",top:-80,right:-80,width:500,height:500,background:"radial-gradient(ellipse,rgba(245,158,11,0.07) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
-      <div style={{position:"absolute",bottom:-80,left:-80,width:400,height:400,background:"radial-gradient(ellipse,rgba(200,16,46,0.05) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
+      <div style={{position:"absolute",top:-80,right:-80,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
+      <div style={{position:"absolute",bottom:-80,left:-80,width:400,height:400,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
 
       <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
@@ -400,9 +400,9 @@ function CryptoSection() {
               <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(8,10,15,0.6),transparent)"}} />
             </div>
             {/* Floating crypto price cards */}
-            <div className="float-chip" style={{position:"absolute",top:20,left:20,background:"rgba(245,158,11,0.12)",backdropFilter:"blur(16px)",border:"1px solid rgba(245,158,11,0.25)",borderRadius:14,padding:"12px 16px"}}>
+            <div className="float-chip" style={{position:"absolute",top:20,left:20,background:"rgba(255,255,255,0.05)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:14,padding:"12px 16px"}}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:28,height:28,borderRadius:8,background:"linear-gradient(135deg,#f7931a,#f5a623)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:"#fff"}}>₿</div>
+                <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>₿</div>
                 <div>
                   <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>Bitcoin</div>
                   <div style={{fontSize:16,color:"#fff",fontWeight:800}}>$107,842</div>
@@ -410,9 +410,9 @@ function CryptoSection() {
                 <div style={{fontSize:13,color:"#4ade80",fontWeight:700,marginLeft:8}}>+2.41%</div>
               </div>
             </div>
-            <div className="float-chip2" style={{position:"absolute",bottom:36,right:20,background:"rgba(99,102,241,0.12)",backdropFilter:"blur(16px)",border:"1px solid rgba(99,102,241,0.25)",borderRadius:14,padding:"12px 16px"}}>
+            <div className="float-chip2" style={{position:"absolute",bottom:36,right:20,background:"rgba(255,255,255,0.05)",backdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.10)",borderRadius:14,padding:"12px 16px"}}>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:28,height:28,borderRadius:8,background:"linear-gradient(135deg,#627eea,#4f63c9)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:"#fff"}}>Ξ</div>
+                <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>Ξ</div>
                 <div>
                   <div style={{fontSize:11,color:"rgba(255,255,255,0.5)"}}>Ethereum</div>
                   <div style={{fontSize:16,color:"#fff",fontWeight:800}}>$2,941</div>
@@ -424,7 +424,7 @@ function CryptoSection() {
 
           {/* Text */}
           <div>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#f59e0b",marginBottom:12}}>Cryptocurrency</p>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:12}}>Cryptocurrency</p>
             <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>
               Crypto Investing Made Simple & Secure
             </h2>
@@ -440,7 +440,7 @@ function CryptoSection() {
                 {v:"8% APY",l:"Staking Yield"},
               ].map(s=>(
                 <div key={s.l} style={{background:"rgba(255,255,255,0.04)",borderRadius:14,padding:"16px",border:"1px solid rgba(255,255,255,0.07)",textAlign:"center"}}>
-                  <div style={{fontSize:20,fontWeight:900,color:"#f59e0b",letterSpacing:"-0.02em"}}>{s.v}</div>
+                  <div style={{fontSize:20,fontWeight:900,color:"#fff",letterSpacing:"-0.02em"}}>{s.v}</div>
                   <div style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontWeight:500,textTransform:"uppercase",letterSpacing:"0.08em",marginTop:4}}>{s.l}</div>
                 </div>
               ))}
@@ -460,7 +460,7 @@ function CryptoSection() {
                 </li>
               ))}
             </ul>
-            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 32px",borderRadius:12,background:"linear-gradient(135deg,#f59e0b,#d97706)",color:"#0F172A",fontWeight:800,fontSize:14,textDecoration:"none",boxShadow:"0 4px 20px rgba(245,158,11,0.3)"}}>
+            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 32px",borderRadius:12,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none"}}>
               Start Trading Crypto <ArrowUpRight size={15} />
             </Link>
           </div>
@@ -480,14 +480,14 @@ export default function Home() {
       {/* ═══ HERO ═══════════════════════════════════════════════════════ */}
       <section style={{background:"#080a0f",paddingTop:72,paddingBottom:0,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
-        <div style={{position:"absolute",top:-100,left:"50%",transform:"translateX(-50%)",width:900,height:500,background:"radial-gradient(ellipse,rgba(200,16,46,0.12) 0%,transparent 65%)",zIndex:1,pointerEvents:"none"}} />
-        <div style={{position:"absolute",top:200,left:-200,width:600,height:600,background:"radial-gradient(ellipse,rgba(37,99,235,0.06) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
-        <div style={{position:"absolute",top:100,right:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(200,16,46,0.05) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:-100,left:"50%",transform:"translateX(-50%)",width:900,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 65%)",zIndex:1,pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:200,left:-200,width:600,height:600,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:100,right:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.01) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
 
         {/* Floating chips */}
         <div className="hero-1 float-chip" style={{position:"absolute",top:120,left:"8%",zIndex:3}}>
           <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.10)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"linear-gradient(135deg,#f7931a,#f5a623)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:"#fff"}}>₿</div>
+            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>₿</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>BTC/USD</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$107,842</div></div>
             <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+2.41%</div>
           </div>
@@ -495,7 +495,7 @@ export default function Home() {
 
         <div className="hero-2 float-chip2" style={{position:"absolute",top:210,right:"7%",zIndex:3}}>
           <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.10)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"linear-gradient(135deg,#555,#222)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff"}}>AAPL</div>
+            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>AAPL</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Apple Inc.</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$211.84</div></div>
             <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+1.24%</div>
           </div>
@@ -503,7 +503,7 @@ export default function Home() {
 
         <div className="hero-3 float-chip3" style={{position:"absolute",top:350,left:"6%",zIndex:3}}>
           <div style={{background:"rgba(255,255,255,0.04)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"linear-gradient(135deg,#b45309,#92400e)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff"}}>AU</div>
+            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>XAU</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Gold Spot</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$3,324.5</div></div>
             <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+0.61%</div>
           </div>
@@ -511,15 +511,15 @@ export default function Home() {
 
         {/* Hero text */}
         <div style={{position:"relative",zIndex:5,maxWidth:860,margin:"0 auto",padding:"80px 24px 40px",textAlign:"center"}}>
-          <div className="hero-1" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(200,16,46,0.12)",border:"1px solid rgba(200,16,46,0.25)",borderRadius:999,padding:"5px 14px 5px 8px",marginBottom:28}}>
-            <span style={{background:"#c8102e",color:"#fff",fontSize:9,fontWeight:800,letterSpacing:"0.12em",textTransform:"uppercase",borderRadius:999,padding:"2px 8px"}}>New</span>
+          <div className="hero-1" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:999,padding:"5px 14px 5px 8px",marginBottom:28}}>
+            <span style={{background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.7)",fontSize:9,fontWeight:800,letterSpacing:"0.12em",textTransform:"uppercase",borderRadius:999,padding:"2px 8px"}}>New</span>
             <span style={{fontSize:12,color:"rgba(255,255,255,0.6)",fontWeight:500}}>24/7 US equity and ETF trading now live</span>
             <ArrowUpRight size={13} color="rgba(255,255,255,0.4)" />
           </div>
 
           <h1 className="hero-2" style={{fontSize:"clamp(46px,7.5vw,82px)",fontWeight:900,color:"#fff",letterSpacing:"-0.04em",lineHeight:1.0,marginBottom:28}}>
             Lower Costs.<br />
-            <span style={{background:"linear-gradient(90deg,#e8394a 0%,#ff7b7b 50%,#e8394a 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Better Returns.</span>
+            <span style={{color:"rgba(255,255,255,0.6)"}}>Better Returns.</span>
           </h1>
 
           <p className="hero-3" style={{fontSize:"clamp(15px,2vw,18px)",color:"rgba(255,255,255,0.48)",lineHeight:1.8,maxWidth:600,margin:"0 auto 20px"}}>
@@ -539,9 +539,9 @@ export default function Home() {
           </div>
 
           <div className="hero-4" style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center",marginBottom:12}}>
-            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#e8192c,#c8102e)",color:"#fff",fontWeight:700,fontSize:15,padding:"14px 42px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(200,16,46,0.45), 0 1px 0 rgba(255,255,255,0.1) inset",transition:"transform 0.15s,box-shadow 0.15s"}}
-              onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(200,16,46,0.55)"}}
-              onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(200,16,46,0.45)"}}>
+            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#fff",color:"#0d1520",fontWeight:700,fontSize:15,padding:"14px 42px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(0,0,0,0.2)",transition:"transform 0.15s,box-shadow 0.15s"}}
+              onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(0,0,0,0.28)"}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(0,0,0,0.2)"}}>
               Get Started Free
             </Link>
             <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,color:"rgba(255,255,255,0.5)",fontSize:14,fontWeight:500,textDecoration:"none",padding:"14px 20px",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12}}>
@@ -586,7 +586,7 @@ export default function Home() {
         <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
         <div style={{position:"relative",zIndex:1,maxWidth:960,margin:"0 auto",padding:"0 24px"}}>
           <div style={{textAlign:"center",marginBottom:48}}>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(200,16,46,0.8)",marginBottom:10}}>Unbeatable Rates</p>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:10}}>Unbeatable Rates</p>
             <h2 style={{fontSize:"clamp(28px,4vw,42px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,margin:0}}>Your Money Works Harder</h2>
             <p style={{color:"rgba(255,255,255,0.3)",fontSize:15,marginTop:10}}>Earn more on cash. Pay less to borrow.</p>
           </div>
@@ -621,7 +621,7 @@ export default function Home() {
         <div style={{position:"absolute",inset:0,backgroundImage:DOTL}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1120,margin:"0 auto",padding:"0 24px"}}>
           <div style={{textAlign:"center",marginBottom:52}}>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:10}}>Why Vault Wealth</p>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Why Vault Wealth</p>
             <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",lineHeight:1.1}}>Built for Serious Investors</h2>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
@@ -658,7 +658,7 @@ export default function Home() {
         <div style={{position:"absolute",inset:0,backgroundImage:DOTL}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
           <div style={{textAlign:"center",marginBottom:56}}>
-            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:10}}>Real Investors. Real Results.</p>
+            <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Real Investors. Real Results.</p>
             <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",lineHeight:1.1,marginBottom:12}}>
               Trusted by 4.4 Million Investors Worldwide
             </h2>
@@ -703,7 +703,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:12}}>Professional Pricing</p>
+              <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:12}}>Professional Pricing</p>
               <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",marginBottom:24,lineHeight:1.1}}>
                 Experience Professional Pricing
               </h2>
@@ -723,7 +723,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#c8102e",textDecoration:"none"}}>
+              <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#0d1520",textDecoration:"none"}}>
                 Learn More <ChevronRight size={16} />
               </a>
             </div>
@@ -735,11 +735,11 @@ export default function Home() {
       <section style={{background:"#080a0f",padding:"96px 0",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
         <div style={{position:"absolute",top:-100,right:-100,width:600,height:600,background:"radial-gradient(ellipse,rgba(37,99,235,0.06) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
-        <div style={{position:"absolute",bottom:-100,left:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(200,16,46,0.05) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
+        <div style={{position:"absolute",bottom:-100,left:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.015) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"start"}}>
             <div>
-              <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(200,16,46,0.8)",marginBottom:12}}>Strength &amp; Security</p>
+              <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:12}}>Strength &amp; Security</p>
               <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>A Broker You Can Trust</h2>
               <p style={{fontSize:15,color:"rgba(255,255,255,0.4)",lineHeight:1.8,marginBottom:40}}>
                 When placing your money with a broker, you need to make sure your broker is secure and can endure through good and bad times. Our strong capital position, conservative balance sheet and automated risk controls are designed to protect Vault from major market events.
@@ -773,7 +773,7 @@ export default function Home() {
       {/* ─── AWARDS ────────────────────────────────────────────────── */}
       <section style={{background:"#fff",padding:"80px 0",borderTop:"1px solid #E6E8EB"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px",textAlign:"center"}}>
-          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:10}}>Recognition</p>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Recognition</p>
           <h2 style={{fontSize:"clamp(22px,3.5vw,36px)",fontWeight:900,color:"#0F172A",marginBottom:8,letterSpacing:"-0.025em"}}>Award-Winning Platform</h2>
           <p style={{color:"#6B7280",fontSize:14,marginBottom:48}}>Recognized by the world's leading financial publications</p>
           <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",alignItems:"stretch"}}>
@@ -785,7 +785,7 @@ export default function Home() {
               {rank:"Best",label:"Online Broker",src:"BrokerChooser 2026"},
             ].map((a,i)=>(
               <div key={i} className="award-card" style={{textAlign:"center",padding:"28px",background:"#fff",border:"1px solid #E6E8EB",borderRadius:16,minWidth:155,transition:"border-color .2s,background .2s",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",cursor:"default"}}>
-                <div style={{fontSize:36,fontWeight:900,color:"#c8102e",letterSpacing:"-0.03em",lineHeight:1}}>{a.rank}</div>
+                <div style={{fontSize:36,fontWeight:900,color:"#0d1520",letterSpacing:"-0.03em",lineHeight:1}}>{a.rank}</div>
                 <div style={{fontSize:13,fontWeight:700,color:"#0F172A",marginTop:8,marginBottom:4,lineHeight:1.4}}>{a.label}</div>
                 <div style={{fontSize:11,color:"#9CA3AF",fontWeight:500}}>{a.src}</div>
               </div>
@@ -798,7 +798,7 @@ export default function Home() {
       <section style={{background:"#F5F6F7",padding:"96px 0",borderTop:"1px solid #E6E8EB",position:"relative"}}>
         <div style={{position:"absolute",inset:0,backgroundImage:DOTL}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px",textAlign:"center"}}>
-          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#c8102e",marginBottom:10}}>Account Types</p>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Account Types</p>
           <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.025em",marginBottom:8}}>Choose the Best Account for You</h2>
           <p style={{color:"#6B7280",fontSize:15,marginBottom:52}}>From individual to institutional — we have an account for every investor</p>
           <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginBottom:60}}>
@@ -825,15 +825,15 @@ export default function Home() {
               {step:"03",title:"Get Started Trading",desc:"Take your investing to the next level"},
             ].map((s,i)=>(
               <div key={i} className="step-card" style={{padding:"28px",borderRadius:16,border:"1px solid #E6E8EB",background:"#F5F6F7",textAlign:"center",transition:"background .18s,box-shadow .18s",cursor:"default"}}>
-                <div style={{fontSize:28,fontWeight:900,color:"rgba(200,16,46,0.15)",letterSpacing:"-0.04em",lineHeight:1,marginBottom:10}}>{s.step}</div>
+                <div style={{fontSize:28,fontWeight:900,color:"rgba(13,21,32,0.1)",letterSpacing:"-0.04em",lineHeight:1,marginBottom:10}}>{s.step}</div>
                 <h4 style={{fontSize:15,fontWeight:700,color:"#0F172A",marginBottom:6}}>{s.title}</h4>
                 <p style={{fontSize:13,color:"#6B7280",lineHeight:1.6,margin:0}}>{s.desc}</p>
               </div>
             ))}
           </div>
-          <Link href="/register" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#e8192c,#c8102e)",color:"#fff",fontWeight:700,fontSize:15,padding:"14px 52px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(200,16,46,0.35)",transition:"transform .15s,box-shadow .15s"}}
-            onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(200,16,46,0.45)"}}
-            onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(200,16,46,0.35)"}}>
+          <Link href="/register" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",background:"#0d1520",color:"#fff",fontWeight:700,fontSize:15,padding:"14px 52px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 16px rgba(13,21,32,0.2)",transition:"transform .15s,box-shadow .15s"}}
+            onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 28px rgba(13,21,32,0.28)"}}
+            onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 16px rgba(13,21,32,0.2)"}}>
             Open Account — No Minimums
           </Link>
           <p style={{fontSize:12,color:"#9CA3AF",marginTop:12}}>No account minimums. No hidden fees.</p>
@@ -843,7 +843,7 @@ export default function Home() {
       {/* ─── 24/7 BANNER ────────────────────────────────────────────── */}
       <section style={{background:"linear-gradient(135deg,#0f2d52 0%,#0a1e3a 50%,#0f1320 100%)",padding:"72px 24px",textAlign:"center",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
-        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:600,height:300,background:"radial-gradient(ellipse,rgba(200,16,46,0.08) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:600,height:300,background:"radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"relative",zIndex:1,maxWidth:740,margin:"0 auto"}}>
           <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:999,padding:"5px 14px",marginBottom:24}}>
             <span className="pulse-dot" style={{width:7,height:7,borderRadius:"50%",background:"#4ade80",display:"inline-block",boxShadow:"0 0 8px #4ade80"}} />

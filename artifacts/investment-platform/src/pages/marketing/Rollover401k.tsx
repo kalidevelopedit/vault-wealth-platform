@@ -23,7 +23,7 @@ export default function Rollover401k() {
   return (
     <MarketingPage
       eyebrow="401(k) Rollover"
-      title={<>Roll Over Your 401(k) —<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Keep Your Savings Working</span></>}
+      title={<>Roll Over Your 401(k) —<br /><span style={{ color: "#fff" }}>Keep Your Savings Working</span></>}
       subtitle="Left a job and have an old 401(k) sitting idle? Rolling it over to an INT Brokers IRA is quick, tax-free, and gives you more investment choices, lower fees, and better tools."
       heroImage={IMG}
       stats={[
@@ -36,7 +36,7 @@ export default function Rollover401k() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>How It Works</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>How It Works</p>
             <h2 style={{ fontSize: "clamp(22px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Four simple steps to roll over your 401(k)</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>

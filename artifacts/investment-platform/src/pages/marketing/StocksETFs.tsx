@@ -35,7 +35,7 @@ export default function StocksETFs() {
   return (
     <MarketingPage
       eyebrow="Stocks & ETFs"
-      title={<>Access 170+ Global<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Stock Markets</span></>}
+      title={<>Access 170+ Global<br /><span style={{ color: "#fff" }}>Stock Markets</span></>}
       subtitle="Trade equities and ETFs across every major exchange worldwide — commission-free on US stocks, with fractional shares from $1 and pre/post-market access every trading day."
       heroImage={IMG}
       stats={[
@@ -51,7 +51,7 @@ export default function StocksETFs() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Why Choose INT Brokers for Stocks</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Why Choose INT Brokers for Stocks</p>
             <h2 style={{ fontSize: "clamp(22px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Everything you need to invest in global equities</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>
@@ -70,7 +70,7 @@ export default function StocksETFs() {
         <div style={{ ...INNER }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Global Exchanges</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Global Exchanges</p>
               <h2 style={{ fontSize: "clamp(22px,3.5vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", marginBottom: 16 }}>Trade on the world's most important exchanges</h2>
               <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.8, marginBottom: 24 }}>INT Brokers has direct market access to 170+ exchanges. No middlemen, no routing delays — your order goes straight to the venue with the best price.</p>
               <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#0F172A", color: "#fff", fontWeight: 700, fontSize: 14, padding: "12px 28px", textDecoration: "none", borderRadius: 10 }}>
@@ -96,7 +96,7 @@ export default function StocksETFs() {
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>Zero-Fee ETFs</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Zero-Fee ETFs</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,48px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", marginBottom: 14 }}>Trade 500+ ETFs with zero commission</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", maxWidth: 540, margin: "0 auto" }}>Including all major index ETFs from Vanguard, BlackRock iShares, State Street SPDR, and more — with no commission and no restrictions.</p>
           </div>
@@ -111,7 +111,7 @@ export default function StocksETFs() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 800, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "3fr 1fr 1fr 1fr", padding: "12px 20px", gap: 8 }}>
               {["Fund Name", "Ticker", "Expense", "AUM"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {ETFS.map((e, i) => (

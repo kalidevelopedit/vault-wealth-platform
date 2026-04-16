@@ -25,7 +25,7 @@ export default function Bonds() {
   return (
     <MarketingPage
       eyebrow="Fixed Income"
-      title={<>Build Steady Income<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>with Bonds</span></>}
+      title={<>Build Steady Income<br /><span style={{ color: "#fff" }}>with Bonds</span></>}
       subtitle="Access over 1 million bonds from 30+ countries — US Treasuries, municipal, investment-grade corporate, high-yield, and sovereign bonds — at $1 per bond with no spread markup."
       heroImage={IMG}
       stats={[
@@ -66,7 +66,7 @@ export default function Bonds() {
                   <div style={{ display: "flex", gap: 16 }}>
                     <div>
                       <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>Yield Range</p>
-                      <p style={{ fontSize: 15, fontWeight: 800, color: "#c8102e" }}>{b.yield}</p>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: "#6B7280" }}>{b.yield}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>Risk Level</p>

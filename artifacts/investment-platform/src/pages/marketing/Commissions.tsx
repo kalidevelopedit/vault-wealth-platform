@@ -28,7 +28,7 @@ export default function Commissions() {
   return (
     <MarketingPage
       eyebrow="Commission Schedule"
-      title={<>Transparent, Competitive<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Commissions</span></>}
+      title={<>Transparent, Competitive<br /><span style={{ color: "#fff" }}>Commissions</span></>}
       subtitle="Our complete commission schedule for every asset class, every market. No hidden markups, no payment for order flow, no tricks. What you see is exactly what you pay."
       heroImage={IMG}
       stats={[
@@ -41,13 +41,13 @@ export default function Commissions() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Full Schedule</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Full Schedule</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Commission schedule for all asset classes</h2>
           </div>
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "2.5fr 1.5fr 1fr 2fr", padding: "13px 24px" }}>
               {["Asset Class", "Commission", "Minimum", "Notes"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {TABLE.map((r, i) => (

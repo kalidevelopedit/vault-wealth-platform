@@ -21,7 +21,7 @@ export default function JointAccounts() {
   return (
     <MarketingPage
       eyebrow="Joint Brokerage Accounts"
-      title={<>Invest Together —<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Joint Accounts</span></>}
+      title={<>Invest Together —<br /><span style={{ color: "#fff" }}>Joint Accounts</span></>}
       subtitle="Open a joint brokerage account with up to four people. Build shared wealth together with full access to INT Brokers' global markets, commission-free trading, and estate planning benefits."
       heroImage={IMG}
       stats={[

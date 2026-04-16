@@ -38,13 +38,13 @@ export function MarketingPage({
 
       <section style={{ background: "#080a0f", padding: "108px 24px 88px", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT, zIndex: 0 }} />
-        <div style={{ position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)", width: 1100, height: 560, background: "radial-gradient(ellipse,rgba(200,16,46,0.11) 0%,transparent 62%)", zIndex: 0, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)", width: 1100, height: 560, background: "radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 62%)", zIndex: 0, pointerEvents: "none" }} />
         {heroImage && (
           <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${heroImage})`, backgroundSize: "cover", backgroundPosition: "center", opacity: 0.07, zIndex: 0 }} />
         )}
         <div style={{ position: "relative", zIndex: 1, maxWidth: 820, margin: "0 auto" }}>
           {eyebrow && (
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 14 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>
               {eyebrow}
             </p>
           )}
@@ -54,7 +54,7 @@ export function MarketingPage({
           <p style={{ fontSize: 17, color: "rgba(255,255,255,0.48)", lineHeight: 1.82, maxWidth: 620, margin: "0 auto 40px" }}>
             {subtitle}
           </p>
-          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(200,16,46,0.4)" }}>
+          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
             Open Account Free <ArrowUpRight size={16} />
           </Link>
         </div>
@@ -77,13 +77,13 @@ export function MarketingPage({
 
       <section style={{ background: "#080a0f", padding: "104px 24px", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT }} />
-        <div style={{ position: "absolute", bottom: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(200,16,46,0.12) 0%,transparent 70%)" }} />
+        <div style={{ position: "absolute", bottom: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 70%)" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 680, margin: "0 auto" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 14 }}>Get Started — Free</p>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>Get Started — Free</p>
           <h2 style={{ fontSize: "clamp(30px,5vw,56px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1.08, marginBottom: 20 }}>{ctaTitle}</h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 40 }}>{ctaText}</p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 42px", borderRadius: 12, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(200,16,46,0.4)" }}>
+            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 42px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
               Open Account Free <ArrowUpRight size={16} />
             </Link>
             <Link href="/login" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 38px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.65)", fontWeight: 600, fontSize: 15, textDecoration: "none" }}>

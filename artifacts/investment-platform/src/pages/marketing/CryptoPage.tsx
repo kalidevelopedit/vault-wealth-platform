@@ -59,7 +59,7 @@ export default function CryptoPage() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Available Cryptocurrencies</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Available Cryptocurrencies</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em" }}>Trade 60+ Digital Assets</h2>
           </div>
           <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E6E8EB", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>

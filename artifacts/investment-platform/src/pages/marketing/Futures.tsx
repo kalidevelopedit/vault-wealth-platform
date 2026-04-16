@@ -25,7 +25,7 @@ export default function Futures() {
   return (
     <MarketingPage
       eyebrow="Futures Trading"
-      title={<>Global Futures Markets,<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>One Account</span></>}
+      title={<>Global Futures Markets,<br /><span style={{ color: "#fff" }}>One Account</span></>}
       subtitle="Trade equity index, energy, metal, agricultural, interest rate, and currency futures from a single INT Brokers account. $0.85 per contract, direct market access to 30+ futures exchanges globally."
       heroImage={IMG}
       stats={[
@@ -55,7 +55,7 @@ export default function Futures() {
       <section style={{ background: "#fff", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Product Coverage</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Product Coverage</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Six categories, hundreds of contracts</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 20 }}>

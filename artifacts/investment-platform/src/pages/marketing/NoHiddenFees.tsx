@@ -34,7 +34,7 @@ export default function NoHiddenFees() {
   return (
     <MarketingPage
       eyebrow="Transparent Pricing"
-      title={<>What You See Is<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>What You Pay</span></>}
+      title={<>What You See Is<br /><span style={{ color: "#fff" }}>What You Pay</span></>}
       subtitle="INT Brokers was built on a simple premise: your broker should make money from your trading activity — not from hidden fees, inflated spreads, or platform charges. Here's our complete, transparent fee disclosure."
       heroImage={IMG}
       stats={[
@@ -52,7 +52,7 @@ export default function NoHiddenFees() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "2.5fr 1fr 1.5fr", padding: "13px 24px" }}>
               {["Fee Type", "INT Brokers", "Competitors"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {COMPARISON.map((r, i) => (

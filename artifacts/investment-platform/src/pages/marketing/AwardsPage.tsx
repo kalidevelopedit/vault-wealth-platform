@@ -56,7 +56,7 @@ export default function AwardsPage() {
   return (
     <MarketingPage
       eyebrow="Industry Recognition"
-      title={<>Ranked #1 by Every<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Major Publication</span></>}
+      title={<>Ranked #1 by Every<br /><span style={{ color: "#fff" }}>Major Publication</span></>}
       subtitle="INT Brokers has been recognised by the world's leading financial publications as the best broker for professional trading, international access, options, futures, and margin rates — for six consecutive years."
       heroImage={IMG}
       stats={[
@@ -73,7 +73,7 @@ export default function AwardsPage() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>2025 – 2026 Awards</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>2025 – 2026 Awards</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Recognised across every category that matters</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))", gap: 16 }}>
@@ -95,7 +95,7 @@ export default function AwardsPage() {
       <section style={{ background: "#fff", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Expert Opinions</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Expert Opinions</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>What the industry's leading reviewers say</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(440px,1fr))", gap: 24 }}>
@@ -120,7 +120,7 @@ export default function AwardsPage() {
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>50+ Years of Leadership</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>50+ Years of Leadership</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,48px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em" }}>We have been ranked #1 by Barron's 17 times.</h2>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function AwardsPage() {
                   {i < HISTORY.length - 1 && <div style={{ width: 1, flex: 1, background: "#E6E8EB", marginTop: 8 }} />}
                 </div>
                 <div style={{ paddingTop: 6, paddingBottom: i < HISTORY.length - 1 ? 0 : 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#c8102e", marginBottom: 4 }}>{h.year}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#6B7280", marginBottom: 4 }}>{h.year}</p>
                   <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7 }}>{h.event}</p>
                 </div>
               </div>

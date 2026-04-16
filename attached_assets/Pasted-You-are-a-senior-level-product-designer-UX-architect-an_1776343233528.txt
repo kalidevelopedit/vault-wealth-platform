@@ -1,0 +1,219 @@
+You are a senior-level product designer, UX architect, and front-end engineer tasked with completely redesigning and optimizing a high-end investment platform.
+
+Your job is to audit, redesign, and elevate the ENTIRE website interface to a **premium, institutional-grade standard**.
+
+---
+
+## 🎯 CORE OBJECTIVE
+
+Transform the website into a **high-trust, professional, minimal, and premium investment platform** that appeals to serious investors.
+
+The final product must feel like it was designed and built by **top-tier engineers and designers hired by a U.S. government-level institution or elite financial entity** — not flashy, not trendy, not childish — but **authoritative, precise, and refined**.
+
+---
+
+## 🚫 NON-NEGOTIABLE DESIGN RULES
+
+* ❌ NO childish design elements
+* ❌ NO colorful icons (all icons must be monochrome or subtle neutral tones)
+* ❌ NO bright or playful colors anywhere in the UI
+* ❌ NO gradient-heavy or “startup-style” visuals
+* ❌ NO low-quality or generic stock imagery
+* ❌ NO clutter, noise, or inconsistent spacing
+* ❌ NO mismatched UI components
+
+---
+
+## ✅ DESIGN PRINCIPLES TO FOLLOW
+
+### 1. Visual Identity
+
+* Use a **minimal, neutral color palette** (e.g., black, white, charcoal, navy, muted gray)
+* Accent colors must be **extremely restrained** (e.g., deep blue, muted gold, or subtle green for financial indicators only)
+* Maintain **perfect color harmony across all pages**
+* Ensure all UI elements feel **cohesive and intentional**
+
+---
+
+### 2. Typography
+
+* Use **high-end, modern, readable fonts** (e.g., Inter, Helvetica Neue, SF Pro, or equivalent)
+* Strict typographic hierarchy:
+
+  * Headlines: bold, confident, spacious
+  * Body: clean, readable, slightly spaced
+* Avoid decorative fonts entirely
+* Ensure **perfect alignment and spacing consistency**
+
+---
+
+### 3. Layout & Spacing
+
+* Apply **strict grid systems**
+* Use **generous whitespace** to create a premium feel
+* Ensure every section is **balanced and aligned**
+* Nothing should feel cramped or uneven
+
+---
+
+### 4. Imagery
+
+* Replace ALL images with:
+
+  * High-resolution, professional, editorial-quality visuals
+* Images must:
+
+  * Match the **brand tone (serious, financial, trustworthy)**
+  * Match **color palette and lighting style**
+  * Feel consistent across the entire site
+* Avoid clichés (e.g., handshakes, fake office smiles)
+* Prefer:
+
+  * Real-world finance environments
+  * Abstract but refined financial visuals
+  * Subtle macro textures or architectural imagery
+
+---
+
+### 5. Icons & UI Elements
+
+* Icons must be:
+
+  * Minimal
+  * Monochrome
+  * Thin or medium-weight
+* No colored icon backgrounds
+* No playful illustrations
+* UI components must feel **engineered, not decorated**
+
+---
+
+### 6. Animations & Interactions
+
+* Add **subtle, smooth, purposeful animations only**
+* Use:
+
+  * Fade-ins
+  * Soft transitions
+  * Micro-interactions (hover states, button feedback)
+* Avoid:
+
+  * Bouncy animations
+  * Overly flashy motion
+* Every animation must feel:
+
+  * Intentional
+  * Calm
+  * Professional
+
+---
+
+### 7. Responsiveness
+
+* Fully optimize for:
+
+  * Mobile
+  * Tablet
+  * Desktop
+* Ensure:
+
+  * Perfect scaling
+  * No broken layouts
+  * Consistent experience across devices
+
+---
+
+## 🧠 INTELLIGENT SYSTEM INSTRUCTIONS
+
+You must:
+
+1. **Scan the entire website structure**
+
+   * Identify weak, outdated, or inconsistent elements
+   * Detect poor UX patterns
+   * Find anything that reduces trust
+
+2. **Remove what doesn’t belong**
+
+   * Eliminate clutter
+   * Remove unnecessary sections
+   * Simplify overly complex flows
+
+3. **Add what is missing**
+
+   * Trust-building elements (credibility indicators, structured data, clarity)
+   * Strong call-to-action placements
+   * Clear investment pathways
+   * Logical user journeys
+
+4. **Refine all user flows**
+
+   * Make onboarding seamless
+   * Make investment actions intuitive
+   * Reduce friction at every step
+
+---
+
+## 💼 INVESTMENT PLATFORM OPTIMIZATION
+
+Design with the mindset of attracting **serious investors**:
+
+* Prioritize:
+
+  * Trust
+  * Clarity
+  * Authority
+  * Stability
+
+* Interface should communicate:
+
+  * Security
+  * Professionalism
+  * Precision
+  * Financial credibility
+
+* Avoid anything that feels:
+
+  * “Startup gimmicky”
+  * Salesy
+  * Overhyped
+
+---
+
+## 🎨 FINAL QUALITY STANDARD
+
+Every part of the UI must feel:
+
+* High-definition
+* Pixel-perfect
+* Cohesive
+* Intentional
+* Premium
+
+Nothing should feel:
+
+* Random
+* Misaligned
+* Inconsistent
+* Low quality
+
+---
+
+## 🧪 FINAL CHECK BEFORE DELIVERY
+
+Before finalizing, verify:
+
+* All colors match and harmonize
+* All animations are smooth and subtle
+* All layouts are balanced
+* All elements feel like part of one system
+* The platform feels **institutional-grade and investor-ready**
+
+---
+
+## 🏁 END GOAL
+
+Deliver a **clean, minimal, high-trust, premium investment platform interface** that feels like it was built by elite professionals for serious financial users.
+
+The result should immediately communicate:
+**“This platform is credible, secure, and worth investing in.”**

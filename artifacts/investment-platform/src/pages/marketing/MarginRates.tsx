@@ -23,7 +23,7 @@ export default function MarginRates() {
   return (
     <MarketingPage
       eyebrow="Margin Rates"
-      title={<>The Industry's Lowest<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Margin Rates</span></>}
+      title={<>The Industry's Lowest<br /><span style={{ color: "#fff" }}>Margin Rates</span></>}
       subtitle="Borrow against your securities at rates up to 55% lower than the industry average — starting from 4.14% on balances above $3M. Interest accrues daily and is charged monthly."
       heroImage={IMG}
       stats={[
@@ -36,14 +36,14 @@ export default function MarginRates() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Tiered Rates</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Tiered Rates</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Margin rates by balance tier (USD)</h2>
             <p style={{ fontSize: 14, color: "#6B7280", maxWidth: 560, margin: "16px auto 0", lineHeight: 1.8 }}>The more you borrow, the lower your rate. INT Brokers rates are blended across tiers.</p>
           </div>
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 760, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", padding: "13px 24px" }}>
               {["Balance Tier", "INT Brokers", "Industry Avg", "Your Savings"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : i === 1 ? "#c8102e" : "rgba(255,255,255,0.4)" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : i === 1 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.4)" }}>{h}</span>
               ))}
             </div>
             {TIERS.map((r, i) => (

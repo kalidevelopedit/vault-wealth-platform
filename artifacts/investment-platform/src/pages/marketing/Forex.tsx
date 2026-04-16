@@ -27,7 +27,7 @@ export default function Forex() {
   return (
     <MarketingPage
       eyebrow="Forex / Currencies"
-      title={<>Trade Currencies<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>24 Hours a Day</span></>}
+      title={<>Trade Currencies<br /><span style={{ color: "#fff" }}>24 Hours a Day</span></>}
       subtitle="Access 100+ currency pairs with near-interbank spreads starting from 0.1 pip. No dealing desk, no re-quotes, 24/5 trading access, and the ability to hold 27 currency balances in one account."
       heroImage={IMG}
       stats={[
@@ -63,7 +63,7 @@ export default function Forex() {
           <div style={{ border: "1px solid #E6E8EB", borderRadius: 16, overflow: "hidden", maxWidth: 640, margin: "0 auto" }}>
             <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "12px 20px" }}>
               {["Pair", "Typical Spread", "Min Trade Size"].map((h, i) => (
-                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
               ))}
             </div>
             {PAIRS.map((p, i) => (

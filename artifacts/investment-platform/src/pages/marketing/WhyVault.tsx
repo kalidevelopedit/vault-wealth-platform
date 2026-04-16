@@ -30,17 +30,17 @@ export default function WhyVault() {
       {/* Hero */}
       <section style={{ background: "#080a0f", padding: "96px 24px 80px", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT }} />
-        <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(200,16,46,0.1) 0%,transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 12 }}>Why Vault Wealth</p>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Why Vault Wealth</p>
           <h1 style={{ fontSize: "clamp(36px,6vw,68px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 24 }}>
             The Smarter Way<br />
-            <span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>to Invest</span>
+            <span style={{ color: "#fff" }}>to Invest</span>
           </h1>
           <p style={{ fontSize: 17, color: "rgba(255,255,255,0.5)", lineHeight: 1.8, maxWidth: 580, margin: "0 auto 36px" }}>
             Since 1977, Vault Wealth has been pushing the boundaries of financial technology to give every investor — from retirees to institutions — access to the best tools, lowest costs, and widest market access on the planet.
           </p>
-          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 40px", borderRadius: 12, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(200,16,46,0.4)" }}>
+          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 40px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
             Open an Account Free <ArrowUpRight size={16} />
           </Link>
         </div>
@@ -63,7 +63,7 @@ export default function WhyVault() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Our Advantages</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Our Advantages</p>
             <h2 style={{ fontSize: "clamp(26px,4vw,42px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Four Reasons to Choose Vault</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(480px,1fr))", gap: 20 }}>
@@ -102,7 +102,7 @@ export default function WhyVault() {
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(400px,1fr))", gap: 64, alignItems: "center" }}>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 12 }}>Our Story</p>
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Our Story</p>
               <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", marginBottom: 20, lineHeight: 1.1 }}>50+ Years of Financial Innovation</h2>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 20 }}>Founded in 1977, Vault Wealth was built on a simple belief: that every investor — regardless of account size — deserves access to the best prices, broadest range of products, and most powerful tools.</p>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 36 }}>Today, Vault Wealth is one of the largest electronic brokerage firms in the world by volume, serving clients in over 200 countries with a platform used by professional traders, retirees, and institutions alike.</p>
@@ -132,13 +132,13 @@ export default function WhyVault() {
       {/* Awards */}
       <section style={{ background: "#fff", padding: "80px 24px", borderTop: "1px solid #E6E8EB" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Industry Recognition</p>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Industry Recognition</p>
           <h2 style={{ fontSize: "clamp(24px,4vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em", marginBottom: 8 }}>Award-Winning, Year After Year</h2>
           <p style={{ color: "#6B7280", fontSize: 15, marginBottom: 52 }}>Recognized by the world's most respected financial publications</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
             {AWARDS.map((a, i) => (
               <div key={i} style={{ background: "#fff", border: "1px solid #E6E8EB", borderRadius: 16, padding: "28px 28px", minWidth: 160, boxShadow: "0 2px 8px rgba(0,0,0,0.04)", textAlign: "center" }}>
-                <div style={{ fontSize: 36, fontWeight: 900, color: "#c8102e", letterSpacing: "-0.03em", lineHeight: 1 }}>{a.rank}</div>
+                <div style={{ fontSize: 36, fontWeight: 900, color: "#6B7280", letterSpacing: "-0.03em", lineHeight: 1 }}>{a.rank}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", marginTop: 8, marginBottom: 4, lineHeight: 1.4 }}>{a.label}</div>
                 <div style={{ fontSize: 11, color: "#9CA3AF" }}>{a.src}</div>
               </div>
@@ -153,7 +153,7 @@ export default function WhyVault() {
         <div style={{ position: "relative", zIndex: 1, maxWidth: 600, margin: "0 auto" }}>
           <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.025em", marginBottom: 16 }}>Ready to Experience the Difference?</h2>
           <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 15, lineHeight: 1.8, marginBottom: 32 }}>Join 4.4 million investors who've already made the switch to Vault Wealth.</p>
-          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(200,16,46,0.4)" }}>
+          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
             Open Account — No Minimums <ArrowUpRight size={16} />
           </Link>
         </div>

@@ -42,12 +42,12 @@ export default function Pricing() {
       {/* Hero */}
       <section style={{ background: "#080a0f", padding: "96px 24px 80px", position: "relative", overflow: "hidden", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT }} />
-        <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(200,16,46,0.1) 0%,transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: -100, left: "50%", transform: "translateX(-50%)", width: 800, height: 400, background: "radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 65%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 12 }}>Transparent Pricing</p>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Transparent Pricing</p>
           <h1 style={{ fontSize: "clamp(36px,6vw,68px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 24 }}>
             Professional Pricing<br />
-            <span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>For Every Investor</span>
+            <span style={{ color: "#fff" }}>For Every Investor</span>
           </h1>
           <p style={{ fontSize: 17, color: "rgba(255,255,255,0.5)", lineHeight: 1.8, maxWidth: 560, margin: "0 auto 36px" }}>
             No hidden fees. No surprises. Trade stocks for $0, earn up to 3.14% on cash, and borrow at the industry's lowest margin rates.
@@ -68,7 +68,7 @@ export default function Pricing() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Commissions</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Commissions</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em" }}>Trade Every Asset Class</h2>
           </div>
           <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E6E8EB", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
@@ -103,7 +103,7 @@ export default function Pricing() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 10 }}>Margin Rates</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>Margin Rates</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.025em" }}>Industry-Low Margin Rates</h2>
             <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 14, marginTop: 8 }}>Up to 55% less than the industry average</p>
           </div>
@@ -122,7 +122,7 @@ export default function Pricing() {
                     <tr key={i} style={{ borderBottom: i < MARGIN_ROWS.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
                       <td style={{ padding: "14px 24px", fontWeight: 700, color: "#fff" }}>{r.currency}</td>
                       <td style={{ padding: "14px 24px", color: "rgba(255,255,255,0.5)" }}>{r.tier}</td>
-                      <td style={{ padding: "14px 24px", fontWeight: 800, color: "#60a5fa", fontSize: 16 }}>{r.rate}</td>
+                      <td style={{ padding: "14px 24px", fontWeight: 800, color: "#fff", fontSize: 16 }}>{r.rate}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -136,16 +136,16 @@ export default function Pricing() {
       <section style={{ background: "#fff", padding: "80px 24px", borderTop: "1px solid #E6E8EB" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Interest on Cash</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Interest on Cash</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em" }}>Earn More on Uninvested Cash</h2>
             <p style={{ color: "#6B7280", fontSize: 14, marginTop: 8 }}>Interest paid on instantly available cash balances — no lock-up</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16 }}>
             {CASH_ROWS.map((r, i) => (
               <div key={i} style={{ background: "linear-gradient(135deg,#080a0f,#0f1320)", borderRadius: 18, padding: "28px 24px", border: "1px solid rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,rgba(74,222,128,0.4),transparent)" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent)" }} />
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{r.currency}</div>
-                <div style={{ fontSize: 28, fontWeight: 900, color: "#4ade80", letterSpacing: "-0.025em", marginBottom: 4 }}>{r.rate}</div>
+                <div style={{ fontSize: 28, fontWeight: 900, color: "#fff", letterSpacing: "-0.025em", marginBottom: 4 }}>{r.rate}</div>
                 <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{r.note}</div>
               </div>
             ))}
@@ -178,7 +178,7 @@ export default function Pricing() {
         <div style={{ position: "relative", zIndex: 1, maxWidth: 600, margin: "0 auto" }}>
           <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.025em", marginBottom: 16 }}>Start Saving on Commissions Today</h2>
           <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 15, lineHeight: 1.8, marginBottom: 32 }}>Open an account in minutes. No minimums. No hidden fees. Trade from $0.</p>
-          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "linear-gradient(135deg,#e8192c,#c8102e)", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(200,16,46,0.4)" }}>
+          <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(0,0,0,0.15)" }}>
             Open Account Free <ArrowUpRight size={16} />
           </Link>
         </div>

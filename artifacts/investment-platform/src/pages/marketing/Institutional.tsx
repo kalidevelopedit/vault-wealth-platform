@@ -25,7 +25,7 @@ export default function Institutional() {
   return (
     <MarketingPage
       eyebrow="Institutional Solutions"
-      title={<>Institutional-Grade<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Investment Solutions</span></>}
+      title={<>Institutional-Grade<br /><span style={{ color: "#fff" }}>Investment Solutions</span></>}
       subtitle="INT Brokers serves over 1,000 institutional clients globally — from RIAs and family offices to hedge funds and proprietary trading groups. Our platform scales from one client account to tens of thousands."
       heroImage={IMG}
       stats={[

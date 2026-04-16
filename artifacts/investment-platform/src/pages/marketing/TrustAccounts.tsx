@@ -25,7 +25,7 @@ export default function TrustAccounts() {
   return (
     <MarketingPage
       eyebrow="Trust Accounts"
-      title={<>Protect and Manage<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Trust Assets</span></>}
+      title={<>Protect and Manage<br /><span style={{ color: "#fff" }}>Trust Assets</span></>}
       subtitle="INT Brokers offers brokerage accounts for all major trust structures — revocable, irrevocable, charitable, special needs, and institutional trustee accounts — with the same institutional-grade tools."
       heroImage={IMG}
       stats={[

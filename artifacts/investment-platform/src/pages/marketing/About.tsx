@@ -31,7 +31,7 @@ export default function About() {
   return (
     <MarketingPage
       eyebrow="Our Story"
-      title={<>Built for Investors<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Since 1977</span></>}
+      title={<>Built for Investors<br /><span style={{ color: "#fff" }}>Since 1977</span></>}
       subtitle="INT Brokers (Vault Wealth Management LLC) is a registered broker-dealer with over 50 years of innovation, $19.5 billion in equity capital, and 4.4 million clients in 200+ countries. We exist to give every investor access to the best tools and lowest costs on the planet."
       heroImage={IMG}
       stats={[
@@ -49,7 +49,7 @@ export default function About() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
         <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Our Values</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Our Values</p>
             <h2 style={{ fontSize: "clamp(22px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>What guides every decision we make</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 20 }}>
@@ -69,7 +69,7 @@ export default function About() {
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(200,16,46,0.85)", marginBottom: 12 }}>Our Mission</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Our Mission</p>
             <h2 style={{ fontSize: "clamp(22px,4vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", lineHeight: 1.1, maxWidth: 680, margin: "0 auto" }}>"Create technology to provide liquidity on better terms. Compete on price and innovation, not on marketing."</h2>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", marginTop: 16 }}>— Thomas Peterffy, Founder</p>
           </div>
@@ -80,7 +80,7 @@ export default function About() {
       <section style={{ background: "#fff", padding: "88px 24px" }}>
         <div style={{ ...INNER, maxWidth: 780 }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Our History</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Our History</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>50 years of industry firsts</h2>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -93,7 +93,7 @@ export default function About() {
                   {i < TIMELINE.length - 1 && <div style={{ width: 1, flex: 1, background: "#E6E8EB", marginTop: 8 }} />}
                 </div>
                 <div style={{ paddingTop: 8, paddingBottom: i < TIMELINE.length - 1 ? 4 : 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#c8102e", marginBottom: 4 }}>{h.year}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#6B7280", marginBottom: 4 }}>{h.year}</p>
                   <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7 }}>{h.event}</p>
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function About() {
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", marginBottom: 10 }}>Leadership</p>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Leadership</p>
             <h2 style={{ fontSize: "clamp(22px,3.5vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Experienced, principled leadership</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 24 }}>
@@ -116,7 +116,7 @@ export default function About() {
                   <span style={{ fontSize: 16, fontWeight: 800, color: "#fff" }}>{l.name.split(" ").map(n => n[0]).join("").slice(0, 2)}</span>
                 </div>
                 <h3 style={{ fontSize: 17, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>{l.name}</h3>
-                <p style={{ fontSize: 12, color: "#c8102e", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>{l.role}</p>
+                <p style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>{l.role}</p>
                 <p style={{ fontSize: 13.5, color: "#6B7280", lineHeight: 1.75 }}>{l.desc}</p>
               </div>
             ))}

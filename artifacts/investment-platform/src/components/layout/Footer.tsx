@@ -75,7 +75,7 @@ export function Footer() {
   return (
     <footer style={{ background: "#080a0f", borderTop: "1px solid rgba(255,255,255,0.06)", fontFamily: "'Inter',system-ui,sans-serif", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: DOT, zIndex: 0, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 700, height: 300, background: "radial-gradient(ellipse,rgba(200,16,46,0.05) 0%,transparent 70%)", zIndex: 0, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: -120, left: "50%", transform: "translateX(-50%)", width: 700, height: 300, background: "radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)", zIndex: 0, pointerEvents: "none" }} />
 
       {/* Trust badges strip */}
       <div style={{ position: "relative", zIndex: 1, borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "24px 48px" }}>

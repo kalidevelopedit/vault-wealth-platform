@@ -33,7 +33,7 @@ export default function InterestOnCash() {
   return (
     <MarketingPage
       eyebrow="Cash Yield Program"
-      title={<>Earn While You Wait —<br /><span style={{ background: "linear-gradient(90deg,#e8394a,#ff7b7b)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Interest on Cash</span></>}
+      title={<>Earn While You Wait —<br /><span style={{ color: "#fff" }}>Interest on Cash</span></>}
       subtitle="Your uninvested cash earns up to 3.14% APY at INT Brokers — paid daily, compounded monthly. Available on balances in 8 currencies. No minimum balance required."
       heroImage={IMG}
       stats={[
@@ -68,7 +68,7 @@ export default function InterestOnCash() {
               <div style={{ border: "1px solid #E6E8EB", borderRadius: 14, overflow: "hidden" }}>
                 <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "12px 18px" }}>
                   {["Balance", "Rate", "Note"].map((h, i) => (
-                    <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                    <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
                   ))}
                 </div>
                 {TIERS.map((r, i) => (
@@ -85,7 +85,7 @@ export default function InterestOnCash() {
               <div style={{ border: "1px solid #E6E8EB", borderRadius: 14, overflow: "hidden" }}>
                 <div style={{ background: "#0F172A", display: "grid", gridTemplateColumns: "1fr 1fr 2fr", padding: "12px 18px" }}>
                   {["Currency", "APY", "Benchmark"].map((h, i) => (
-                    <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "#c8102e" }}>{h}</span>
+                    <span key={h} style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: i === 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.75)" }}>{h}</span>
                   ))}
                 </div>
                 {CURRENCIES.map((c, i) => (

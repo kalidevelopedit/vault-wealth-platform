@@ -50,7 +50,7 @@ export default function Privacy() {
       <HomeNavbar />
 
       <div style={{ background: "#0F172A", padding: "80px 24px 60px", textAlign: "center" }}>
-        <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(200,16,46,0.8)", marginBottom: 12 }}>Legal</p>
+        <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Legal</p>
         <h1 style={{ fontSize: "clamp(28px,5vw,52px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.04em", marginBottom: 12 }}>Privacy Policy</h1>
         <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)" }}>Last updated: April 9, 2026 · Vault Wealth Management LLC</p>
       </div>
