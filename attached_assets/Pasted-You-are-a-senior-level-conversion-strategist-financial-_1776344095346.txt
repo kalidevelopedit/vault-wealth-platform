@@ -1,0 +1,362 @@
+You are a senior-level conversion strategist, financial copywriter, UX architect, and full-stack product designer.
+
+Your task is to completely rewrite, restructure, and optimize the **entire website content, messaging, and user flow** for a **premium investment and retirement-focused platform**.
+
+---
+
+# 🎯 PRIMARY OBJECTIVE
+
+The website must be designed to **attract, educate, and convert users who are serious about long-term financial growth**, specifically:
+
+* Retirement planning
+* Wealth preservation
+* Passive income generation
+* Structured financial growth
+
+The end goal is:
+👉 Get users to **register, trust the platform, and commit to investing**
+
+---
+
+# 🧭 CONTENT STRATEGY (GLOBAL)
+
+Every piece of content across the website must revolve around:
+
+### Core Themes:
+
+* Retirement planning (primary focus)
+* 401(k)s, pensions, and long-term savings
+* Trust funds and family wealth structuring
+* Generational wealth
+* Passive monthly income
+* Investment strategies (crypto, CFDs, futures — but framed responsibly)
+* Financial security and stability
+
+---
+
+## ✍️ WRITING STYLE
+
+All content must be:
+
+* Professional and authoritative
+* Calm, confident, and non-salesy
+* Clear and easy to understand
+* Trust-driven (not hype-driven)
+* Written as if by a **top-tier financial institution**
+
+Avoid:
+
+* Overpromising
+* Aggressive sales language
+* “Get rich quick” tone
+
+---
+
+# 🏠 HOMEPAGE CONTENT STRUCTURE
+
+## 1. Hero Section (Above the Fold)
+
+Must immediately communicate:
+
+* Long-term financial growth
+* Retirement security
+* Monthly income potential
+
+### Include:
+
+* Strong headline (example direction):
+  “Structured Investment Strategies for Long-Term Financial Security”
+
+* Supporting text:
+  Explain retirement-focused investing, wealth building, and guidance
+
+* CTA:
+  “Start Planning Your Financial Future”
+
+---
+
+## 2. Returns Calculator (CRITICAL FEATURE)
+
+You MUST implement an **interactive investment calculator**.
+
+### Functionality:
+
+User inputs:
+
+* Initial investment amount
+* Optional monthly contribution
+* Time period (months/years)
+
+System outputs:
+
+* Estimated monthly return
+* Compounded growth over time
+
+### Logic:
+
+* Monthly return range: **1.75% – 3%**
+* Default example: **2.35% monthly**
+
+### Display:
+
+* Monthly earnings
+* Total portfolio value growth
+* Clean graph (minimal, professional)
+
+### UX:
+
+* Smooth slider inputs
+* Instant updates (real-time calculation)
+* Subtle animation on value changes
+
+---
+
+## 📊 IMPORTANT COMPLIANCE NOTE FOR IMPLEMENTATION
+
+Do NOT present returns as guaranteed.
+
+Instead:
+
+* Use language like:
+  “Projected”, “Estimated”, “Historical performance range”
+
+---
+
+# 🧱 CORE CONTENT SECTIONS
+
+## 1. Retirement Planning
+
+Explain:
+
+* How users can prepare for retirement
+* Long-term structured investing
+* Stability over speculation
+
+---
+
+## 2. Investment Strategies
+
+Cover:
+
+* Crypto (positioned as modern diversification)
+* CFDs and futures (positioned as advanced tools)
+* Risk-managed strategies
+
+---
+
+## 3. Wealth Structuring
+
+Include:
+
+* Trust funds
+* Family funds
+* Generational wealth planning
+
+Explain clearly:
+
+* Why they matter
+* How users can set them up through guidance
+
+---
+
+## 4. Monthly Income Concept
+
+Explain:
+
+* Passive income through investments
+* Compounding returns
+* Long-term consistency
+
+---
+
+## 5. Trust & Credibility Section
+
+Include:
+
+* Clear process explanation
+* Transparency in how platform works
+* Professional tone (no gimmicks)
+
+---
+
+# 🖼️ IMAGE & VISUAL CONTENT RULES
+
+Images must:
+
+* Be high-resolution and professional
+* Reflect:
+
+  * Finance
+  * Stability
+  * Planning
+  * Serious investors
+
+Use:
+
+* Clean office environments
+* Subtle architectural imagery
+* Financial dashboards (minimal style)
+
+Avoid:
+
+* Fake smiling stock people
+* Bright or staged visuals
+* Anything that feels promotional or low quality
+
+---
+
+# 🎬 ANIMATIONS & INTERACTIONS
+
+* Use subtle fade-ins for sections
+* Smooth scrolling transitions
+* Micro-interactions on:
+
+  * Buttons
+  * Calculator inputs
+* Graph animations for growth projections
+
+Everything must feel:
+
+* Smooth
+* Controlled
+* Professional
+
+---
+
+# 🔐 USER FLOW & CONVERSION SYSTEM
+
+## 1. Registration Flow
+
+Keep it simple and frictionless:
+
+Step 1:
+
+* Name
+* Email
+* Password
+
+Step 2:
+
+* Investment interest (retirement, passive income, etc.)
+
+Step 3:
+
+* Optional financial goals
+
+---
+
+## 2. Onboarding Flow
+
+After signup:
+
+* Ask user:
+
+  * Investment goals
+  * Time horizon
+  * Risk tolerance
+
+* Generate:
+  👉 A simple “recommended path” or dashboard
+
+---
+
+## 3. Dashboard (Post-Login)
+
+Must include:
+
+* Portfolio overview (even if simulated initially)
+* Monthly return projections
+* Investment tools access
+* Educational guidance
+
+---
+
+# 🛠️ ADMIN SYSTEM REQUIREMENTS
+
+Store in admin:
+
+### User Data:
+
+* Name
+* Email
+* Registration date
+* Investment preferences
+* Risk profile
+* Activity history
+
+### Financial Inputs:
+
+* Calculator inputs (optional logging)
+* User-selected plans
+
+---
+
+### Admin Capabilities:
+
+* View all users
+* Filter by interest (retirement, trust funds, etc.)
+* Track conversions
+* Manage content sections
+* Adjust displayed return ranges if needed
+
+---
+
+# ⚙️ IMPLEMENTATION INSTRUCTIONS FOR DEVELOPERS
+
+## Frontend:
+
+* Build modular sections (component-based)
+* Ensure responsive design across all devices
+* Use clean UI frameworks (no heavy styling libraries)
+
+## Backend:
+
+* Secure user authentication
+* Store onboarding and profile data
+* Build scalable structure for future financial integrations
+
+## Calculator:
+
+* Implement real-time calculation logic
+* Ensure smooth UI updates (no lag)
+
+## Performance:
+
+* Optimize for fast load times
+* Lazy-load images and animations
+
+---
+
+# 🔍 FINAL WEBSITE AUDIT REQUIREMENT
+
+Before completion, you MUST:
+
+1. Scan every page
+
+2. Remove anything unrelated to:
+
+   * Retirement
+   * Investment
+   * Wealth building
+
+3. Ensure:
+
+   * Every section supports the main goal
+   * No distractions exist
+   * Messaging is consistent throughout
+
+---
+
+# 🏁 FINAL GOAL
+
+Create a platform that feels like:
+
+* A serious financial institution
+* A trusted retirement partner
+* A premium investment environment
+
+Users should immediately feel:
+👉 “This is where I plan my financial future.”
+
+And be naturally guided to:
+👉 Register, engage, and invest

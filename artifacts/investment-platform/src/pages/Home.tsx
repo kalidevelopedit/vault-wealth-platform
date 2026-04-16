@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import {
-  Check, ChevronRight, ChevronLeft, ExternalLink, Info,
+  Check, ChevronRight, ChevronLeft, Info,
   User, Users, Landmark, Briefcase, Building2,
   DollarSign, Globe2, Zap, ShieldCheck,
   TrendingUp, ArrowUpRight, Star, Shield, Lock, Clock,
-  Bitcoin, BarChart3, Wheat, Coins
+  Bitcoin, BarChart3, Wheat, Calculator, PiggyBank, Target
 } from "lucide-react";
 
 /* ─── CSS ──────────────────────────────────────────────────────────────── */
@@ -41,6 +41,14 @@ const css = `
   .step-card:hover{background:#fff!important;box-shadow:0 4px 20px rgba(0,0,0,.06)!important}
   .inv-tab:hover{border-color:rgba(255,255,255,0.25)!important;color:rgba(255,255,255,0.85)!important}
   .testi-card{transition:opacity .4s ease,transform .4s ease}
+
+  .calc-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;outline:none;background:rgba(255,255,255,0.12);border-radius:999px;cursor:pointer}
+  .calc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;transition:transform .12s}
+  .calc-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+  .calc-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
+  .calc-output{transition:all 0.3s ease}
+  @keyframes countUp{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)}}
+  .val-animate{animation:countUp 0.3s ease both}
 `;
 
 const DOT  = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
@@ -470,6 +478,186 @@ function CryptoSection() {
   );
 }
 
+/* ─── Investment Calculator ─────────────────────────────────────────────── */
+const fmt = (n: number) =>
+  n >= 1_000_000
+    ? "$" + (n / 1_000_000).toFixed(2) + "M"
+    : "$" + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+function InvestmentCalculator() {
+  const [principal, setPrincipal] = useState(50000);
+  const [monthly, setMonthly]     = useState(500);
+  const [years, setYears]         = useState(10);
+  const [animKey, setAnimKey]     = useState(0);
+
+  const r     = 2.35 / 100;          // fixed 2.35% monthly projected
+  const t     = years * 12;
+  const grow  = Math.pow(1 + r, t);
+  const total = principal * grow + monthly * (grow - 1) / r;
+  const monthlyEarning = total * r;
+  const totalContributed = principal + monthly * t;
+  const totalGrowth = total - totalContributed;
+
+  const trigger = useCallback(() => setAnimKey(k => k + 1), []);
+
+  useEffect(() => { trigger(); }, [principal, monthly, years]);
+
+  /* SVG chart — yearly snapshots */
+  const W = 520, H = 200, PX = 40, PY = 20, PB = 32;
+  const points = Array.from({ length: years + 1 }, (_, i) => {
+    const months = i * 12;
+    const g = Math.pow(1 + r, months);
+    return months === 0 ? principal : principal * g + monthly * (g - 1) / r;
+  });
+  const maxV = points[points.length - 1];
+  const minV = points[0];
+  const range = maxV - minV || 1;
+  const W_inner = W - PX * 2;
+  const H_inner = H - PY - PB;
+
+  const toX = (i: number) => PX + (i / years) * W_inner;
+  const toY = (v: number) => PY + H_inner - ((v - minV) / range) * H_inner;
+
+  const pathStr = points.map((v, i) => `${i === 0 ? "M" : "L"} ${toX(i).toFixed(1)} ${toY(v).toFixed(1)}`).join(" ");
+  const areaStr = pathStr + ` L ${toX(years).toFixed(1)} ${(PY + H_inner).toFixed(1)} L ${PX} ${(PY + H_inner).toFixed(1)} Z`;
+
+  /* Y-axis labels */
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
+    v: minV + f * range,
+    y: toY(minV + f * range),
+  }));
+
+  return (
+    <section style={{ background: "#F5F6F7", padding: "96px 0", borderTop: "1px solid #E6E8EB", position: "relative" }}>
+      <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Investment Calculator</p>
+          <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 12 }}>
+            See How Your Money Can Grow
+          </h2>
+          <p style={{ color: "#6B7280", fontSize: 15, maxWidth: 540, margin: "0 auto" }}>
+            Adjust your investment amount and timeline to see estimated compounded growth based on a projected monthly return of 2.35%.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(440px,1fr))", gap: 32, alignItems: "start" }}>
+
+          {/* ── Left: controls ── */}
+          <div style={{ background: "linear-gradient(140deg,#0d1520,#141e2e)", borderRadius: 24, padding: "40px 40px 36px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.18)", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.08)" }} />
+
+            {/* Slider: initial investment */}
+            {[
+              { label: "Initial Investment", value: principal, min: 1000, max: 500000, step: 1000, setter: setPrincipal, display: fmt(principal) },
+              { label: "Monthly Contribution", value: monthly, min: 0, max: 10000, step: 100, setter: setMonthly, display: fmt(monthly) + "/mo" },
+              { label: "Investment Period", value: years, min: 1, max: 30, step: 1, setter: setYears, display: `${years} year${years !== 1 ? "s" : ""}` },
+            ].map(({ label, value, min, max, step, setter, display }) => (
+              <div key={label} style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>{display}</span>
+                </div>
+                <input
+                  type="range" className="calc-slider"
+                  min={min} max={max} step={step} value={value}
+                  onChange={e => setter(Number(e.target.value))}
+                  style={{ width: "100%" }}
+                />
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{label === "Investment Period" ? `${min}yr` : fmt(min)}</span>
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{label === "Investment Period" ? `${max}yr` : fmt(max)}</span>
+                </div>
+              </div>
+            ))}
+
+            {/* Projected rate badge */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "12px 16px", marginTop: 4 }}>
+              <Info size={14} color="rgba(255,255,255,0.3)" />
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.5 }}>
+                Projected monthly return: <strong style={{ color: "rgba(255,255,255,0.55)" }}>2.35%</strong> — historical performance range 1.75%–3%. Past performance does not guarantee future results.
+              </span>
+            </div>
+
+            <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 28, background: "#fff", color: "#0d1520", fontWeight: 700, fontSize: 14, padding: "13px 32px", textDecoration: "none", borderRadius: 12, boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}>
+              Start Building Wealth <ArrowUpRight size={15} />
+            </Link>
+          </div>
+
+          {/* ── Right: results + chart ── */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Result cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {[
+                { icon: PiggyBank, label: "Estimated Monthly Income", value: fmt(monthlyEarning), note: "After " + years + " years" },
+                { icon: Target, label: "Projected Portfolio Value", value: fmt(total), note: "Total estimated value" },
+                { icon: DollarSign, label: "Total Contributions", value: fmt(totalContributed), note: "Principal + monthly" },
+                { icon: TrendingUp, label: "Estimated Growth", value: fmt(totalGrowth), note: "Compounded returns" },
+              ].map(({ icon: Icon, label, value, note }, i) => (
+                <div key={label} style={{ background: "#fff", borderRadius: 18, padding: "24px 20px", border: "1px solid #E6E8EB", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg,#0d1520,#1a2d4a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Icon size={16} color="rgba(255,255,255,0.7)" strokeWidth={1.5} />
+                    </div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: 1.3 }}>{label}</span>
+                  </div>
+                  <div key={animKey + i} className="val-animate" style={{ fontSize: "clamp(18px,2.5vw,24px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em", lineHeight: 1 }}>{value}</div>
+                  <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 4 }}>{note}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* SVG chart */}
+            <div style={{ background: "linear-gradient(140deg,#0d1520,#141e2e)", borderRadius: 20, padding: "28px 24px 20px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 12px 40px rgba(0,0,0,0.15)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Projected Growth</span>
+                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>Estimated — not guaranteed</span>
+              </div>
+              <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}>
+                <defs>
+                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                  </linearGradient>
+                  <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.9)" />
+                  </linearGradient>
+                </defs>
+                {/* Y-axis ticks */}
+                {yTicks.map((tick, i) => (
+                  <g key={i}>
+                    <line x1={PX} y1={tick.y} x2={W - PX} y2={tick.y} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+                    <text x={PX - 8} y={tick.y + 4} textAnchor="end" fill="rgba(255,255,255,0.2)" fontSize="9" fontFamily="Inter,sans-serif">{tick.v >= 1e6 ? (tick.v / 1e6).toFixed(1) + "M" : (tick.v / 1e3).toFixed(0) + "K"}</text>
+                  </g>
+                ))}
+                {/* X-axis labels (every 5 years or every 2yr if short) */}
+                {Array.from({ length: years + 1 }, (_, i) => i).filter(i => i % (years > 10 ? 5 : years > 5 ? 2 : 1) === 0).map(i => (
+                  <text key={i} x={toX(i)} y={H - 8} textAnchor="middle" fill="rgba(255,255,255,0.2)" fontSize="9" fontFamily="Inter,sans-serif">Yr {i}</text>
+                ))}
+                {/* Area fill */}
+                <path d={areaStr} fill="url(#chartGrad)" />
+                {/* Line */}
+                <path d={pathStr} fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                {/* End dot */}
+                <circle cx={toX(years)} cy={toY(maxV)} r="5" fill="#fff" opacity="0.9" />
+                <circle cx={toX(years)} cy={toY(maxV)} r="9" fill="rgba(255,255,255,0.15)" />
+                {/* End label */}
+                <text x={toX(years)} y={toY(maxV) - 16} textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="10" fontWeight="700" fontFamily="Inter,sans-serif">
+                  {maxV >= 1e6 ? "$" + (maxV / 1e6).toFixed(2) + "M" : "$" + (maxV / 1e3).toFixed(0) + "K"}
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── Main Component ────────────────────────────────────────────────────── */
 export default function Home() {
   return (
@@ -517,16 +705,14 @@ export default function Home() {
             <ArrowUpRight size={13} color="rgba(255,255,255,0.4)" />
           </div>
 
-          <h1 className="hero-2" style={{fontSize:"clamp(46px,7.5vw,82px)",fontWeight:900,color:"#fff",letterSpacing:"-0.04em",lineHeight:1.0,marginBottom:28}}>
-            Lower Costs.<br />
-            <span style={{color:"rgba(255,255,255,0.6)"}}>Better Returns.</span>
+          <h1 className="hero-2" style={{fontSize:"clamp(40px,6.5vw,76px)",fontWeight:900,color:"#fff",letterSpacing:"-0.04em",lineHeight:1.04,marginBottom:28}}>
+            Structured Strategies<br />
+            <span style={{color:"rgba(255,255,255,0.55)"}}>for Long-Term Financial Security.</span>
           </h1>
 
           <p className="hero-3" style={{fontSize:"clamp(15px,2vw,18px)",color:"rgba(255,255,255,0.48)",lineHeight:1.8,maxWidth:600,margin:"0 auto 20px"}}>
-            Earn <strong style={{color:"rgba(255,255,255,0.9)",fontWeight:700}}>up to USD&nbsp;3.14%</strong> on uninvested cash, pay{" "}
-            <strong style={{color:"rgba(255,255,255,0.9)",fontWeight:700}}>up to 55%&nbsp;less</strong> on margin, and trade with{" "}
-            <strong style={{color:"rgba(255,255,255,0.9)",fontWeight:700}}>commissions from&nbsp;$0</strong> across{" "}
-            <strong style={{color:"rgba(255,255,255,0.9)",fontWeight:700}}>170+&nbsp;markets</strong>.
+            Plan your retirement, build generational wealth, and generate{" "}
+            <strong style={{color:"rgba(255,255,255,0.85)",fontWeight:700}}>passive monthly income</strong> — with institutional-grade tools once reserved for the ultra-wealthy.
           </p>
 
           <div className="hero-3" style={{display:"flex",gap:24,justifyContent:"center",marginBottom:32,flexWrap:"wrap"}}>
@@ -542,10 +728,10 @@ export default function Home() {
             <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#fff",color:"#0d1520",fontWeight:700,fontSize:15,padding:"14px 42px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(0,0,0,0.2)",transition:"transform 0.15s,box-shadow 0.15s"}}
               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(0,0,0,0.28)"}}
               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(0,0,0,0.2)"}}>
-              Get Started Free
+              Start Planning Your Financial Future
             </Link>
             <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,color:"rgba(255,255,255,0.5)",fontSize:14,fontWeight:500,textDecoration:"none",padding:"14px 20px",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12}}>
-              View Demo <ChevronRight size={14} />
+              View Calculator <ChevronRight size={14} />
             </a>
           </div>
 
@@ -613,6 +799,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── INVESTMENT CALCULATOR ─────────────────────────────────── */}
+      <InvestmentCalculator />
+
       {/* ─── INVESTMENT CATEGORIES ─────────────────────────────────── */}
       <InvestmentCategories />
 
@@ -622,7 +811,7 @@ export default function Home() {
         <div style={{position:"relative",zIndex:1,maxWidth:1120,margin:"0 auto",padding:"0 24px"}}>
           <div style={{textAlign:"center",marginBottom:52}}>
             <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Why Vault Wealth</p>
-            <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",lineHeight:1.1}}>Built for Serious Investors</h2>
+            <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",lineHeight:1.1}}>Built for Long-Term Wealth</h2>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
             {[
