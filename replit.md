@@ -18,7 +18,13 @@ pnpm workspace monorepo using TypeScript. This is the **INT Brokers / Vault Weal
 
 All marketing pages use the shared `MarketingPage` component at `src/components/marketing/MarketingPage.tsx` — dark hero + dot pattern + stats bar + Unsplash images. No colored icon backgrounds anywhere.
 
-**UI Design**: Strictly neutral institutional palette — ZERO red/amber/blue/green accent colors. All CTAs on dark backgrounds are white pill buttons, CTAs on light backgrounds use `#0d1520` solid. Section eyebrows: `rgba(255,255,255,0.35)` on dark, `#6B7280` on light. Navbar active/hover = `#0d1520`. All 28+ marketing pages fully neutralized. Admin sidebar active state = `rgba(255,255,255,0.08)` glass (no red).
+**UI Design (App — Dark Luxury)**: Full dark-mode flagship for the authenticated app shell. Token system:
+- BG: `#0c0f1a` | CARD: `#131827` | CARD2: `#0d1020`
+- BORD: `rgba(255,255,255,0.07)` | TEXT: `rgba(255,255,255,0.92)` | MUTED: `rgba(255,255,255,0.38)`
+- BLUE: `#3b82f6` (primary CTA) | GAIN: `#22c55e` | LOSS: `#ef4444`
+- Hero gradient: `linear-gradient(135deg,#3b30a8 0%,#2563eb 55%,#1e40af 100%)` with `0 8px 40px rgba(59,130,246,0.24)` glow
+- **Pages redesigned**: Login, Dashboard (all 3 tabs), Profile (3-tab w/ portfolio card), Wallet (hero card + ledger)
+- **Marketing site**: Neutral institutional palette — no accent colors on marketing pages, white pill CTAs on dark backgrounds.
 
 ## Stack
 

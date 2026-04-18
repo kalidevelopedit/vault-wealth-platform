@@ -1,17 +1,24 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, Zap } from "lucide-react";
 
-const INPUT = "w-full bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-3.5 py-2.5 rounded-xl placeholder:text-[#bbb] focus:outline-none focus:border-[#0d1520] transition-colors";
+const BG   = "#080c18";
+const CARD = "#0f1624";
+const BORD = "rgba(255,255,255,0.07)";
+const TEXT = "rgba(255,255,255,0.92)";
+const MUTED= "rgba(255,255,255,0.35)";
+const BLUE = "#3b82f6";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [demoLoading, setDemoLoading] = useState(false);
+  const { login, loginAsDemo } = useAuth();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +27,7 @@ export default function Login() {
     try {
       await login({ email, password });
       toast.success("Welcome back");
+      setLocation("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Invalid credentials");
     } finally {
@@ -27,121 +35,234 @@ export default function Login() {
     }
   };
 
+  const handleDemo = async () => {
+    setDemoLoading(true);
+    try {
+      if (loginAsDemo) {
+        await loginAsDemo();
+      } else {
+        await login({ email: "demo@vestplatform.com", password: "demo1234" });
+      }
+      toast.success("Logged in as demo user");
+      setLocation("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Demo login failed");
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex" style={{ background: "#F5F6F7" }}>
-      {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[460px] shrink-0 bg-[#0d1520] p-12 relative overflow-hidden">
-        {/* Subtle dot grid */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.035)'/%3E%3C/svg%3E")`, zIndex: 0, pointerEvents: "none" }} />
-        {/* Red glow */}
-        <div style={{ position: "absolute", top: -80, left: "50%", transform: "translateX(-50%)", width: 400, height: 300, background: "radial-gradient(ellipse,rgba(200,16,46,0.07) 0%,transparent 70%)", zIndex: 0, pointerEvents: "none" }} />
+    <div style={{ minHeight: "100vh", display: "flex", background: BG }}>
 
-        <div style={{ position: "relative", zIndex: 1 }}>
+      {/* ── Left branding panel ── */}
+      <div style={{
+        width: 480, flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "space-between",
+        background: "linear-gradient(165deg,#0d1226 0%,#0a0f1e 50%,#060b18 100%)",
+        padding: "48px 52px 52px", position: "relative", overflow: "hidden",
+        borderRight: "1px solid rgba(255,255,255,0.05)",
+      }} className="login-left">
+        {/* Ambient glows */}
+        <div style={{ position: "absolute", top: -100, left: -80, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle,rgba(59,130,246,0.07) 0%,transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: -80, right: -60, width: 320, height: 320, borderRadius: "50%", background: "radial-gradient(circle,rgba(99,102,241,0.06) 0%,transparent 65%)", pointerEvents: "none" }} />
+        {/* Dot grid */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='rgba(255,255,255,0.025)'/%3E%3C/svg%3E")`, pointerEvents: "none" }} />
+
+        {/* Logo */}
+        <div style={{ position: "relative" }}>
           <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 340, height: "auto", display: "block", mixBlendMode: "screen" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 300, height: "auto", display: "block", mixBlendMode: "screen" }} />
           </Link>
-          <div style={{ marginTop: 10, height: 1, background: "rgba(255,255,255,0.06)", width: "100%" }} />
-          <p style={{ marginTop: 12, fontSize: 12, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.06em" }}>Institutional Investment Platform</p>
+          <div style={{ marginTop: 12, height: 1, background: BORD }} />
+          <p style={{ marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>Institutional Investment Platform</p>
         </div>
 
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <p className="text-white/30 text-[13px] leading-relaxed font-light max-w-xs mb-8">
-            "Vault Wealth has transformed how we manage our multi-asset portfolio. The institutional tools and reporting are unmatched."
+        {/* Testimonial */}
+        <div style={{ position: "relative" }}>
+          <div style={{ fontSize: 28, color: "rgba(59,130,246,0.3)", lineHeight: 1, marginBottom: 12, fontFamily: "Georgia,serif" }}>"</div>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", lineHeight: 1.75, fontWeight: 400, maxWidth: 300, marginBottom: 20 }}>
+            Vault Wealth has transformed how we manage our multi-asset portfolio. The institutional tools and reporting are unmatched.
           </p>
-          <div>
-            <div className="text-white/70 text-[12px] font-semibold">Sarah M.</div>
-            <div className="text-white/25 text-[10px] uppercase tracking-widest mt-0.5">Chief Investment Officer</div>
-          </div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", fontWeight: 600 }}>Sarah M.</div>
+          <div style={{ fontSize: 9, color: "rgba(255,255,255,0.2)", textTransform: "uppercase", letterSpacing: "0.2em", marginTop: 3 }}>Chief Investment Officer</div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3" style={{ position: "relative", zIndex: 1 }}>
+        {/* Stats grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, position: "relative" }}>
           {[
-            { val: "$2.4B+", label: "Assets Under Management" },
-            { val: "50K+", label: "Institutional Investors" },
-            { val: "99.98%", label: "Platform Uptime" },
-            { val: "SOC 2", label: "Type II Certified" },
-          ].map((s, i) => (
-            <div key={i} className="p-4 rounded-xl bg-white/[0.05]" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-              <div className="text-white/80 text-[17px] font-bold tabular-nums tracking-tight">{s.val}</div>
-              <div className="text-white/30 text-[9px] uppercase tracking-widest mt-1">{s.label}</div>
+            { val: "$2.4B+",  label: "Assets Under Management" },
+            { val: "50K+",    label: "Institutional Investors"  },
+            { val: "99.98%",  label: "Platform Uptime"          },
+            { val: "SOC 2",   label: "Type II Certified"        },
+          ].map((s) => (
+            <div key={s.val} style={{
+              padding: "16px 18px", borderRadius: 14,
+              background: "rgba(255,255,255,0.04)",
+              border: `1px solid rgba(255,255,255,0.06)`,
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums" }}>{s.val}</div>
+              <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em", marginTop: 4 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-[380px]">
+      {/* ── Right form panel ── */}
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "48px 32px" }}>
+        <div style={{ width: "100%", maxWidth: 400 }}>
+
           {/* Mobile logo */}
-          <div className="mb-10 lg:hidden flex justify-center">
+          <div style={{ marginBottom: 40, display: "none" }} className="login-mobile-logo">
             <Link href="/">
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 220, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
+              <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", display: "block", mixBlendMode: "screen" }} />
             </Link>
           </div>
 
-          <div className="mb-9">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af] mb-3">INT Brokers · Secure Login</div>
-            <h1 className="text-[24px] font-bold tracking-tight text-[#0F172A] leading-snug">Welcome back</h1>
-            <p className="text-[13px] text-[#6B7280] mt-2">Sign in to your INT Brokers brokerage account to access your portfolio, markets, and account tools.</p>
+          {/* Headline */}
+          <div style={{ marginBottom: 36 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 12 }}>
+              INT Brokers · Secure Login
+            </div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: TEXT, letterSpacing: "-0.03em", lineHeight: 1.2, margin: 0, marginBottom: 10 }}>
+              Welcome back
+            </h1>
+            <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, margin: 0 }}>
+              Sign in to your brokerage account to access your portfolio and markets.
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {/* Email */}
             <div>
-              <label className="block text-[10px] font-semibold text-[#6B7280] uppercase tracking-widest mb-1.5">Email Address</label>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.16em", marginBottom: 8 }}>
+                Email Address
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
                 required
-                className={INPUT}
+                style={{
+                  width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box",
+                  background: CARD, border: `1px solid rgba(255,255,255,0.09)`, color: TEXT, fontSize: 13,
+                  outline: "none", transition: "border-color 0.14s",
+                }}
+                onFocus={e => e.target.style.borderColor = "rgba(59,130,246,0.5)"}
+                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.09)"}
               />
             </div>
 
+            {/* Password */}
             <div>
-              <div className="flex justify-between mb-1.5">
-                <label className="block text-[10px] font-semibold text-[#6B7280] uppercase tracking-widest">Password</label>
-                <a href="#" className="text-[10px] text-[#6B7280] hover:text-[#0F172A] transition-colors">Forgot password?</a>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.16em" }}>Password</label>
+                <a href="#" style={{ fontSize: 11, color: BLUE, textDecoration: "none", fontWeight: 500 }}>Forgot password?</a>
               </div>
-              <div className="relative">
+              <div style={{ position: "relative" }}>
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className={INPUT + " pr-10"}
+                  style={{
+                    width: "100%", padding: "12px 44px 12px 16px", borderRadius: 12, boxSizing: "border-box",
+                    background: CARD, border: `1px solid rgba(255,255,255,0.09)`, color: TEXT, fontSize: 13,
+                    outline: "none", transition: "border-color 0.14s",
+                  }}
+                  onFocus={e => e.target.style.borderColor = "rgba(59,130,246,0.5)"}
+                  onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.09)"}
                 />
-                <button type="button" onClick={() => setShowPassword(s => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#6B7280] transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(s => !s)}
+                  style={{
+                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer", color: MUTED, display: "flex",
+                  }}
+                >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
 
+            {/* Sign In button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#0d1520] text-white text-[11px] font-semibold uppercase tracking-[0.12em] py-3 rounded-xl hover:bg-[#1a2d4a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+              style={{
+                width: "100%", padding: "14px", borderRadius: 12, marginTop: 4,
+                background: BLUE, color: "#fff", border: "none",
+                fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase",
+                cursor: loading ? "wait" : "pointer",
+                opacity: loading ? 0.75 : 1,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 4px 20px rgba(59,130,246,0.28)",
+                transition: "opacity 0.14s, box-shadow 0.14s",
+              }}
+              onMouseEnter={e => !loading && (e.currentTarget.style.boxShadow = "0 6px 28px rgba(59,130,246,0.4)")}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 4px 20px rgba(59,130,246,0.28)")}
             >
-              {loading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Signing in…</> : "Sign In"}
+              {loading ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Signing in…</> : "Sign In"}
             </button>
           </form>
 
-          <div className="mt-8 pt-7 border-t border-[#E6E8EB]">
-            <p className="text-[12px] text-[#6B7280]">
+          {/* Divider */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
+            <div style={{ flex: 1, height: 1, background: BORD }} />
+            <span style={{ fontSize: 11, color: MUTED }}>or</span>
+            <div style={{ flex: 1, height: 1, background: BORD }} />
+          </div>
+
+          {/* Demo button */}
+          <button onClick={handleDemo} disabled={demoLoading} style={{
+            width: "100%", padding: "13px", borderRadius: 12,
+            background: "rgba(245,158,11,0.1)", color: "#f59e0b",
+            border: "1px solid rgba(245,158,11,0.25)",
+            fontSize: 12, fontWeight: 700, letterSpacing: "0.05em",
+            cursor: demoLoading ? "wait" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            transition: "all 0.14s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(245,158,11,0.16)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(245,158,11,0.1)"}
+          >
+            {demoLoading
+              ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Loading…</>
+              : <><Zap size={14} /> Try Demo Account</>}
+          </button>
+
+          {/* Footer link + demo card */}
+          <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORD}` }}>
+            <p style={{ fontSize: 12, color: MUTED, marginBottom: 16 }}>
               No account?{" "}
-              <Link href="/register" className="text-[#0F172A] font-semibold hover:underline">
+              <Link href="/register" style={{ color: TEXT, fontWeight: 700, textDecoration: "none" }}>
                 Open an account
               </Link>
             </p>
-          </div>
 
-          <div className="mt-5 p-4 rounded-xl border border-[#E6E8EB] bg-white">
-            <div className="text-[9px] font-semibold uppercase tracking-widest text-[#9ca3af] mb-1.5">Demo Access</div>
-            <div className="text-[11px] text-[#6B7280] font-mono">demo@vestplatform.com / demo1234</div>
+            <div style={{
+              padding: "14px 16px", borderRadius: 12,
+              background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.15)",
+            }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: "rgba(59,130,246,0.6)", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: 6 }}>Demo Access</div>
+              <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>demo@vestplatform.com / demo1234</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @media (max-width: 1024px) {
+          .login-left { display: none !important; }
+          .login-mobile-logo { display: flex !important; }
+        }
+      `}</style>
     </div>
   );
 }

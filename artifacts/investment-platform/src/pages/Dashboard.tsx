@@ -17,9 +17,16 @@ import {
 } from "lucide-react";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
-const GAIN = "#1a6b47";
-const LOSS = "#943636";
-const PIE_COLORS = ["#162d4a", "#3a5e88", "#7ba3c8", "#bbd0e5"];
+const GAIN = "#22c55e";
+const LOSS = "#ef4444";
+const PIE_COLORS = ["#3b82f6", "#6366f1", "#8b5cf6", "#a78bfa"];
+const BG   = "#0c0f1a";
+const CARD = "#131827";
+const CARD2= "#0d1020";
+const BORD = "rgba(255,255,255,0.07)";
+const TEXT = "rgba(255,255,255,0.92)";
+const MUTED= "rgba(255,255,255,0.38)";
+const BLUE = "#3b82f6";
 const fmtUSD = (n: number) =>
   n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtShort = (n: number) =>
@@ -31,8 +38,8 @@ function genUID(id: number) {
   return `VW-${String(id).padStart(6, "0")}`;
 }
 
-// Glass card
-const G = "bg-white/[0.75] backdrop-blur-[28px] border border-white/[0.9] rounded-2xl shadow-[0_4px_28px_rgba(16,24,40,0.08),0_0_0_1px_rgba(255,255,255,0.5)]";
+// Dark glass card helper (inline styles used below)
+const G = "";
 
 // ─── Live Feed ───────────────────────────────────────────────────────────────
 const USERNAMES = [
@@ -191,50 +198,49 @@ export default function Dashboard() {
     setTimeout(() => { setConverting(false); setConvertDone(true); setTimeout(() => setConvertDone(false), 3000); }, 1800);
   };
 
-  const CAT_COLOR: Record<string, string> = { CRYPTO: "#3a5e88", STOCK: "#2b6b4e", COMMOD: "#7a5c28", FUTURE: "#5a3a8a" };
+  const CAT_COLOR: Record<string, string> = { CRYPTO: "#3b82f6", STOCK: "#22c55e", COMMOD: "#f59e0b", FUTURE: "#8b5cf6" };
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#edf0f5 0%,#e8edf3 60%,#eaecf0 100%)" }}>
+    <div style={{ minHeight: "100vh", background: BG }}>
 
       {/* ── Top header ── */}
       <div style={{ padding: "28px 28px 0", maxWidth: 1400, margin: "0 auto" }}>
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>
               {uid} · {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
             </div>
-            <h1 style={{ fontSize: 26, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.025em", lineHeight: 1.2 }}>
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: TEXT, letterSpacing: "-0.025em", lineHeight: 1.2 }}>
               {greeting}, {firstName}.
             </h1>
-            <p style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>Here's your account overview.</p>
+            <p style={{ fontSize: 13, color: MUTED, marginTop: 4 }}>Here's your account overview.</p>
           </div>
 
           {/* Active users pill */}
           <div style={{
             display: "flex", alignItems: "center", gap: 10,
-            background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.9)", borderRadius: 99,
+            background: CARD, border: `1px solid ${BORD}`, borderRadius: 99,
             padding: "9px 18px",
-            boxShadow: "0 2px 14px rgba(16,24,40,0.07)",
+            boxShadow: "0 2px 14px rgba(0,0,0,0.2)",
           }}>
             <div style={{ position: "relative", width: 8, height: 8 }}>
               <span style={{
                 position: "absolute", inset: 0, borderRadius: "50%",
-                background: "#1a6b47", animation: "pulse-dot 1.8s ease-in-out infinite",
+                background: GAIN, animation: "pulse-dot 1.8s ease-in-out infinite",
               }} />
-              <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#1a6b47" }} />
+              <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: GAIN }} />
             </div>
-            <Users size={13} color="#6B7280" />
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+            <Users size={13} color={MUTED} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
               {activeUsers.toLocaleString()}
             </span>
-            <span style={{ fontSize: 11, color: "#9ca3af", fontWeight: 500 }}>active investors</span>
+            <span style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>active investors</span>
           </div>
         </div>
 
         {/* KPI strip */}
         {ls ? (
-          <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
+          <div className="flex items-center justify-center py-10"><Loader2 style={{ width: 18, height: 18, color: MUTED, animation: "spin 1s linear infinite" }} /></div>
         ) : (
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
             {[
@@ -248,7 +254,7 @@ export default function Dashboard() {
                 label: "Available Cash",
                 value: `$${fmtUSD(summary?.availableCash || 0)}`,
                 sub: "Ready to deploy",
-                subColor: "#6B7280",
+                subColor: MUTED,
               },
               {
                 label: "Total Return",
@@ -264,15 +270,11 @@ export default function Dashboard() {
               },
             ].map((k, i) => (
               <div key={i} style={{
-                background: "rgba(255,255,255,0.75)",
-                backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)",
-                borderRadius: 18,
-                padding: "20px 22px",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07),0 0 0 1px rgba(255,255,255,0.5)",
+                background: CARD, border: `1px solid ${BORD}`,
+                borderRadius: 18, padding: "20px 22px",
               }}>
-                <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 10 }}>{k.label}</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", marginBottom: 4 }}>{k.value}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 10 }}>{k.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: TEXT, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", marginBottom: 4 }}>{k.value}</div>
                 <div style={{ fontSize: 11, fontWeight: 500, color: k.subColor }}>{k.sub}</div>
               </div>
             ))}
@@ -282,17 +284,16 @@ export default function Dashboard() {
         {/* Tab bar */}
         <div style={{
           display: "inline-flex", gap: 2,
-          background: "rgba(255,255,255,0.6)", backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.9)", borderRadius: 14,
+          background: CARD2, border: `1px solid ${BORD}`, borderRadius: 14,
           padding: 4, marginBottom: 22,
         }}>
           {([["home","Overview"],["portfolio","Portfolio"],["convert","Convert"]] as const).map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)} style={{
               padding: "7px 20px", borderRadius: 11, fontSize: 12, fontWeight: 600,
               border: "none", cursor: "pointer", letterSpacing: "0.02em",
-              background: tab === key ? "white" : "transparent",
-              color: tab === key ? "#0F172A" : "#9ca3af",
-              boxShadow: tab === key ? "0 1px 6px rgba(16,24,40,0.1)" : "none",
+              background: tab === key ? CARD : "transparent",
+              color: tab === key ? TEXT : MUTED,
+              boxShadow: tab === key ? "0 1px 6px rgba(0,0,0,0.3)" : "none",
               transition: "all 0.18s ease",
             }}>{label}</button>
           ))}
@@ -310,30 +311,24 @@ export default function Dashboard() {
             <div className="xl:col-span-2 space-y-5">
 
               {/* Quick actions */}
-              <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
-                padding: "18px 20px",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-              }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 14 }}>Quick Actions</div>
+              <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, padding: "18px 20px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 14 }}>Quick Actions</div>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { label: "Deposit",   icon: ArrowDownToLine,  href: "/wallet" },
-                    { label: "Withdraw",  icon: ArrowUpFromLine,   href: "/wallet" },
-                    { label: "Buy Asset", icon: TrendingUp,        href: "/invest" },
-                    { label: "Sell",      icon: TrendingDown,      href: "/invest" },
-                    { label: "Convert",   icon: ArrowLeftRight,    onClick: () => setTab("convert") },
-                    { label: "Markets",   icon: Zap,               href: "/assets/crypto" },
-                  ].map(({ label, icon: Icon, href, onClick }) => (
+                    { label: "Deposit",   icon: ArrowDownToLine,  href: "/wallet",       blue: true  },
+                    { label: "Withdraw",  icon: ArrowUpFromLine,   href: "/wallet",       blue: false },
+                    { label: "Buy Asset", icon: TrendingUp,        href: "/invest",       blue: false },
+                    { label: "Sell",      icon: TrendingDown,      href: "/invest",       blue: false },
+                    { label: "Convert",   icon: ArrowLeftRight,    onClick: () => setTab("convert"), blue: false },
+                    { label: "Markets",   icon: Zap,               href: "/assets/crypto",blue: false },
+                  ].map(({ label, icon: Icon, href, onClick, blue }) => (
                     href
                       ? <Link key={label} href={href} style={{
                           display: "inline-flex", alignItems: "center", gap: 7,
                           padding: "8px 16px", borderRadius: 10,
-                          background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB",
-                          fontSize: 12, fontWeight: 600, color: "#374151",
-                          textDecoration: "none", boxShadow: "0 1px 4px rgba(16,24,40,0.05)",
-                          transition: "all 0.14s",
+                          background: blue ? BLUE : "rgba(255,255,255,0.05)", border: `1px solid ${blue ? BLUE : BORD}`,
+                          fontSize: 12, fontWeight: 600, color: blue ? "#fff" : TEXT,
+                          textDecoration: "none", transition: "all 0.14s",
                         }}>
                           <Icon size={13} strokeWidth={1.8} />
                           {label}
@@ -341,10 +336,9 @@ export default function Dashboard() {
                       : <button key={label} onClick={onClick} style={{
                           display: "inline-flex", alignItems: "center", gap: 7,
                           padding: "8px 16px", borderRadius: 10,
-                          background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB",
-                          fontSize: 12, fontWeight: 600, color: "#374151",
-                          cursor: "pointer", boxShadow: "0 1px 4px rgba(16,24,40,0.05)",
-                          transition: "all 0.14s",
+                          background: "rgba(255,255,255,0.05)", border: `1px solid ${BORD}`,
+                          fontSize: 12, fontWeight: 600, color: TEXT,
+                          cursor: "pointer", transition: "all 0.14s",
                         }}>
                           <Icon size={13} strokeWidth={1.8} />
                           {label}
@@ -354,45 +348,43 @@ export default function Dashboard() {
               </div>
 
               {/* Recommendations */}
-              <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
-                overflow: "hidden",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-              }}>
-                <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>
                       <Star size={9} style={{ display: "inline", marginRight: 4, marginBottom: 1 }} />
                       Curated for You
                     </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Recommended Assets</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Recommended Assets</div>
                   </div>
-                  <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 500 }}>Based on your profile</span>
+                  <span style={{ fontSize: 10, color: MUTED, fontWeight: 500 }}>Based on your profile</span>
                 </div>
-                <div className="divide-y divide-[#E6E8EB]/70">
-                  {recs.map((r) => (
-                    <Link key={r.symbol} href={`/assets/${r.symbol}`} style={{ display: "flex", alignItems: "center", padding: "16px 24px", textDecoration: "none", transition: "background 0.12s" }}
-                      className="hover:bg-white/50">
+                <div>
+                  {recs.map((r, ri) => (
+                    <Link key={r.symbol} href={`/assets/${r.symbol}`}
+                      style={{ display: "flex", alignItems: "center", padding: "15px 24px", textDecoration: "none", borderBottom: ri < recs.length - 1 ? `1px solid ${BORD}` : "none", transition: "background 0.12s" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                    >
                       <div style={{ flexShrink: 0, marginRight: 14 }}>
                         <AssetIcon symbol={r.symbol} size={36} borderRadius={10} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>{r.name}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{r.name}</span>
                           <span style={{
-                            fontSize: 9, fontWeight: 700, color: CAT_COLOR[r.cat] ?? "#6B7280",
-                            background: `${CAT_COLOR[r.cat] ?? "#6B7280"}14`,
+                            fontSize: 9, fontWeight: 700, color: CAT_COLOR[r.cat],
+                            background: `${CAT_COLOR[r.cat]}20`,
                             padding: "2px 7px", borderRadius: 20, letterSpacing: "0.06em",
                           }}>{r.cat}</span>
                         </div>
-                        <div style={{ fontSize: 11, color: "#6B7280" }}>{r.why}</div>
+                        <div style={{ fontSize: 11, color: MUTED }}>{r.why}</div>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: GAIN, marginBottom: 2 }}>{r.target}</div>
-                        <div style={{ fontSize: 10, color: "#9ca3af" }}>{r.conf}% confidence</div>
+                        <div style={{ fontSize: 10, color: MUTED }}>{r.conf}% confidence</div>
                       </div>
-                      <ChevronRight size={14} color="#D1D5DB" style={{ marginLeft: 10 }} />
+                      <ChevronRight size={14} color={MUTED} style={{ marginLeft: 10 }} />
                     </Link>
                   ))}
                 </div>
@@ -400,19 +392,14 @@ export default function Dashboard() {
 
               {/* Holdings preview */}
               {!lh && holdings && holdings.length > 0 && (
-                <div style={{
-                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
-                  overflow: "hidden",
-                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-                }}>
-                  <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                  <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Current Holdings</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Current Holdings</div>
                     </div>
                     <button onClick={() => setTab("portfolio")} style={{
-                      fontSize: 11, fontWeight: 600, color: "#6B7280", background: "none", border: "none",
+                      fontSize: 11, fontWeight: 600, color: BLUE, background: "none", border: "none",
                       cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
                     }}>
                       View All <ArrowRight size={11} />
@@ -421,9 +408,9 @@ export default function Dashboard() {
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(230,232,235,0.7)", background: "rgba(245,246,247,0.5)" }}>
+                        <tr style={{ borderBottom: `1px solid ${BORD}`, background: CARD2 }}>
                           {["Asset","Price","24h","Value","P&L"].map(h => (
-                            <th key={h} style={{ padding: "10px 16px", textAlign: h === "Asset" ? "left" : "right", fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
+                            <th key={h} style={{ padding: "10px 16px", textAlign: h === "Asset" ? "left" : "right", fontSize: 9, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -431,24 +418,26 @@ export default function Dashboard() {
                         {holdings.slice(0, 5).map(h => {
                           const g = h.gainLossPercentage >= 0;
                           return (
-                            <tr key={h.id} style={{ borderBottom: "1px solid rgba(230,232,235,0.5)", transition: "background 0.1s" }}
-                              className="hover:bg-white/40">
+                            <tr key={h.id} style={{ borderBottom: `1px solid ${BORD}`, transition: "background 0.1s" }}
+                              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                            >
                               <td style={{ padding: "12px 16px" }}>
                                 <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
                                   <AssetIcon symbol={h.symbol} size={30} borderRadius={8} />
                                   <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
-                                    <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: TEXT }}>{h.name}</div>
+                                    <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace" }}>{h.symbol}</div>
                                   </div>
                                 </Link>
                               </td>
-                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 500, color: "#0F172A", fontFamily: "monospace" }}>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 500, color: TEXT, fontFamily: "monospace" }}>
                                 ${h.currentPrice.toLocaleString()}
                               </td>
                               <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: g ? GAIN : LOSS, fontFamily: "monospace" }}>
                                 {g ? "+" : ""}{h.gainLossPercentage}%
                               </td>
-                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "#0F172A", fontFamily: "monospace" }}>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>
                                 ${h.currentValue.toLocaleString()}
                               </td>
                               <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 500, color: g ? GAIN : LOSS, fontFamily: "monospace" }}>
@@ -467,64 +456,56 @@ export default function Dashboard() {
             {/* Right 1/3 — Live Feed */}
             <div className="space-y-5">
               <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
-                overflow: "hidden",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-                height: "calc(100vh - 280px)", minHeight: 520,
+                background: CARD, border: `1px solid ${BORD}`, borderRadius: 18,
+                overflow: "hidden", height: "calc(100vh - 280px)", minHeight: 520,
                 display: "flex", flexDirection: "column",
               }}>
-                <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(230,232,235,0.7)", flexShrink: 0 }}>
+                <div style={{ padding: "18px 20px 14px", borderBottom: `1px solid ${BORD}`, flexShrink: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                         <span style={{
-                          width: 7, height: 7, borderRadius: "50%", background: "#1a6b47",
+                          width: 7, height: 7, borderRadius: "50%", background: GAIN,
                           display: "inline-block", animation: "pulse-dot 1.6s ease-in-out infinite",
                         }} />
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#1a6b47", textTransform: "uppercase", letterSpacing: "0.14em" }}>Live</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: GAIN, textTransform: "uppercase", letterSpacing: "0.14em" }}>Live</span>
                       </div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Platform Activity</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Platform Activity</div>
                     </div>
-                    <RefreshCw size={13} color="#9ca3af" style={{ animation: "spin-slow 4s linear infinite" }} />
+                    <RefreshCw size={13} color={MUTED} style={{ animation: "spin-slow 4s linear infinite" }} />
                   </div>
                 </div>
 
                 <div style={{ flex: 1, overflowY: "hidden", position: "relative" }}>
                   <div style={{ overflowY: "hidden", height: "100%" }}>
                     {feed.map((trade, idx) => (
-                      <div
-                        key={trade.id}
-                        style={{
-                          display: "flex", alignItems: "center", gap: 10,
-                          padding: "10px 18px",
-                          borderBottom: "1px solid rgba(230,232,235,0.4)",
-                          opacity: idx === 0 ? 1 : Math.max(0.35, 1 - idx * 0.045),
-                          transform: idx === 0 ? "translateY(0)" : undefined,
-                          animation: idx === 0 ? "slide-in 0.35s ease" : undefined,
-                          transition: "opacity 0.3s",
-                          background: idx === 0 ? "rgba(255,255,255,0.5)" : "transparent",
-                        }}
-                      >
+                      <div key={trade.id} style={{
+                        display: "flex", alignItems: "center", gap: 10,
+                        padding: "10px 18px",
+                        borderBottom: `1px solid ${BORD}`,
+                        opacity: idx === 0 ? 1 : Math.max(0.3, 1 - idx * 0.048),
+                        animation: idx === 0 ? "slide-in 0.35s ease" : undefined,
+                        transition: "opacity 0.3s",
+                        background: idx === 0 ? "rgba(59,130,246,0.05)" : "transparent",
+                      }}>
                         <AssetIcon symbol={trade.asset.symbol} size={28} borderRadius={8} />
-
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 1 }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", fontFamily: "monospace" }}>{trade.user}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: TEXT, fontFamily: "monospace" }}>{trade.user}</span>
                             <span style={{
-                              fontSize: 8, fontWeight: 600, color: trade.side.includes("Long") || trade.side === "Bought" ? GAIN : LOSS,
-                              background: (trade.side.includes("Long") || trade.side === "Bought") ? `${GAIN}12` : `${LOSS}12`,
+                              fontSize: 8, fontWeight: 600,
+                              color: trade.side.includes("Long") || trade.side === "Bought" ? GAIN : LOSS,
+                              background: (trade.side.includes("Long") || trade.side === "Bought") ? `${GAIN}18` : `${LOSS}18`,
                               padding: "1px 6px", borderRadius: 20,
                             }}>{trade.side}</span>
                           </div>
-                          <div style={{ fontSize: 10, color: "#9ca3af" }}>{trade.asset.name} · {trade.asset.cat}</div>
+                          <div style={{ fontSize: 10, color: MUTED }}>{trade.asset.name} · {trade.asset.cat}</div>
                         </div>
-
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
                           <div style={{ fontSize: 11, fontWeight: 700, color: trade.positive ? GAIN : LOSS, fontFamily: "monospace" }}>
                             {trade.positive ? "+" : "−"}${fmtUSD(trade.change)}
                           </div>
-                          <div style={{ fontSize: 9, color: "#9ca3af" }}>{trade.ago}s ago</div>
+                          <div style={{ fontSize: 9, color: MUTED }}>{trade.ago}s ago</div>
                         </div>
                       </div>
                     ))}
@@ -534,25 +515,22 @@ export default function Dashboard() {
 
               {/* News */}
               {news && news.length > 0 && (
-                <div style={{
-                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
-                  overflow: "hidden",
-                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-                }}>
-                  <div style={{ padding: "16px 20px 12px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Market Insights</div>
+                <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                  <div style={{ padding: "16px 20px 12px", borderBottom: `1px solid ${BORD}` }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>Market Insights</div>
                   </div>
                   <div>
-                    {news.slice(0, 3).map(item => (
+                    {news.slice(0, 3).map((item, ni) => (
                       <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "block", padding: "13px 20px", borderBottom: "1px solid rgba(230,232,235,0.5)", textDecoration: "none", transition: "background 0.12s" }}
-                        className="hover:bg-white/50">
-                        <div style={{ fontSize: 9, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
+                        style={{ display: "block", padding: "13px 20px", borderBottom: ni < 2 ? `1px solid ${BORD}` : "none", textDecoration: "none", transition: "background 0.12s" }}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      >
+                        <div style={{ fontSize: 9, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
                           {item.source} · {new Date(item.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </div>
-                        <div style={{ fontSize: 12, color: "#374151", fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
+                        <div style={{ fontSize: 12, color: TEXT, fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
                       </a>
                     ))}
                   </div>
@@ -568,24 +546,20 @@ export default function Dashboard() {
             <div className="xl:col-span-2 space-y-5">
 
               {/* Chart */}
-              <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+              <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: `1px solid ${BORD}` }}>
                   <div>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Performance</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Portfolio Value Over Time</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Performance</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Portfolio Value Over Time</div>
                   </div>
-                  <div style={{ display: "flex", gap: 2, background: "rgba(245,246,247,0.8)", padding: 3, borderRadius: 10 }}>
+                  <div style={{ display: "flex", gap: 2, background: CARD2, padding: 3, borderRadius: 10, border: `1px solid ${BORD}` }}>
                     {(["ytd","1y","3y","all"] as const).map(p => (
                       <button key={p} onClick={() => setPeriod(p)} style={{
                         padding: "5px 13px", borderRadius: 8, fontSize: 10, fontWeight: 600,
                         border: "none", cursor: "pointer", textTransform: "uppercase",
-                        background: period === p ? "white" : "transparent",
-                        color: period === p ? "#0F172A" : "#9ca3af",
-                        boxShadow: period === p ? "0 1px 4px rgba(16,24,40,0.08)" : "none",
+                        background: period === p ? CARD : "transparent",
+                        color: period === p ? TEXT : MUTED,
+                        boxShadow: period === p ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
                         transition: "all 0.15s",
                       }}>{p}</button>
                     ))}
@@ -597,46 +571,44 @@ export default function Dashboard() {
                       <AreaChart data={performance.data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
                         <defs>
                           <linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={positive ? GAIN : LOSS} stopOpacity={0.12} />
+                            <stop offset="0%" stopColor={positive ? GAIN : LOSS} stopOpacity={0.18} />
                             <stop offset="100%" stopColor={positive ? GAIN : LOSS} stopOpacity={0} />
                           </linearGradient>
                         </defs>
-                        <XAxis dataKey="date" tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
-                        <YAxis domain={["auto","auto"]} tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} width={44} />
+                        <XAxis dataKey="date" tick={{ fontSize: 9, fill: MUTED }} tickLine={false} axisLine={false} />
+                        <YAxis domain={["auto","auto"]} tick={{ fontSize: 9, fill: MUTED }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} width={44} />
                         <Tooltip
-                          contentStyle={{ fontSize: 11, border: "1px solid rgba(255,255,255,0.9)", borderRadius: 12, boxShadow: "0 8px 24px rgba(16,24,40,0.12)", padding: "8px 14px", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)" }}
-                          itemStyle={{ color: "#0F172A", fontWeight: 600 }}
+                          contentStyle={{ fontSize: 11, border: `1px solid ${BORD}`, borderRadius: 12, padding: "8px 14px", background: CARD2 }}
+                          itemStyle={{ color: TEXT, fontWeight: 600 }}
                           formatter={(v: number) => [`$${v.toLocaleString()}`, "Value"]}
-                          labelStyle={{ color: "#9ca3af", fontSize: 10 }}
+                          labelStyle={{ color: MUTED, fontSize: 10 }}
                         />
                         <Area type="monotone" dataKey="value" stroke={positive ? GAIN : LOSS} strokeWidth={1.5} fill="url(#perfG)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center" style={{ color: "#9ca3af", fontSize: 12 }}>No data available</div>
+                    <div className="h-full flex items-center justify-center" style={{ color: MUTED, fontSize: 12 }}>No data available</div>
                   )}
                 </div>
               </div>
 
               {/* Holdings table */}
-              <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-              }}>
-                <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>All Holdings</div>
+              <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                <div style={{ padding: "20px 24px 16px", borderBottom: `1px solid ${BORD}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>All Holdings</div>
                 </div>
                 {lh ? (
-                  <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+                  <div style={{ display: "flex", justifyContent: "center", padding: "48px 0" }}>
+                    <Loader2 style={{ width: 16, height: 16, color: MUTED, animation: "spin 1s linear infinite" }} />
+                  </div>
                 ) : (
                   <div style={{ overflowX: "auto" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <thead>
-                        <tr style={{ borderBottom: "1px solid rgba(230,232,235,0.7)", background: "rgba(245,246,247,0.5)" }}>
+                        <tr style={{ borderBottom: `1px solid ${BORD}`, background: CARD2 }}>
                           {["Instrument","Last Price","24h","Qty","Value","Allocation"].map(h => (
-                            <th key={h} style={{ padding: "11px 16px", textAlign: h === "Instrument" ? "left" : "right", fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
+                            <th key={h} style={{ padding: "11px 16px", textAlign: h === "Instrument" ? "left" : "right", fontSize: 9, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -645,27 +617,29 @@ export default function Dashboard() {
                           const gain = h.gainLossPercentage >= 0;
                           const alloc = ((h.currentValue / (summary?.totalAssets || 1)) * 100).toFixed(1);
                           return (
-                            <tr key={h.id} style={{ borderBottom: "1px solid rgba(230,232,235,0.5)", transition: "background 0.1s" }}
-                              className="hover:bg-white/40">
+                            <tr key={h.id} style={{ borderBottom: `1px solid ${BORD}`, transition: "background 0.1s" }}
+                              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                            >
                               <td style={{ padding: "13px 16px" }}>
                                 <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
                                   <AssetIcon symbol={h.symbol} size={32} borderRadius={9} />
                                   <div>
-                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
-                                    <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: TEXT }}>{h.name}</div>
+                                    <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace" }}>{h.symbol}</div>
                                   </div>
                                 </Link>
                               </td>
-                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: "#0F172A" }}>${h.currentPrice.toLocaleString()}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: TEXT }}>${h.currentPrice.toLocaleString()}</td>
                               <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: gain ? GAIN : LOSS }}>{gain ? "+" : ""}{h.gainLossPercentage}%</td>
-                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: "#6B7280" }}>{h.quantity}</td>
-                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: "#0F172A" }}>${h.currentValue.toLocaleString()}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: MUTED }}>{h.quantity}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: TEXT }}>${h.currentValue.toLocaleString()}</td>
                               <td style={{ padding: "13px 16px", textAlign: "right" }}>
                                 <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                                  <div style={{ width: 48, height: 3, borderRadius: 99, background: "rgba(230,232,235,0.7)" }}>
-                                    <div style={{ width: `${alloc}%`, height: "100%", borderRadius: 99, background: "#162d4a" }} />
+                                  <div style={{ width: 48, height: 3, borderRadius: 99, background: "rgba(255,255,255,0.08)" }}>
+                                    <div style={{ width: `${alloc}%`, height: "100%", borderRadius: 99, background: BLUE }} />
                                   </div>
-                                  <span style={{ fontSize: 10, fontFamily: "monospace", color: "#6B7280" }}>{alloc}%</span>
+                                  <span style={{ fontSize: 10, fontFamily: "monospace", color: MUTED }}>{alloc}%</span>
                                 </div>
                               </td>
                             </tr>
@@ -680,14 +654,10 @@ export default function Dashboard() {
 
             {/* Right: allocation + news */}
             <div className="space-y-5">
-              <div style={{
-                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
-                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-              }}>
-                <div style={{ padding: "20px 22px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Allocation</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Asset Distribution</div>
+              <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                <div style={{ padding: "20px 22px 16px", borderBottom: `1px solid ${BORD}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Allocation</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>Asset Distribution</div>
                 </div>
                 <div style={{ padding: "20px 22px" }}>
                   {assetMix?.allocations && (
@@ -698,7 +668,7 @@ export default function Dashboard() {
                             {assetMix.allocations.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />)}
                           </Pie>
                           <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`}
-                            contentStyle={{ fontSize: 10, border: "1px solid rgba(255,255,255,0.9)", borderRadius: 10, padding: "6px 10px", background: "rgba(255,255,255,0.9)" }} />
+                            contentStyle={{ fontSize: 10, border: `1px solid ${BORD}`, borderRadius: 10, padding: "6px 10px", background: CARD2 }} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -708,11 +678,11 @@ export default function Dashboard() {
                       <div key={a.assetType} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: PIE_COLORS[i % PIE_COLORS.length], flexShrink: 0 }} />
-                          <span style={{ fontSize: 12, color: "#374151", textTransform: "capitalize" }}>{a.assetType}</span>
+                          <span style={{ fontSize: 12, color: TEXT, textTransform: "capitalize" }}>{a.assetType}</span>
                         </div>
                         <div style={{ textAlign: "right" }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, fontFamily: "monospace" }}>{a.percentage}%</div>
-                          <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>${a.value?.toLocaleString()}</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: TEXT }}>{a.percentage}%</div>
+                          <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace" }}>${a.value?.toLocaleString()}</div>
                         </div>
                       </div>
                     ))}
@@ -721,23 +691,21 @@ export default function Dashboard() {
               </div>
 
               {news && news.length > 0 && (
-                <div style={{
-                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
-                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
-                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
-                }}>
-                  <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Market Insights</div>
+                <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden" }}>
+                  <div style={{ padding: "18px 20px 14px", borderBottom: `1px solid ${BORD}` }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>Market Insights</div>
                   </div>
-                  {news.map(item => (
+                  {news.map((item, ni) => (
                     <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "block", padding: "13px 20px", borderBottom: "1px solid rgba(230,232,235,0.5)", textDecoration: "none", transition: "background 0.12s" }}
-                      className="hover:bg-white/50">
-                      <div style={{ fontSize: 9, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
+                      style={{ display: "block", padding: "13px 20px", borderBottom: ni < news.length - 1 ? `1px solid ${BORD}` : "none", textDecoration: "none", transition: "background 0.12s" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                    >
+                      <div style={{ fontSize: 9, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
                         {item.source} · {new Date(item.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </div>
-                      <div style={{ fontSize: 12, color: "#374151", fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
+                      <div style={{ fontSize: 12, color: TEXT, fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
                     </a>
                   ))}
                 </div>
@@ -749,30 +717,25 @@ export default function Dashboard() {
         {/* ════ CONVERT TAB ════ */}
         {tab === "convert" && (
           <div style={{ maxWidth: 520, margin: "0 auto" }}>
-            <div style={{
-              background: "rgba(255,255,255,0.82)", backdropFilter: "blur(32px)",
-              border: "1px solid rgba(255,255,255,0.95)", borderRadius: 22,
-              boxShadow: "0 8px 40px rgba(16,24,40,0.10),0 0 0 1px rgba(255,255,255,0.6)",
-              overflow: "hidden",
-            }}>
-              <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>Swap</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#0F172A" }}>Convert Assets</div>
-                <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Instantly exchange between assets at live rates</div>
+            <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 22, overflow: "hidden" }}>
+              <div style={{ padding: "24px 28px 20px", borderBottom: `1px solid ${BORD}` }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>Swap</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: TEXT }}>Convert Assets</div>
+                <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>Instantly exchange between assets at live rates</div>
               </div>
 
               <div style={{ padding: "24px 28px" }}>
                 {/* From */}
                 <div style={{ marginBottom: 8 }}>
-                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Pay</label>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Pay</label>
                   <div style={{
                     display: "flex", gap: 10, alignItems: "center",
-                    background: "rgba(245,246,247,0.8)", border: "1.5px solid rgba(230,232,235,0.9)",
+                    background: CARD2, border: `1.5px solid ${BORD}`,
                     borderRadius: 14, padding: "14px 16px",
                   }}>
                     <select value={fromAsset} onChange={e => setFromAsset(e.target.value)} style={{
-                      background: "white", border: "1px solid #E6E8EB", borderRadius: 9,
-                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#0F172A",
+                      background: "#16202e", border: `1px solid ${BORD}`, borderRadius: 9,
+                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: TEXT,
                       outline: "none", cursor: "pointer",
                     }}>
                       {CONVERT_ASSETS.map(a => <option key={a.symbol} value={a.symbol}>{a.symbol}</option>)}
@@ -783,7 +746,7 @@ export default function Dashboard() {
                       onChange={e => { setFromAmt(e.target.value); setConvertDone(false); }}
                       style={{
                         flex: 1, background: "none", border: "none", outline: "none",
-                        fontSize: 20, fontWeight: 700, color: "#0F172A", fontFamily: "monospace",
+                        fontSize: 20, fontWeight: 700, color: TEXT, fontFamily: "monospace",
                         textAlign: "right",
                       }}
                     />
@@ -794,67 +757,57 @@ export default function Dashboard() {
                 <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}>
                   <button onClick={() => { const tmp = fromAsset; setFromAsset(toAsset); setToAsset(tmp); setConvertDone(false); }} style={{
                     width: 36, height: 36, borderRadius: "50%",
-                    background: "white", border: "1.5px solid #E6E8EB",
+                    background: CARD2, border: `1.5px solid ${BORD}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer", boxShadow: "0 2px 8px rgba(16,24,40,0.08)",
-                    transition: "transform 0.2s",
+                    cursor: "pointer", transition: "transform 0.2s",
                   }}
                   onMouseEnter={e => (e.currentTarget.style.transform = "rotate(180deg)")}
                   onMouseLeave={e => (e.currentTarget.style.transform = "rotate(0deg)")}>
-                    <ArrowLeftRight size={14} color="#6B7280" />
+                    <ArrowLeftRight size={14} color={MUTED} />
                   </button>
                 </div>
 
                 {/* To */}
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Receive</label>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Receive</label>
                   <div style={{
                     display: "flex", gap: 10, alignItems: "center",
-                    background: "rgba(245,246,247,0.8)", border: "1.5px solid rgba(230,232,235,0.9)",
+                    background: CARD2, border: `1.5px solid rgba(59,130,246,0.25)`,
                     borderRadius: 14, padding: "14px 16px",
                   }}>
                     <select value={toAsset} onChange={e => { setToAsset(e.target.value); setConvertDone(false); }} style={{
-                      background: "white", border: "1px solid #E6E8EB", borderRadius: 9,
-                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#0F172A",
+                      background: "#16202e", border: `1px solid ${BORD}`, borderRadius: 9,
+                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: TEXT,
                       outline: "none", cursor: "pointer",
                     }}>
                       {CONVERT_ASSETS.filter(a => a.symbol !== fromAsset).map(a => <option key={a.symbol} value={a.symbol}>{a.symbol}</option>)}
                     </select>
-                    <div style={{
-                      flex: 1, fontSize: 20, fontWeight: 700, color: "#0F172A",
-                      fontFamily: "monospace", textAlign: "right",
-                    }}>
+                    <div style={{ flex: 1, fontSize: 20, fontWeight: 700, color: TEXT, fontFamily: "monospace", textAlign: "right" }}>
                       {isNaN(toNum) ? "—" : toNum < 0.001 ? toNum.toExponential(4) : toNum < 1 ? toNum.toFixed(6) : toNum.toFixed(4)}
                     </div>
                   </div>
                 </div>
 
                 {/* Rate info */}
-                <div style={{
-                  background: "rgba(245,246,247,0.7)", borderRadius: 12, padding: "12px 16px",
-                  marginBottom: 20, display: "flex", justifyContent: "space-between",
-                }}>
-                  <span style={{ fontSize: 11, color: "#6B7280" }}>Exchange Rate</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", fontFamily: "monospace" }}>
-                    1 {fromAsset} ≈ {(fromData?.rate / toData?.rate).toFixed(6)} {toAsset}
-                  </span>
-                </div>
-                <div style={{
-                  background: "rgba(245,246,247,0.7)", borderRadius: 12, padding: "12px 16px",
-                  marginBottom: 24, display: "flex", justifyContent: "space-between",
-                }}>
-                  <span style={{ fontSize: 11, color: "#6B7280" }}>Network Fee</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>$0.00 (waived)</span>
-                </div>
+                {[
+                  { label: "Exchange Rate", value: `1 ${fromAsset} ≈ ${(fromData?.rate / toData?.rate).toFixed(6)} ${toAsset}` },
+                  { label: "Network Fee",   value: "$0.00 (waived)" },
+                ].map((row) => (
+                  <div key={row.label} style={{ background: CARD2, borderRadius: 12, padding: "12px 16px", marginBottom: 12, display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, color: MUTED }}>{row.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>{row.value}</span>
+                  </div>
+                ))}
 
+                <div style={{ marginBottom: 24 }} />
                 <button onClick={handleConvert} disabled={converting || fromNum <= 0} style={{
                   width: "100%", padding: "15px", borderRadius: 14, fontSize: 13, fontWeight: 700,
-                  background: convertDone ? "#1a6b47" : "#0d1520", color: "white", border: "none",
+                  background: convertDone ? GAIN : BLUE, color: "white", border: "none",
                   cursor: converting || fromNum <= 0 ? "not-allowed" : "pointer",
                   opacity: fromNum <= 0 ? 0.5 : 1,
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   letterSpacing: "0.04em", transition: "background 0.3s",
-                  boxShadow: "0 4px 16px rgba(13,21,32,0.2)",
+                  boxShadow: `0 4px 16px rgba(59,130,246,0.25)`,
                 }}>
                   {converting ? (
                     <><Loader2 size={15} style={{ animation: "spin 1s linear infinite" }} /> Processing…</>
@@ -868,7 +821,7 @@ export default function Dashboard() {
             </div>
 
             {/* Disclaimer */}
-            <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 11, color: MUTED, textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
               Rates are indicative only. Actual execution prices may vary.
               Conversions are subject to account verification and platform terms.
             </p>
