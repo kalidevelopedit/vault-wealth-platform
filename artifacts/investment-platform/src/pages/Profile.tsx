@@ -9,11 +9,16 @@ const KYC_STATUS = {
   not_started: { label: "Not Started", dot: "#aaa", Icon: Shield },
 };
 
-const CARD = "bg-white rounded-2xl border border-[#E6E8EB] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_1px_3px_rgba(16,24,40,0.06)]";
+const CARD = "bg-white/[0.78] backdrop-blur-[24px] border border-white/[0.9] rounded-2xl shadow-[0_4px_24px_rgba(16,24,40,0.07),0_0_0_1px_rgba(255,255,255,0.5)]";
+
+function genUID(id: number) {
+  return `VW-${String(id).padStart(6, "0")}`;
+}
 
 export default function Profile() {
   const { user } = useAuth();
   const { data: profile, isLoading } = useGetUserProfile();
+  const uid = user?.id ? genUID(user.id) : "VW-000000";
 
   if (isLoading) return (
     <div className="h-full flex items-center justify-center py-32">
@@ -36,6 +41,7 @@ export default function Profile() {
     { label: "Date of Birth", value: profile?.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—" },
     { label: "Address", value: profile?.address ? `${profile.address}, ${profile.city || ""} ${profile.postalCode || ""}`.trim() : "—" },
     { label: "Member Since", value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "—" },
+    { label: "Account ID", value: uid },
   ];
 
   const onboardingSteps = [
@@ -50,11 +56,12 @@ export default function Profile() {
   const completedSteps = kycComplete ? onboardingSteps.length : Math.floor(onboardingSteps.length * 0.4);
 
   return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#edf0f5 0%,#e8edf3 60%,#eaecf0 100%)" }}>
     <div className="max-w-[1000px] mx-auto px-6 py-8 pb-16">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-1">Account</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>Account · {uid}</div>
           <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Profile</h1>
         </div>
       </div>
@@ -70,6 +77,9 @@ export default function Profile() {
               </div>
               <div className="text-[15px] font-semibold text-foreground tracking-tight">{user?.fullName || "—"}</div>
               <div className="text-[11px] text-muted-foreground mt-0.5">{user?.email}</div>
+              <div style={{ marginTop: 10, padding: "4px 12px", background: "rgba(13,21,32,0.06)", borderRadius: 99, fontSize: 10, fontWeight: 700, color: "#6B7280", letterSpacing: "0.12em", fontFamily: "monospace" }}>
+                {uid}
+              </div>
             </div>
             <div className="p-4">
               <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground mb-2.5">Identity Status</div>
@@ -163,6 +173,7 @@ export default function Profile() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

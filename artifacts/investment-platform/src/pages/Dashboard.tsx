@@ -1,17 +1,151 @@
-import { useGetPortfolioSummary, useGetPortfolioPerformance, useGetHoldings, useGetAssetMix, useGetMarketNews } from "@workspace/api-client-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
-import { Loader2, ArrowDownToLine, ArrowUpFromLine, TrendingUp, TrendingDown } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  useGetPortfolioSummary, useGetPortfolioPerformance,
+  useGetHoldings, useGetAssetMix, useGetMarketNews,
+} from "@workspace/api-client-react";
+import {
+  AreaChart, Area, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell,
+} from "recharts";
+import {
+  TrendingUp, TrendingDown, ArrowDownToLine, ArrowUpFromLine,
+  ArrowLeftRight, RefreshCw, Users, Zap, Star, Loader2,
+  ArrowRight, ChevronRight,
+} from "lucide-react";
 
-const PIE_COLORS = ["#162d4a", "#3a5e88", "#7ba3c8", "#bbd0e5"];
-const GAIN = "#2b6b4e";
+// ─── Helpers ────────────────────────────────────────────────────────────────
+const GAIN = "#1a6b47";
 const LOSS = "#943636";
-const CARD = "bg-white rounded-2xl border border-[#E6E8EB]";
-const CARD_SHADOW = "shadow-[0_1px_2px_rgba(16,24,40,0.04),0_1px_3px_rgba(16,24,40,0.06)]";
+const PIE_COLORS = ["#162d4a", "#3a5e88", "#7ba3c8", "#bbd0e5"];
+const fmtUSD = (n: number) =>
+  n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtShort = (n: number) =>
+  n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M`
+  : n >= 1_000   ? `$${(n / 1_000).toFixed(1)}k`
+  : `$${fmtUSD(n)}`;
 
+function genUID(id: number) {
+  return `VW-${String(id).padStart(6, "0")}`;
+}
+
+// Glass card
+const G = "bg-white/[0.75] backdrop-blur-[28px] border border-white/[0.9] rounded-2xl shadow-[0_4px_28px_rgba(16,24,40,0.08),0_0_0_1px_rgba(255,255,255,0.5)]";
+
+// ─── Live Feed ───────────────────────────────────────────────────────────────
+const USERNAMES = [
+  "phantom_x82","silk.trader","nova_vlt","xero.fin","blaze_q","frost.cap",
+  "axon_fx","dusk_algo","apex.trd","zephyr88","meridian","cipher_v",
+  "delta.arc","prime.edg","vantage_k","echo_xbt","lyric.cap","storm_q",
+  "pulse_fx","orbit.ve","solstice","vaulter9","nebula_x","crane.fi",
+  "synth_q","mirage.v","haven_99","stratos","cobalt.x","trident8",
+  "iron.cap","velvet.q","mosaic_x","glacier","raptor_v","zenith.fi",
+  "ember_q","cascade.x","horizon8","luminary","prism.cap","vertex_q",
+  "neon.arb","spectra_x","tungsten","cascade_q","aurora.fi","ironwood",
+];
+const ASSETS = [
+  { symbol: "BTC",  name: "Bitcoin",       cat: "CRYPTO" },
+  { symbol: "ETH",  name: "Ethereum",      cat: "CRYPTO" },
+  { symbol: "SOL",  name: "Solana",        cat: "CRYPTO" },
+  { symbol: "BNB",  name: "BNB",           cat: "CRYPTO" },
+  { symbol: "AVAX", name: "Avalanche",     cat: "CRYPTO" },
+  { symbol: "AAPL", name: "Apple Inc.",    cat: "STOCK"  },
+  { symbol: "TSLA", name: "Tesla",         cat: "STOCK"  },
+  { symbol: "NVDA", name: "NVIDIA",        cat: "STOCK"  },
+  { symbol: "MSFT", name: "Microsoft",     cat: "STOCK"  },
+  { symbol: "META", name: "Meta",          cat: "STOCK"  },
+  { symbol: "XAU",  name: "Gold Spot",     cat: "COMMOD" },
+  { symbol: "XAG",  name: "Silver",        cat: "COMMOD" },
+  { symbol: "CRUDE","name": "Crude Oil",   cat: "COMMOD" },
+  { symbol: "ES",   name: "S&P Futures",   cat: "FUTURE" },
+  { symbol: "NQ",   name: "Nasdaq Fut.",   cat: "FUTURE" },
+];
+const SIDES = ["Bought", "Sold", "Opened Long", "Closed Short", "Opened Short"] as const;
+
+function rndItem<T>(arr: T[]) { return arr[Math.floor(Math.random() * arr.length)]; }
+function genTrade(id: number) {
+  const asset = rndItem(ASSETS);
+  const side = rndItem(SIDES);
+  const val = Math.random() * 9800 + 200;
+  const gain = side === "Bought" || side === "Opened Long"
+    ? (Math.random() > 0.45 ? 1 : -1)
+    : (Math.random() > 0.45 ? -1 : 1);
+  const pct = (Math.random() * 8.4 + 0.2).toFixed(2);
+  const change = val * parseFloat(pct) / 100;
+  return {
+    id,
+    user: rndItem(USERNAMES),
+    asset,
+    side,
+    value: val,
+    pct,
+    change,
+    positive: gain > 0,
+    ago: Math.floor(Math.random() * 59) + 1,
+  };
+}
+
+function buildInitialFeed() {
+  return Array.from({ length: 18 }, (_, i) => genTrade(i));
+}
+
+// ─── Recommendation engine ───────────────────────────────────────────────────
+const RECS: Record<string, { symbol: string; name: string; cat: string; why: string; target: string; conf: number }[]> = {
+  crypto: [
+    { symbol: "BTC",  name: "Bitcoin",   cat: "CRYPTO", why: "Matches your crypto preference", target: "+18%", conf: 87 },
+    { symbol: "ETH",  name: "Ethereum",  cat: "CRYPTO", why: "High conviction by institutional holders", target: "+24%", conf: 81 },
+    { symbol: "SOL",  name: "Solana",    cat: "CRYPTO", why: "Strong DeFi momentum aligns with your goals", target: "+31%", conf: 74 },
+  ],
+  stock: [
+    { symbol: "NVDA", name: "NVIDIA",    cat: "STOCK",  why: "AI sector aligns with your growth goals", target: "+22%", conf: 89 },
+    { symbol: "AAPL", name: "Apple Inc.",cat: "STOCK",  why: "Stable dividend + growth, matches profile", target: "+14%", conf: 83 },
+    { symbol: "MSFT", name: "Microsoft", cat: "STOCK",  why: "Cloud revenue growth, low volatility", target: "+17%", conf: 80 },
+  ],
+  commodity: [
+    { symbol: "XAU",  name: "Gold Spot", cat: "COMMOD", why: "Inflation hedge, matches conservative goals", target: "+11%", conf: 79 },
+    { symbol: "XAG",  name: "Silver",    cat: "COMMOD", why: "Industrial demand surge expected", target: "+19%", conf: 72 },
+    { symbol: "CRUDE",name: "Crude Oil", cat: "COMMOD", why: "OPEC+ cuts support price floor", target: "+13%", conf: 70 },
+  ],
+  default: [
+    { symbol: "BTC",  name: "Bitcoin",   cat: "CRYPTO", why: "Most held asset on this platform", target: "+18%", conf: 85 },
+    { symbol: "NVDA", name: "NVIDIA",    cat: "STOCK",  why: "AI sector outperforming benchmark", target: "+22%", conf: 82 },
+    { symbol: "XAU",  name: "Gold Spot", cat: "COMMOD", why: "Global safe-haven demand", target: "+11%", conf: 77 },
+  ],
+};
+
+function getRecs(prefs?: string[] | null) {
+  if (!prefs || !prefs.length) return RECS.default;
+  const p = prefs.join(" ").toLowerCase();
+  if (p.includes("crypto")) return RECS.crypto;
+  if (p.includes("stock") || p.includes("equit")) return RECS.stock;
+  if (p.includes("commod") || p.includes("gold")) return RECS.commodity;
+  return RECS.default;
+}
+
+// ─── Convert assets ──────────────────────────────────────────────────────────
+const CONVERT_ASSETS = [
+  { symbol: "USD",  label: "US Dollar",     rate: 1 },
+  { symbol: "BTC",  label: "Bitcoin",        rate: 0.0000095 },
+  { symbol: "ETH",  label: "Ethereum",       rate: 0.000285 },
+  { symbol: "SOL",  label: "Solana",         rate: 0.00637 },
+  { symbol: "AAPL", label: "Apple Inc.",     rate: 0.00471 },
+  { symbol: "XAU",  label: "Gold (oz)",      rate: 0.000299 },
+];
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const { user } = useAuth();
+  const [tab, setTab] = useState<"home" | "portfolio" | "convert">("home");
   const [period, setPeriod] = useState<"ytd" | "1y" | "3y" | "all">("1y");
+  const [feed, setFeed] = useState(() => buildInitialFeed());
+  const [activeUsers, setActiveUsers] = useState(647_821);
+  const feedIdRef = useRef(100);
+  const [fromAsset, setFromAsset] = useState("USD");
+  const [toAsset, setToAsset] = useState("BTC");
+  const [fromAmt, setFromAmt] = useState("1000");
+  const [converting, setConverting] = useState(false);
+  const [convertDone, setConvertDone] = useState(false);
 
   const { data: summary, isLoading: ls } = useGetPortfolioSummary();
   const { data: performance } = useGetPortfolioPerformance({ period });
@@ -19,269 +153,764 @@ export default function Dashboard() {
   const { data: assetMix } = useGetAssetMix();
   const { data: news } = useGetMarketNews({ limit: 4 });
 
-  if (ls || lh) return (
-    <div className="h-full flex items-center justify-center py-32">
-      <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-    </div>
-  );
+  // Animate active users
+  useEffect(() => {
+    const t = setInterval(() => {
+      setActiveUsers(n => n + Math.floor(Math.random() * 13) - 6);
+    }, 2200);
+    return () => clearInterval(t);
+  }, []);
+
+  // Animate feed
+  useEffect(() => {
+    const t = setInterval(() => {
+      setFeed(prev => {
+        const id = feedIdRef.current++;
+        return [genTrade(id), ...prev.slice(0, 17)];
+      });
+    }, 1600);
+    return () => clearInterval(t);
+  }, []);
 
   const positive = (summary?.totalReturn ?? 0) >= 0;
-  const fmtUSD = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const uid = user?.id ? genUID(user.id) : "VW-000000";
+  const firstName = user?.fullName?.split(" ")[0] ?? "Investor";
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const recs = getRecs((user as any)?.investmentPreferences);
+
+  // Convert calculation
+  const fromData = CONVERT_ASSETS.find(a => a.symbol === fromAsset)!;
+  const toData   = CONVERT_ASSETS.find(a => a.symbol === toAsset)!;
+  const fromNum  = parseFloat(fromAmt) || 0;
+  const toNum    = fromNum * (fromData?.rate ?? 1) / (toData?.rate ?? 1);
+
+  const handleConvert = () => {
+    setConverting(true);
+    setTimeout(() => { setConverting(false); setConvertDone(true); setTimeout(() => setConvertDone(false), 3000); }, 1800);
+  };
+
+  const CAT_COLOR: Record<string, string> = { CRYPTO: "#3a5e88", STOCK: "#2b6b4e", COMMOD: "#7a5c28", FUTURE: "#5a3a8a" };
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 py-8 pb-16">
-      {/* Page header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-1">Portfolio</div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Overview</h1>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#edf0f5 0%,#e8edf3 60%,#eaecf0 100%)" }}>
+
+      {/* ── Top header ── */}
+      <div style={{ padding: "28px 28px 0", maxWidth: 1400, margin: "0 auto" }}>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", letterSpacing: "0.16em", textTransform: "uppercase", marginBottom: 4 }}>
+              {uid} · {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+            </div>
+            <h1 style={{ fontSize: 26, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.025em", lineHeight: 1.2 }}>
+              {greeting}, {firstName}.
+            </h1>
+            <p style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>Here's your account overview.</p>
+          </div>
+
+          {/* Active users pill */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.9)", borderRadius: 99,
+            padding: "9px 18px",
+            boxShadow: "0 2px 14px rgba(16,24,40,0.07)",
+          }}>
+            <div style={{ position: "relative", width: 8, height: 8 }}>
+              <span style={{
+                position: "absolute", inset: 0, borderRadius: "50%",
+                background: "#1a6b47", animation: "pulse-dot 1.8s ease-in-out infinite",
+              }} />
+              <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#1a6b47" }} />
+            </div>
+            <Users size={13} color="#6B7280" />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+              {activeUsers.toLocaleString()}
+            </span>
+            <span style={{ fontSize: 11, color: "#9ca3af", fontWeight: 500 }}>active investors</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {[
-            { label: "Buy", icon: TrendingUp, href: "/invest" },
-            { label: "Sell", icon: TrendingDown, href: "/invest" },
-            { label: "Deposit", icon: ArrowDownToLine, href: "/wallet" },
-            { label: "Withdraw", icon: ArrowUpFromLine, href: "/wallet" },
-          ].map(({ label, icon: Icon, href }) => (
-            <Link key={label} href={href}
-              className="inline-flex items-center gap-1.5 border border-[#E6E8EB] bg-white text-foreground text-[10px] font-medium uppercase tracking-wider px-3 py-1.5 rounded-xl hover:bg-muted/40 transition-all hover:-translate-y-px hover:shadow-[0_4px_10px_rgba(0,0,0,0.06)]">
-              <Icon className="w-3 h-3" strokeWidth={1.5} />{label}
-            </Link>
+
+        {/* KPI strip */}
+        {ls ? (
+          <div className="flex items-center justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
+        ) : (
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
+            {[
+              {
+                label: "Portfolio Value",
+                value: `$${fmtUSD(summary?.totalAssets || 0)}`,
+                sub: `${positive ? "+" : "−"}${Math.abs(summary?.returnPercentage || 0).toFixed(2)}% all-time`,
+                subColor: positive ? GAIN : LOSS,
+              },
+              {
+                label: "Available Cash",
+                value: `$${fmtUSD(summary?.availableCash || 0)}`,
+                sub: "Ready to deploy",
+                subColor: "#6B7280",
+              },
+              {
+                label: "Total Return",
+                value: `${positive ? "+" : "−"}$${fmtUSD(Math.abs(summary?.totalReturn || 0))}`,
+                sub: `${positive ? "+" : ""}${summary?.returnPercentage?.toFixed(2)}%`,
+                subColor: positive ? GAIN : LOSS,
+              },
+              {
+                label: "Today's P&L",
+                value: `${(summary?.dayChange || 0) >= 0 ? "+" : "−"}$${fmtUSD(Math.abs(summary?.dayChange || 0))}`,
+                sub: `${(summary?.dayChange || 0) >= 0 ? "+" : "−"}${Math.abs(summary?.dayChangePercentage || 0).toFixed(2)}% today`,
+                subColor: (summary?.dayChange || 0) >= 0 ? GAIN : LOSS,
+              },
+            ].map((k, i) => (
+              <div key={i} style={{
+                background: "rgba(255,255,255,0.75)",
+                backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)",
+                borderRadius: 18,
+                padding: "20px 22px",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07),0 0 0 1px rgba(255,255,255,0.5)",
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 10 }}>{k.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", marginBottom: 4 }}>{k.value}</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: k.subColor }}>{k.sub}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Tab bar */}
+        <div style={{
+          display: "inline-flex", gap: 2,
+          background: "rgba(255,255,255,0.6)", backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.9)", borderRadius: 14,
+          padding: 4, marginBottom: 22,
+        }}>
+          {([["home","Overview"],["portfolio","Portfolio"],["convert","Convert"]] as const).map(([key, label]) => (
+            <button key={key} onClick={() => setTab(key)} style={{
+              padding: "7px 20px", borderRadius: 11, fontSize: 12, fontWeight: 600,
+              border: "none", cursor: "pointer", letterSpacing: "0.02em",
+              background: tab === key ? "white" : "transparent",
+              color: tab === key ? "#0F172A" : "#9ca3af",
+              boxShadow: tab === key ? "0 1px 6px rgba(16,24,40,0.1)" : "none",
+              transition: "all 0.18s ease",
+            }}>{label}</button>
           ))}
         </div>
       </div>
 
-      {/* KPI strip — individual floating cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {[
-          {
-            label: "Total Portfolio Value",
-            value: `$${fmtUSD(summary?.totalAssets || 0)}`,
-            sub: <span style={{ color: positive ? GAIN : LOSS }} className="text-[11px]">
-              {positive ? "+" : "−"}{Math.abs(summary?.returnPercentage || 0).toFixed(2)}% total return
-            </span>
-          },
-          {
-            label: "Available Cash",
-            value: `$${fmtUSD(summary?.availableCash || 0)}`,
-            sub: <span className="text-[11px] text-muted-foreground">Uninvested balance</span>
-          },
-          {
-            label: "Total Return",
-            value: `${positive ? "+" : "−"}$${fmtUSD(Math.abs(summary?.totalReturn || 0))}`,
-            sub: <span style={{ color: positive ? GAIN : LOSS }} className="text-[11px] font-medium">
-              {positive ? "+" : ""}{summary?.returnPercentage?.toFixed(2)}%
-            </span>
-          },
-          {
-            label: "Today's Change",
-            value: `${(summary?.dayChange || 0) >= 0 ? "+" : "−"}$${fmtUSD(Math.abs(summary?.dayChange || 0))}`,
-            sub: <span style={{ color: (summary?.dayChange || 0) >= 0 ? GAIN : LOSS }} className="text-[11px]">
-              {(summary?.dayChange || 0) >= 0 ? "+" : "−"}{Math.abs(summary?.dayChangePercentage || 0).toFixed(2)}%
-            </span>
-          },
-        ].map((kpi, i) => (
-          <div key={i} className={`p-6 ${CARD} ${CARD_SHADOW}`}>
-            <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-3">{kpi.label}</div>
-            <div className="text-[22px] font-semibold text-foreground tracking-tight tabular-nums mb-1">{kpi.value}</div>
-            <div>{kpi.sub}</div>
-          </div>
-        ))}
-      </div>
+      {/* ── Tab Content ── */}
+      <div style={{ padding: "0 28px 48px", maxWidth: 1400, margin: "0 auto" }}>
 
-      {/* Main grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        {/* ════ HOME TAB ════ */}
+        {tab === "home" && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-        {/* Left: chart + holdings */}
-        <div className="xl:col-span-2 space-y-5">
+            {/* Left 2/3 */}
+            <div className="xl:col-span-2 space-y-5">
 
-          {/* Performance chart */}
-          <div className={`${CARD} ${CARD_SHADOW} overflow-hidden`}>
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
-              <div>
-                <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Performance</div>
-                <div className="text-[13px] font-semibold text-foreground">Portfolio Value Over Time</div>
+              {/* Quick actions */}
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
+                padding: "18px 20px",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 14 }}>Quick Actions</div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "Deposit",   icon: ArrowDownToLine,  href: "/wallet" },
+                    { label: "Withdraw",  icon: ArrowUpFromLine,   href: "/wallet" },
+                    { label: "Buy Asset", icon: TrendingUp,        href: "/invest" },
+                    { label: "Sell",      icon: TrendingDown,      href: "/invest" },
+                    { label: "Convert",   icon: ArrowLeftRight,    onClick: () => setTab("convert") },
+                    { label: "Markets",   icon: Zap,               href: "/assets/crypto" },
+                  ].map(({ label, icon: Icon, href, onClick }) => (
+                    href
+                      ? <Link key={label} href={href} style={{
+                          display: "inline-flex", alignItems: "center", gap: 7,
+                          padding: "8px 16px", borderRadius: 10,
+                          background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB",
+                          fontSize: 12, fontWeight: 600, color: "#374151",
+                          textDecoration: "none", boxShadow: "0 1px 4px rgba(16,24,40,0.05)",
+                          transition: "all 0.14s",
+                        }}>
+                          <Icon size={13} strokeWidth={1.8} />
+                          {label}
+                        </Link>
+                      : <button key={label} onClick={onClick} style={{
+                          display: "inline-flex", alignItems: "center", gap: 7,
+                          padding: "8px 16px", borderRadius: 10,
+                          background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB",
+                          fontSize: 12, fontWeight: 600, color: "#374151",
+                          cursor: "pointer", boxShadow: "0 1px 4px rgba(16,24,40,0.05)",
+                          transition: "all 0.14s",
+                        }}>
+                          <Icon size={13} strokeWidth={1.8} />
+                          {label}
+                        </button>
+                  ))}
+                </div>
               </div>
-              {/* Pill period toggle */}
-              <div className="flex items-center gap-1 bg-[#F2F3F5] p-1 rounded-full">
-                {(["ytd", "1y", "3y", "all"] as const).map((p) => (
-                  <button key={p} onClick={() => setPeriod(p)}
-                    className={`px-3 py-1 text-[10px] font-medium uppercase tracking-wide rounded-full transition-all
-                      ${period === p
-                        ? "bg-white text-foreground shadow-[0_1px_2px_rgba(16,24,40,0.08)]"
-                        : "text-muted-foreground hover:text-foreground"}`}>
-                    {p}
-                  </button>
-                ))}
+
+              {/* Recommendations */}
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
+                overflow: "hidden",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+              }}>
+                <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>
+                      <Star size={9} style={{ display: "inline", marginRight: 4, marginBottom: 1 }} />
+                      Curated for You
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Recommended Assets</div>
+                  </div>
+                  <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 500 }}>Based on your profile</span>
+                </div>
+                <div className="divide-y divide-[#E6E8EB]/70">
+                  {recs.map((r) => (
+                    <Link key={r.symbol} href={`/assets/${r.symbol}`} style={{ display: "flex", alignItems: "center", padding: "16px 24px", textDecoration: "none", transition: "background 0.12s" }}
+                      className="hover:bg-white/50">
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.9)",
+                        border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 9, fontWeight: 800, color: "#0F172A", letterSpacing: "0.04em",
+                        flexShrink: 0, marginRight: 14,
+                        boxShadow: "0 1px 4px rgba(16,24,40,0.06)",
+                      }}>
+                        {r.symbol.slice(0, 3)}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>{r.name}</span>
+                          <span style={{
+                            fontSize: 9, fontWeight: 700, color: CAT_COLOR[r.cat] ?? "#6B7280",
+                            background: `${CAT_COLOR[r.cat] ?? "#6B7280"}14`,
+                            padding: "2px 7px", borderRadius: 20, letterSpacing: "0.06em",
+                          }}>{r.cat}</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: "#6B7280" }}>{r.why}</div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: GAIN, marginBottom: 2 }}>{r.target}</div>
+                        <div style={{ fontSize: 10, color: "#9ca3af" }}>{r.conf}% confidence</div>
+                      </div>
+                      <ChevronRight size={14} color="#D1D5DB" style={{ marginLeft: 10 }} />
+                    </Link>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="px-3 py-5 h-[240px]">
-              {performance?.data ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={performance.data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="perf" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={positive ? GAIN : LOSS} stopOpacity={0.1} />
-                        <stop offset="100%" stopColor={positive ? GAIN : LOSS} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="date" tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
-                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false}
-                      tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={42} />
-                    <Tooltip
-                      contentStyle={{ fontSize: 11, border: "1px solid #E6E8EB", borderRadius: 10, boxShadow: "0 4px 10px rgba(16,24,40,0.06)", padding: "8px 12px", background: "#fff" }}
-                      itemStyle={{ color: "#0F172A", fontWeight: 600 }}
-                      formatter={(value: number) => [`$${value.toLocaleString()}`, "Value"]}
-                      labelStyle={{ color: "#9ca3af", fontSize: 10 }}
-                    />
-                    <Area type="monotone" dataKey="value"
-                      stroke={positive ? GAIN : LOSS} strokeWidth={1.5}
-                      fill="url(#perf)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground text-xs">No data</div>
-              )}
-            </div>
-          </div>
 
-          {/* Holdings table */}
-          <div className={`${CARD} ${CARD_SHADOW} overflow-hidden`}>
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
-              <div>
-                <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Positions</div>
-                <div className="text-[13px] font-semibold text-foreground">Current Holdings</div>
-              </div>
-              <Link href="/invest" className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider">
-                Trade →
-              </Link>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-[#E6E8EB] bg-[#F5F6F7]">
-                    <th className="text-left py-3 px-6 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Instrument</th>
-                    <th className="text-right py-3 px-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Last Price</th>
-                    <th className="text-right py-3 px-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">24h</th>
-                    <th className="text-right py-3 px-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Qty</th>
-                    <th className="text-right py-3 px-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Value</th>
-                    <th className="text-right py-3 px-6 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Alloc.</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E6E8EB]">
-                  {holdings?.map((h) => {
-                    const gain = h.gainLossPercentage >= 0;
-                    const alloc = ((h.currentValue / (summary?.totalAssets || 1)) * 100).toFixed(1);
-                    return (
-                      <tr key={h.id} className="hover:bg-[#F5F6F7] transition-colors cursor-pointer">
-                        <td className="py-3.5 px-6">
-                          <Link href={`/assets/${h.symbol}`} className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-[#F2F3F5] flex items-center justify-center text-foreground text-[9px] font-bold shrink-0">
-                              {h.symbol.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-foreground text-[12px]">{h.name}</div>
-                              <div className="text-muted-foreground text-[10px] font-mono uppercase">{h.symbol}</div>
-                            </div>
-                          </Link>
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-mono text-foreground text-[12px]">
-                          ${h.currentPrice.toLocaleString()}
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-mono text-[12px] font-medium" style={{ color: gain ? GAIN : LOSS }}>
-                          {gain ? "+" : ""}{h.gainLossPercentage}%
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-mono text-muted-foreground text-[12px]">
-                          {h.quantity}
-                        </td>
-                        <td className="py-3.5 px-4 text-right font-mono font-semibold text-foreground text-[12px]">
-                          ${h.currentValue.toLocaleString()}
-                        </td>
-                        <td className="py-3.5 px-6 text-right">
-                          <div className="inline-flex items-center gap-2">
-                            <div className="w-12 h-1 rounded-full bg-[#E6E8EB]">
-                              <div className="h-full rounded-full bg-[#162d4a]" style={{ width: `${alloc}%` }} />
-                            </div>
-                            <span className="font-mono text-muted-foreground text-[10px] w-8 text-right">{alloc}%</span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Right: allocation + news */}
-        <div className="space-y-5">
-
-          {/* Asset Mix */}
-          <div className={`${CARD} ${CARD_SHADOW} overflow-hidden`}>
-            <div className="px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
-              <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Allocation</div>
-              <div className="text-[13px] font-semibold text-foreground">Asset Distribution</div>
-            </div>
-            <div className="px-6 py-5">
-              {assetMix?.allocations && (
-                <div className="h-[150px] flex justify-center mb-5">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={assetMix.allocations} cx="50%" cy="50%"
-                        innerRadius={48} outerRadius={66} paddingAngle={3} dataKey="value">
-                        {assetMix.allocations.map((_, i) => (
-                          <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`}
-                        contentStyle={{ fontSize: 10, border: "1px solid #E6E8EB", borderRadius: 10, padding: "6px 10px", background: "#fff" }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+              {/* Holdings preview */}
+              {!lh && holdings && holdings.length > 0 && (
+                <div style={{
+                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
+                  overflow: "hidden",
+                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+                }}>
+                  <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Current Holdings</div>
+                    </div>
+                    <button onClick={() => setTab("portfolio")} style={{
+                      fontSize: 11, fontWeight: 600, color: "#6B7280", background: "none", border: "none",
+                      cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+                    }}>
+                      View All <ArrowRight size={11} />
+                    </button>
+                  </div>
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid rgba(230,232,235,0.7)", background: "rgba(245,246,247,0.5)" }}>
+                          {["Asset","Price","24h","Value","P&L"].map(h => (
+                            <th key={h} style={{ padding: "10px 16px", textAlign: h === "Asset" ? "left" : "right", fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {holdings.slice(0, 5).map(h => {
+                          const g = h.gainLossPercentage >= 0;
+                          return (
+                            <tr key={h.id} style={{ borderBottom: "1px solid rgba(230,232,235,0.5)", transition: "background 0.1s" }}
+                              className="hover:bg-white/40">
+                              <td style={{ padding: "12px 16px" }}>
+                                <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+                                  <div style={{
+                                    width: 30, height: 30, borderRadius: 8, background: "rgba(255,255,255,0.9)",
+                                    border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontSize: 8, fontWeight: 800, color: "#0F172A", flexShrink: 0,
+                                  }}>{h.symbol.slice(0,3)}</div>
+                                  <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
+                                    <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>
+                                  </div>
+                                </Link>
+                              </td>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 500, color: "#0F172A", fontFamily: "monospace" }}>
+                                ${h.currentPrice.toLocaleString()}
+                              </td>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: g ? GAIN : LOSS, fontFamily: "monospace" }}>
+                                {g ? "+" : ""}{h.gainLossPercentage}%
+                              </td>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, color: "#0F172A", fontFamily: "monospace" }}>
+                                ${h.currentValue.toLocaleString()}
+                              </td>
+                              <td style={{ padding: "12px 16px", textAlign: "right", fontSize: 12, fontWeight: 500, color: g ? GAIN : LOSS, fontFamily: "monospace" }}>
+                                {g ? "+" : "−"}${Math.abs(h.gainLoss ?? 0).toLocaleString()}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
-              <div className="space-y-3">
-                {assetMix?.allocations.map((a, i) => (
-                  <div key={a.assetType} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                      <span className="text-[12px] text-foreground capitalize">{a.assetType}</span>
+            </div>
+
+            {/* Right 1/3 — Live Feed */}
+            <div className="space-y-5">
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
+                overflow: "hidden",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+                height: "calc(100vh - 280px)", minHeight: 520,
+                display: "flex", flexDirection: "column",
+              }}>
+                <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(230,232,235,0.7)", flexShrink: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                        <span style={{
+                          width: 7, height: 7, borderRadius: "50%", background: "#1a6b47",
+                          display: "inline-block", animation: "pulse-dot 1.6s ease-in-out infinite",
+                        }} />
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#1a6b47", textTransform: "uppercase", letterSpacing: "0.14em" }}>Live</span>
+                      </div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Platform Activity</div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[12px] font-semibold font-mono tabular-nums">{a.percentage}%</span>
-                      <div className="text-[10px] text-muted-foreground font-mono">${a.value?.toLocaleString()}</div>
-                    </div>
+                    <RefreshCw size={13} color="#9ca3af" style={{ animation: "spin-slow 4s linear infinite" }} />
                   </div>
-                ))}
+                </div>
+
+                <div style={{ flex: 1, overflowY: "hidden", position: "relative" }}>
+                  <div style={{ overflowY: "hidden", height: "100%" }}>
+                    {feed.map((trade, idx) => (
+                      <div
+                        key={trade.id}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 10,
+                          padding: "10px 18px",
+                          borderBottom: "1px solid rgba(230,232,235,0.4)",
+                          opacity: idx === 0 ? 1 : Math.max(0.35, 1 - idx * 0.045),
+                          transform: idx === 0 ? "translateY(0)" : undefined,
+                          animation: idx === 0 ? "slide-in 0.35s ease" : undefined,
+                          transition: "opacity 0.3s",
+                          background: idx === 0 ? "rgba(255,255,255,0.5)" : "transparent",
+                        }}
+                      >
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 8,
+                          background: "rgba(245,246,247,0.9)",
+                          border: "1px solid #E6E8EB",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 7, fontWeight: 800, color: "#0F172A", flexShrink: 0,
+                        }}>{trade.asset.symbol.slice(0,3)}</div>
+
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 1 }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", fontFamily: "monospace" }}>{trade.user}</span>
+                            <span style={{
+                              fontSize: 8, fontWeight: 600, color: trade.side.includes("Long") || trade.side === "Bought" ? GAIN : LOSS,
+                              background: (trade.side.includes("Long") || trade.side === "Bought") ? `${GAIN}12` : `${LOSS}12`,
+                              padding: "1px 6px", borderRadius: 20,
+                            }}>{trade.side}</span>
+                          </div>
+                          <div style={{ fontSize: 10, color: "#9ca3af" }}>{trade.asset.name} · {trade.asset.cat}</div>
+                        </div>
+
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: trade.positive ? GAIN : LOSS, fontFamily: "monospace" }}>
+                            {trade.positive ? "+" : "−"}${fmtUSD(trade.change)}
+                          </div>
+                          <div style={{ fontSize: 9, color: "#9ca3af" }}>{trade.ago}s ago</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* News */}
+              {news && news.length > 0 && (
+                <div style={{
+                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18,
+                  overflow: "hidden",
+                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+                }}>
+                  <div style={{ padding: "16px 20px 12px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Market Insights</div>
+                  </div>
+                  <div>
+                    {news.slice(0, 3).map(item => (
+                      <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "block", padding: "13px 20px", borderBottom: "1px solid rgba(230,232,235,0.5)", textDecoration: "none", transition: "background 0.12s" }}
+                        className="hover:bg-white/50">
+                        <div style={{ fontSize: 9, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
+                          {item.source} · {new Date(item.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#374151", fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ════ PORTFOLIO TAB ════ */}
+        {tab === "portfolio" && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+            <div className="xl:col-span-2 space-y-5">
+
+              {/* Chart */}
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Performance</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Portfolio Value Over Time</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 2, background: "rgba(245,246,247,0.8)", padding: 3, borderRadius: 10 }}>
+                    {(["ytd","1y","3y","all"] as const).map(p => (
+                      <button key={p} onClick={() => setPeriod(p)} style={{
+                        padding: "5px 13px", borderRadius: 8, fontSize: 10, fontWeight: 600,
+                        border: "none", cursor: "pointer", textTransform: "uppercase",
+                        background: period === p ? "white" : "transparent",
+                        color: period === p ? "#0F172A" : "#9ca3af",
+                        boxShadow: period === p ? "0 1px 4px rgba(16,24,40,0.08)" : "none",
+                        transition: "all 0.15s",
+                      }}>{p}</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: "16px 8px", height: 260 }}>
+                  {performance?.data ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={performance.data} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="perfG" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={positive ? GAIN : LOSS} stopOpacity={0.12} />
+                            <stop offset="100%" stopColor={positive ? GAIN : LOSS} stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} />
+                        <YAxis domain={["auto","auto"]} tick={{ fontSize: 9, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} width={44} />
+                        <Tooltip
+                          contentStyle={{ fontSize: 11, border: "1px solid rgba(255,255,255,0.9)", borderRadius: 12, boxShadow: "0 8px 24px rgba(16,24,40,0.12)", padding: "8px 14px", background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)" }}
+                          itemStyle={{ color: "#0F172A", fontWeight: 600 }}
+                          formatter={(v: number) => [`$${v.toLocaleString()}`, "Value"]}
+                          labelStyle={{ color: "#9ca3af", fontSize: 10 }}
+                        />
+                        <Area type="monotone" dataKey="value" stroke={positive ? GAIN : LOSS} strokeWidth={1.5} fill="url(#perfG)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center" style={{ color: "#9ca3af", fontSize: 12 }}>No data available</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Holdings table */}
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+              }}>
+                <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Positions</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>All Holdings</div>
+                </div>
+                {lh ? (
+                  <div className="flex items-center justify-center py-12"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid rgba(230,232,235,0.7)", background: "rgba(245,246,247,0.5)" }}>
+                          {["Instrument","Last Price","24h","Qty","Value","Allocation"].map(h => (
+                            <th key={h} style={{ padding: "11px 16px", textAlign: h === "Instrument" ? "left" : "right", fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {holdings?.map((h) => {
+                          const gain = h.gainLossPercentage >= 0;
+                          const alloc = ((h.currentValue / (summary?.totalAssets || 1)) * 100).toFixed(1);
+                          return (
+                            <tr key={h.id} style={{ borderBottom: "1px solid rgba(230,232,235,0.5)", transition: "background 0.1s" }}
+                              className="hover:bg-white/40">
+                              <td style={{ padding: "13px 16px" }}>
+                                <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+                                  <div style={{ width: 32, height: 32, borderRadius: 9, background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 800, color: "#0F172A" }}>
+                                    {h.symbol.slice(0,2).toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
+                                    <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>
+                                  </div>
+                                </Link>
+                              </td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: "#0F172A" }}>${h.currentPrice.toLocaleString()}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: gain ? GAIN : LOSS }}>{gain ? "+" : ""}{h.gainLossPercentage}%</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontFamily: "monospace", color: "#6B7280" }}>{h.quantity}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right", fontSize: 12, fontWeight: 600, fontFamily: "monospace", color: "#0F172A" }}>${h.currentValue.toLocaleString()}</td>
+                              <td style={{ padding: "13px 16px", textAlign: "right" }}>
+                                <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                                  <div style={{ width: 48, height: 3, borderRadius: 99, background: "rgba(230,232,235,0.7)" }}>
+                                    <div style={{ width: `${alloc}%`, height: "100%", borderRadius: 99, background: "#162d4a" }} />
+                                  </div>
+                                  <span style={{ fontSize: 10, fontFamily: "monospace", color: "#6B7280" }}>{alloc}%</span>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
 
-          {/* Market Insights */}
-          <div className={`${CARD} ${CARD_SHADOW} overflow-hidden`}>
-            <div className="px-6 pt-5 pb-4 border-b border-[#E6E8EB]">
-              <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-1">Intelligence</div>
-              <div className="text-[13px] font-semibold text-foreground">Market Insights</div>
-            </div>
-            <div className="divide-y divide-[#E6E8EB]">
-              {news?.map((item) => (
-                <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"
-                  className="block px-6 py-4 hover:bg-[#F5F6F7] transition-colors group">
-                  <div className="text-[9px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5 flex items-center gap-1.5">
-                    <span>{item.source}</span>
-                    <span className="opacity-30">·</span>
-                    <span>{new Date(item.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+            {/* Right: allocation + news */}
+            <div className="space-y-5">
+              <div style={{
+                background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
+                boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+              }}>
+                <div style={{ padding: "20px 22px 16px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 3 }}>Allocation</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Asset Distribution</div>
+                </div>
+                <div style={{ padding: "20px 22px" }}>
+                  {assetMix?.allocations && (
+                    <div style={{ height: 160, display: "flex", justifyContent: "center", marginBottom: 20 }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={assetMix.allocations} cx="50%" cy="50%" innerRadius={50} outerRadius={68} paddingAngle={3} dataKey="value">
+                            {assetMix.allocations.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />)}
+                          </Pie>
+                          <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`}
+                            contentStyle={{ fontSize: 10, border: "1px solid rgba(255,255,255,0.9)", borderRadius: 10, padding: "6px 10px", background: "rgba(255,255,255,0.9)" }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {assetMix?.allocations.map((a, i) => (
+                      <div key={a.assetType} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: PIE_COLORS[i % PIE_COLORS.length], flexShrink: 0 }} />
+                          <span style={{ fontSize: 12, color: "#374151", textTransform: "capitalize" }}>{a.assetType}</span>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, fontFamily: "monospace" }}>{a.percentage}%</div>
+                          <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>${a.value?.toLocaleString()}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <h4 className="text-[12px] font-medium text-foreground leading-relaxed line-clamp-2 group-hover:text-muted-foreground transition-colors">
-                    {item.title}
-                  </h4>
-                </a>
-              ))}
+                </div>
+              </div>
+
+              {news && news.length > 0 && (
+                <div style={{
+                  background: "rgba(255,255,255,0.75)", backdropFilter: "blur(28px)",
+                  border: "1px solid rgba(255,255,255,0.9)", borderRadius: 18, overflow: "hidden",
+                  boxShadow: "0 4px 28px rgba(16,24,40,0.07)",
+                }}>
+                  <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 2 }}>Intelligence</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Market Insights</div>
+                  </div>
+                  {news.map(item => (
+                    <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", padding: "13px 20px", borderBottom: "1px solid rgba(230,232,235,0.5)", textDecoration: "none", transition: "background 0.12s" }}
+                      className="hover:bg-white/50">
+                      <div style={{ fontSize: 9, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 4 }}>
+                        {item.source} · {new Date(item.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#374151", fontWeight: 500, lineHeight: 1.5 }} className="line-clamp-2">{item.title}</div>
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
+
+        {/* ════ CONVERT TAB ════ */}
+        {tab === "convert" && (
+          <div style={{ maxWidth: 520, margin: "0 auto" }}>
+            <div style={{
+              background: "rgba(255,255,255,0.82)", backdropFilter: "blur(32px)",
+              border: "1px solid rgba(255,255,255,0.95)", borderRadius: 22,
+              boxShadow: "0 8px 40px rgba(16,24,40,0.10),0 0 0 1px rgba(255,255,255,0.6)",
+              overflow: "hidden",
+            }}>
+              <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid rgba(230,232,235,0.7)" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 4 }}>Swap</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#0F172A" }}>Convert Assets</div>
+                <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Instantly exchange between assets at live rates</div>
+              </div>
+
+              <div style={{ padding: "24px 28px" }}>
+                {/* From */}
+                <div style={{ marginBottom: 8 }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Pay</label>
+                  <div style={{
+                    display: "flex", gap: 10, alignItems: "center",
+                    background: "rgba(245,246,247,0.8)", border: "1.5px solid rgba(230,232,235,0.9)",
+                    borderRadius: 14, padding: "14px 16px",
+                  }}>
+                    <select value={fromAsset} onChange={e => setFromAsset(e.target.value)} style={{
+                      background: "white", border: "1px solid #E6E8EB", borderRadius: 9,
+                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#0F172A",
+                      outline: "none", cursor: "pointer",
+                    }}>
+                      {CONVERT_ASSETS.map(a => <option key={a.symbol} value={a.symbol}>{a.symbol}</option>)}
+                    </select>
+                    <input
+                      type="number"
+                      value={fromAmt}
+                      onChange={e => { setFromAmt(e.target.value); setConvertDone(false); }}
+                      style={{
+                        flex: 1, background: "none", border: "none", outline: "none",
+                        fontSize: 20, fontWeight: 700, color: "#0F172A", fontFamily: "monospace",
+                        textAlign: "right",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Swap button */}
+                <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}>
+                  <button onClick={() => { const tmp = fromAsset; setFromAsset(toAsset); setToAsset(tmp); setConvertDone(false); }} style={{
+                    width: 36, height: 36, borderRadius: "50%",
+                    background: "white", border: "1.5px solid #E6E8EB",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", boxShadow: "0 2px 8px rgba(16,24,40,0.08)",
+                    transition: "transform 0.2s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "rotate(180deg)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "rotate(0deg)")}>
+                    <ArrowLeftRight size={14} color="#6B7280" />
+                  </button>
+                </div>
+
+                {/* To */}
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.14em", display: "block", marginBottom: 8 }}>You Receive</label>
+                  <div style={{
+                    display: "flex", gap: 10, alignItems: "center",
+                    background: "rgba(245,246,247,0.8)", border: "1.5px solid rgba(230,232,235,0.9)",
+                    borderRadius: 14, padding: "14px 16px",
+                  }}>
+                    <select value={toAsset} onChange={e => { setToAsset(e.target.value); setConvertDone(false); }} style={{
+                      background: "white", border: "1px solid #E6E8EB", borderRadius: 9,
+                      padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#0F172A",
+                      outline: "none", cursor: "pointer",
+                    }}>
+                      {CONVERT_ASSETS.filter(a => a.symbol !== fromAsset).map(a => <option key={a.symbol} value={a.symbol}>{a.symbol}</option>)}
+                    </select>
+                    <div style={{
+                      flex: 1, fontSize: 20, fontWeight: 700, color: "#0F172A",
+                      fontFamily: "monospace", textAlign: "right",
+                    }}>
+                      {isNaN(toNum) ? "—" : toNum < 0.001 ? toNum.toExponential(4) : toNum < 1 ? toNum.toFixed(6) : toNum.toFixed(4)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rate info */}
+                <div style={{
+                  background: "rgba(245,246,247,0.7)", borderRadius: 12, padding: "12px 16px",
+                  marginBottom: 20, display: "flex", justifyContent: "space-between",
+                }}>
+                  <span style={{ fontSize: 11, color: "#6B7280" }}>Exchange Rate</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A", fontFamily: "monospace" }}>
+                    1 {fromAsset} ≈ {(fromData?.rate / toData?.rate).toFixed(6)} {toAsset}
+                  </span>
+                </div>
+                <div style={{
+                  background: "rgba(245,246,247,0.7)", borderRadius: 12, padding: "12px 16px",
+                  marginBottom: 24, display: "flex", justifyContent: "space-between",
+                }}>
+                  <span style={{ fontSize: 11, color: "#6B7280" }}>Network Fee</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#0F172A" }}>$0.00 (waived)</span>
+                </div>
+
+                <button onClick={handleConvert} disabled={converting || fromNum <= 0} style={{
+                  width: "100%", padding: "15px", borderRadius: 14, fontSize: 13, fontWeight: 700,
+                  background: convertDone ? "#1a6b47" : "#0d1520", color: "white", border: "none",
+                  cursor: converting || fromNum <= 0 ? "not-allowed" : "pointer",
+                  opacity: fromNum <= 0 ? 0.5 : 1,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  letterSpacing: "0.04em", transition: "background 0.3s",
+                  boxShadow: "0 4px 16px rgba(13,21,32,0.2)",
+                }}>
+                  {converting ? (
+                    <><Loader2 size={15} style={{ animation: "spin 1s linear infinite" }} /> Processing…</>
+                  ) : convertDone ? (
+                    "✓ Conversion Complete"
+                  ) : (
+                    `Convert ${fromAmt} ${fromAsset} → ${toAsset}`
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Disclaimer */}
+            <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
+              Rates are indicative only. Actual execution prices may vary.
+              Conversions are subject to account verification and platform terms.
+            </p>
+          </div>
+        )}
       </div>
+
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.8); opacity: 0.3; }
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes slide-in {
+          from { opacity: 0; transform: translateY(-10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

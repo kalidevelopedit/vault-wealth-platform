@@ -35,6 +35,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? user.fullName.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
     : "U";
 
+  const uid = user?.id ? `VW-${String(user.id).padStart(6, "0")}` : "VW-000000";
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -75,7 +77,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </div>
             <div className="min-w-0">
               <p className="text-white/80 text-[11px] font-medium truncate leading-none mb-0.5">{user?.fullName || "User"}</p>
-              <p className="text-white/28 text-[10px] truncate">{user?.email}</p>
+              <p className="text-white/28 text-[10px] truncate font-mono">{uid}</p>
             </div>
           </div>
           <button
