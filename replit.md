@@ -24,7 +24,30 @@ All marketing pages use the shared `MarketingPage` component at `src/components/
 - BLUE: `#3b82f6` (primary CTA) | GAIN: `#22c55e` | LOSS: `#ef4444`
 - Hero gradient: `linear-gradient(135deg,#3b30a8 0%,#2563eb 55%,#1e40af 100%)` with `0 8px 40px rgba(59,130,246,0.24)` glow
 - **Pages redesigned**: Login, Dashboard (all 3 tabs), Profile (3-tab w/ portfolio card), Wallet (hero card + ledger)
+- **Admin portal**: Full dark redesign — stat cards, tabbed user directory (with frozen filter), Applications queue
 - **Marketing site**: Neutral institutional palette — no accent colors on marketing pages, white pill CTAs on dark backgrounds.
+
+## Auth & Account Status Flow
+
+- **Login redirect fix**: Uses `useEffect` watching the `user` state to redirect (eliminates race condition)
+- **Frozen accounts**: `is_frozen` + `frozen_reason` columns on users table. Login returns 403 `account_frozen` error → WhatsApp popup shown. ProtectedRoute also checks `isFrozen` for already-logged-in users.
+- **Admin passcode**: `2468`
+- **Demo account**: `demo@vestplatform.com` / `demo1234` (KYC approved, onboarding complete)
+
+## Admin Portal — Features
+
+| Feature | Implementation |
+|---|---|
+| User directory | Dark table — name, email, country, portfolio, KYC status, onboarding |
+| Applications queue | KYC pending approval/decline flow with email notifications |
+| Freeze/Unfreeze | `PATCH /api/admin/users/:id/freeze` → toggles `is_frozen` |
+| Delete user | `DELETE /api/admin/users/:id` → cascades all related data |
+| Set asset position | `POST /api/admin/users/:id/assets` → set qty/avg-cost for any symbol |
+| Set cash balance | `PATCH /api/admin/users/:id/cash` → override available cash |
+| Add transaction | `POST /api/admin/users/:id/transactions` → adds deposit/withdraw/bank/crypto entries |
+| Frozen popup | Shows WhatsApp support link (`wa.me/18886555555`) when account suspended |
+| KYC decision | Approve/Reject/Flag with internal compliance notes |
+| Activity timeline | Full audit log of all user events |
 
 ## Stack
 

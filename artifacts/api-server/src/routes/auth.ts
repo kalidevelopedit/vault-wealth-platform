@@ -84,6 +84,10 @@ router.post("/login", async (req, res) => {
       res.status(401).json({ error: "invalid_credentials", message: "Invalid email or password" });
       return;
     }
+    if ((user as any).isFrozen) {
+      res.status(403).json({ error: "account_frozen", message: "Your account has been suspended. Please contact support." });
+      return;
+    }
     await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, user.id));
     await db.insert(activityLogTable).values({
       userId: user.id,
@@ -146,6 +150,8 @@ router.get("/me", async (req, res) => {
       mustSetPin: user.mustSetPin ?? false,
       hasPin: !!user.pinHash,
       pinVerified: (req.session as any).pinVerified ?? false,
+      isFrozen: (user as any).isFrozen ?? false,
+      frozenReason: (user as any).frozenReason ?? null,
     });
   } catch (err) {
     req.log.error({ err }, "Get me error");

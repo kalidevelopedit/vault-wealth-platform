@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -17,8 +17,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
-  const { login, loginAsDemo } = useAuth();
+  const { login, user } = useAuth();
   const [, setLocation] = useLocation();
+  const [frozenPopup, setFrozenPopup] = useState(false);
+
+  // Redirect to dashboard once authenticated (fixes timing race)
+  useEffect(() => {
+    if (user && !(user as any).isFrozen) {
+      setLocation("/dashboard");
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +35,15 @@ export default function Login() {
     try {
       await login({ email, password });
       toast.success("Welcome back");
-      setLocation("/dashboard");
+      // redirect happens via useEffect when user state updates
     } catch (error: any) {
-      toast.error(error.message || "Invalid credentials");
+      const errCode = error?.data?.error;
+      const errMsg  = error?.data?.message || error?.message || "";
+      if (errCode === "account_frozen" || errMsg.includes("suspended")) {
+        setFrozenPopup(true);
+      } else {
+        toast.error(errMsg || "Invalid email or password");
+      }
     } finally {
       setLoading(false);
     }
@@ -38,22 +52,57 @@ export default function Login() {
   const handleDemo = async () => {
     setDemoLoading(true);
     try {
-      if (loginAsDemo) {
-        await loginAsDemo();
-      } else {
-        await login({ email: "demo@vestplatform.com", password: "demo1234" });
-      }
-      toast.success("Logged in as demo user");
-      setLocation("/dashboard");
+      await login({ email: "demo@vestplatform.com", password: "demo1234" });
+      toast.success("Welcome, Demo User!");
+      // redirect via useEffect
     } catch (err: any) {
-      toast.error(err.message || "Demo login failed");
+      toast.error(err?.data?.message || err?.message || "Demo login failed");
     } finally {
       setDemoLoading(false);
     }
   };
 
+  const WHATSAPP_LINK = "https://wa.me/18886555555?text=My%20account%20has%20been%20frozen.%20Please%20help.";
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: BG }}>
+
+      {/* ── Frozen Account Popup ── */}
+      {frozenPopup && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 999, display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)",
+        }}>
+          <div style={{
+            width: 400, background: "#0f1624", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20,
+            padding: "40px 36px", textAlign: "center", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+          }}>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "rgba(255,255,255,0.92)", margin: "0 0 10px", letterSpacing: "-0.02em" }}>Account Suspended</h2>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, margin: "0 0 28px" }}>
+              Your account has been temporarily suspended. Please contact our support team to resolve this issue and restore access to your account.
+            </p>
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%",
+              padding: "14px", borderRadius: 12, background: "#25D366", color: "#fff",
+              textDecoration: "none", fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
+              boxShadow: "0 4px 20px rgba(37,211,102,0.3)", marginBottom: 12,
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Contact Support via WhatsApp
+            </a>
+            <button onClick={() => setFrozenPopup(false)} style={{
+              width: "100%", padding: "12px", borderRadius: 12, background: "transparent",
+              border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.35)",
+              fontSize: 12, fontWeight: 600, cursor: "pointer",
+            }}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Left branding panel ── */}
       <div style={{

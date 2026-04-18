@@ -31,6 +31,8 @@ export const usersTable = pgTable("users", {
   pinHash: text("pin_hash"),
   mustSetPin: boolean("must_set_pin").default(false).notNull(),
   availableCash: text("available_cash").default("10000.00").notNull(),
+  isFrozen: boolean("is_frozen").default(false).notNull(),
+  frozenReason: text("frozen_reason"),
   lastActive: timestamp("last_active"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

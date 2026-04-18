@@ -8,6 +8,8 @@ export interface ExtendedUser extends User {
   mustSetPin?: boolean;
   hasPin?: boolean;
   pinVerified?: boolean;
+  isFrozen?: boolean;
+  frozenReason?: string | null;
 }
 
 interface AuthContextType {

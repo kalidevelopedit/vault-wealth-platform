@@ -47,6 +47,7 @@ router.get("/stats", requireAdminSession, async (req, res) => {
     const verifiedUsers = allUsers.filter(u => u.kycStatus === "approved").length;
     const pendingKyc = allUsers.filter(u => u.kycStatus === "pending").length;
     const rejectedKyc = allUsers.filter(u => u.kycStatus === "rejected").length;
+    const frozenUsers = allUsers.filter(u => (u as any).isFrozen).length;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -76,6 +77,7 @@ router.get("/stats", requireAdminSession, async (req, res) => {
       verifiedUsers,
       pendingKyc,
       rejectedKyc,
+      frozenUsers,
       todaySignups,
       totalPlatformAssets: Math.round(totalAssets * 100) / 100,
       totalDeposits: Math.round(totalDeposits * 100) / 100,
@@ -113,7 +115,6 @@ router.get("/users", requireAdminSession, async (req, res) => {
     const total = allUsers.length;
     const paged = allUsers.slice(offset, offset + limit);
 
-    const userIds = paged.map(u => u.id);
     const holdings = await db
       .select({ h: holdingsTable, a: assetsTable })
       .from(holdingsTable)
@@ -151,6 +152,8 @@ router.get("/users", requireAdminSession, async (req, res) => {
         transactionCount: txCountByUser[u.id] ?? 0,
         lastActive: u.lastActive ? u.lastActive.toISOString() : null,
         createdAt: u.createdAt.toISOString(),
+        isFrozen: (u as any).isFrozen ?? false,
+        frozenReason: (u as any).frozenReason ?? null,
       };
     });
 
@@ -187,14 +190,14 @@ router.get("/users/:userId", requireAdminSession, async (req, res) => {
     const recentTx = await db.select().from(transactionsTable)
       .where(eq(transactionsTable.userId, userId))
       .orderBy(desc(transactionsTable.createdAt))
-      .limit(10);
+      .limit(20);
 
     const docs = await db.select().from(kycDocumentsTable).where(eq(kycDocumentsTable.userId, userId));
 
     const activity = await db.select().from(activityLogTable)
       .where(eq(activityLogTable.userId, userId))
       .orderBy(desc(activityLogTable.timestamp))
-      .limit(20);
+      .limit(30);
 
     const availableCash = parseFloat(user.availableCash);
     const totalPortfolioValue = availableCash + cryptoBalance + stockBalance + commodityBalance;
@@ -218,6 +221,9 @@ router.get("/users/:userId", requireAdminSession, async (req, res) => {
         investmentPurpose: (user as any).investmentPurpose ?? null,
         investmentAmount: (user as any).investmentAmount ?? null,
         onboardingComplete: user.onboardingComplete,
+        onboardingStep: user.onboardingStep,
+        isFrozen: (user as any).isFrozen ?? false,
+        frozenReason: (user as any).frozenReason ?? null,
         createdAt: user.createdAt.toISOString(),
       },
       balance: {
@@ -261,6 +267,7 @@ router.get("/users/:userId", requireAdminSession, async (req, res) => {
         status: t.status,
         createdAt: t.createdAt.toISOString(),
         logoUrl: t.logoUrl ?? null,
+        notes: (t as any).notes ?? null,
       })),
       kycDocuments: docs.map(d => ({
         id: d.id,
@@ -330,6 +337,178 @@ router.patch("/users/:userId/kyc", requireAdminSession, async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Update KYC status error");
     res.status(500).json({ error: "server_error", message: "Failed to update KYC status" });
+  }
+});
+
+// Freeze / Unfreeze user
+router.patch("/users/:userId/freeze", requireAdminSession, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { freeze, reason } = req.body;
+    const isFrozen = freeze === true;
+
+    await db.update(usersTable).set({
+      isFrozen,
+      frozenReason: isFrozen ? (reason ?? "Account suspended by admin") : null,
+      updatedAt: new Date(),
+    } as any).where(eq(usersTable.id, userId));
+
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: isFrozen ? "account_frozen" : "account_unfrozen",
+      description: isFrozen
+        ? `Account frozen${reason ? `: ${reason}` : ""}`
+        : "Account unfrozen by admin",
+    });
+
+    res.json({ message: isFrozen ? "Account frozen" : "Account unfrozen", isFrozen });
+  } catch (err) {
+    req.log.error({ err }, "Freeze user error");
+    res.status(500).json({ error: "server_error", message: "Failed to update freeze status" });
+  }
+});
+
+// Delete user
+router.delete("/users/:userId", requireAdminSession, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    await db.delete(activityLogTable).where(eq(activityLogTable.userId, userId));
+    await db.delete(kycDocumentsTable).where(eq(kycDocumentsTable.userId, userId));
+    await db.delete(transactionsTable).where(eq(transactionsTable.userId, userId));
+    await db.delete(holdingsTable).where(eq(holdingsTable.userId, userId));
+    await db.delete(usersTable).where(eq(usersTable.id, userId));
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    req.log.error({ err }, "Delete user error");
+    res.status(500).json({ error: "server_error", message: "Failed to delete user" });
+  }
+});
+
+// Update user cash balance
+router.patch("/users/:userId/cash", requireAdminSession, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { amount, notes } = req.body;
+    if (amount === undefined || isNaN(parseFloat(amount))) {
+      res.status(400).json({ error: "validation_error", message: "Valid amount required" });
+      return;
+    }
+    const newAmount = Math.max(0, parseFloat(amount));
+    await db.update(usersTable).set({
+      availableCash: newAmount.toFixed(2),
+      updatedAt: new Date(),
+    }).where(eq(usersTable.id, userId));
+
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "cash_adjusted",
+      description: `Available cash set to $${newAmount.toFixed(2)}${notes ? `: ${notes}` : ""}`,
+    });
+
+    res.json({ message: "Cash balance updated", availableCash: newAmount });
+  } catch (err) {
+    req.log.error({ err }, "Update cash error");
+    res.status(500).json({ error: "server_error", message: "Failed to update cash" });
+  }
+});
+
+// Add or update a user holding (asset position)
+router.post("/users/:userId/assets", requireAdminSession, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { symbol, quantity, averageCost } = req.body;
+
+    if (!symbol || quantity === undefined) {
+      res.status(400).json({ error: "validation_error", message: "symbol and quantity required" });
+      return;
+    }
+
+    const [asset] = await db.select().from(assetsTable).where(eq(assetsTable.symbol, symbol.toUpperCase())).limit(1);
+    if (!asset) {
+      res.status(404).json({ error: "not_found", message: `Asset symbol ${symbol} not found` });
+      return;
+    }
+
+    const qty = parseFloat(quantity);
+    const cost = parseFloat(averageCost ?? asset.currentPrice);
+
+    const [existing] = await db.select().from(holdingsTable)
+      .where(and(eq(holdingsTable.userId, userId), eq(holdingsTable.assetId, asset.id)))
+      .limit(1);
+
+    if (qty <= 0) {
+      // Remove holding
+      if (existing) {
+        await db.delete(holdingsTable).where(eq(holdingsTable.id, existing.id));
+      }
+      await db.insert(activityLogTable).values({
+        userId, eventType: "holding_removed",
+        description: `Admin removed ${symbol} from portfolio`,
+      });
+      res.json({ message: `${symbol} holding removed` });
+      return;
+    }
+
+    if (existing) {
+      await db.update(holdingsTable).set({
+        quantity: qty.toFixed(8),
+        averageCost: cost.toFixed(4),
+        updatedAt: new Date(),
+      }).where(eq(holdingsTable.id, existing.id));
+    } else {
+      await db.insert(holdingsTable).values({
+        userId,
+        assetId: asset.id,
+        quantity: qty.toFixed(8),
+        averageCost: cost.toFixed(4),
+      });
+    }
+
+    await db.insert(activityLogTable).values({
+      userId, eventType: "holding_adjusted",
+      description: `Admin set ${symbol} position: ${qty} units @ $${cost.toFixed(2)}`,
+    });
+
+    res.json({ message: `${symbol} holding updated`, quantity: qty, averageCost: cost });
+  } catch (err) {
+    req.log.error({ err }, "Update holding error");
+    res.status(500).json({ error: "server_error", message: "Failed to update holding" });
+  }
+});
+
+// Add transaction to user activity
+router.post("/users/:userId/transactions", requireAdminSession, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const { type, amount, name, symbol, notes, status } = req.body;
+
+    if (!type || !amount) {
+      res.status(400).json({ error: "validation_error", message: "type and amount required" });
+      return;
+    }
+
+    const validTypes = ["deposit", "withdraw", "buy", "sell", "bank_withdrawal", "crypto_withdrawal"];
+    const txType = validTypes.includes(type) ? type : "withdraw";
+
+    await db.insert(transactionsTable).values({
+      userId,
+      type: txType as any,
+      amount: parseFloat(amount).toFixed(2),
+      name: name ?? null,
+      symbol: symbol ?? null,
+      status: (status ?? "completed") as any,
+    });
+
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "transaction_added",
+      description: `Admin added ${txType} of $${parseFloat(amount).toFixed(2)}${name ? ` (${name})` : ""}`,
+    });
+
+    res.json({ message: "Transaction added successfully" });
+  } catch (err) {
+    req.log.error({ err }, "Add transaction error");
+    res.status(500).json({ error: "server_error", message: "Failed to add transaction" });
   }
 });
 
