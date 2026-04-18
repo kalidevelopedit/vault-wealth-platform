@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "wouter";
-import { Search, X, ChevronDown } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { Search, X, ChevronDown, Zap } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 const NAV = [
   {
@@ -156,7 +157,20 @@ export function HomeNavbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [demoLoading, setDemoLoading] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const { login } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const handleDemo = async () => {
+    setDemoLoading(true);
+    try {
+      await login({ email: "demo@vestplatform.com", password: "demo1234" });
+      setLocation("/dashboard");
+    } catch {
+      setDemoLoading(false);
+    }
+  };
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -210,6 +224,35 @@ export function HomeNavbar() {
                 <Search size={19} color="#374151" />
               </button>
             )}
+            {/* ── DEMO BUTTON ── remove before launch ── */}
+            <button
+              onClick={handleDemo}
+              disabled={demoLoading}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                fontSize: "12px", fontWeight: 700,
+                color: "#92400e",
+                background: demoLoading
+                  ? "rgba(245,158,11,0.08)"
+                  : "linear-gradient(135deg,rgba(245,158,11,0.12),rgba(251,191,36,0.14))",
+                border: "1.5px solid rgba(245,158,11,0.45)",
+                padding: "7px 16px",
+                cursor: demoLoading ? "wait" : "pointer",
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+                transition: "all 0.14s",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: demoLoading ? "none" : "0 0 12px rgba(245,158,11,0.2)",
+              }}
+              onMouseEnter={e => !demoLoading && (e.currentTarget.style.boxShadow = "0 0 20px rgba(245,158,11,0.35)")}
+              onMouseLeave={e => !demoLoading && (e.currentTarget.style.boxShadow = "0 0 12px rgba(245,158,11,0.2)")}
+              title="Auto-login with demo account — remove before launch"
+            >
+              <Zap size={12} color="#d97706" strokeWidth={2.5} />
+              {demoLoading ? "Loading…" : "Demo"}
+            </button>
+
             <Link href="/login" style={{
               fontSize: "14px", fontWeight: 600, color: "#111",
               textDecoration: "none", padding: "8px 18px",
