@@ -28,6 +28,8 @@ export const usersTable = pgTable("users", {
   investmentAmount: text("investment_amount"),
   selfieStatus: text("selfie_status").default("not_submitted").notNull(),
   selfieVideoUrl: text("selfie_video_url"),
+  pinHash: text("pin_hash"),
+  mustSetPin: boolean("must_set_pin").default(false).notNull(),
   availableCash: text("available_cash").default("10000.00").notNull(),
   lastActive: timestamp("last_active"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -4,12 +4,19 @@ import type { User, LoginRequest, RegisterRequest } from "@workspace/api-client-
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
+export interface ExtendedUser extends User {
+  mustSetPin?: boolean;
+  hasPin?: boolean;
+  pinVerified?: boolean;
+}
+
 interface AuthContextType {
-  user: User | undefined;
+  user: ExtendedUser | undefined;
   isLoading: boolean;
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,8 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLocation("/login");
   };
 
+  const refreshUser = async () => {
+    await refetch();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user: user as ExtendedUser | undefined, isLoading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

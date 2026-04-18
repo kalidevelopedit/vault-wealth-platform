@@ -2,7 +2,21 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { usersTable, holdingsTable, assetsTable, transactionsTable, kycDocumentsTable, activityLogTable } from "@workspace/db/schema";
 import { eq, and, ilike, or, desc, sql, count } from "drizzle-orm";
-import { sendKycApprovedEmail, sendKycRejectedEmail } from "../lib/email.js";
+import crypto from "crypto";
+import { sendKycApprovedEmail, sendKycRejectedEmail, sendAccountActivatedEmail } from "../lib/email.js";
+
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password + "salt_investment_platform").digest("hex");
+}
+
+function generateTempPassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let result = "";
+  for (let i = 0; i < 8; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
 
 const router: IRouter = Router();
 
@@ -297,6 +311,15 @@ router.patch("/users/:userId/kyc", requireAdminSession, async (req, res) => {
 
     if (userBefore) {
       if (status === "approved") {
+        const tempPassword = generateTempPassword();
+        const passwordHash = hashPassword(tempPassword);
+        await db.update(usersTable).set({
+          passwordHash,
+          mustSetPin: true,
+          pinHash: null,
+          updatedAt: new Date(),
+        }).where(eq(usersTable.id, userId));
+        sendAccountActivatedEmail({ email: userBefore.email, fullName: userBefore.fullName, tempPassword }).catch(() => {});
         sendKycApprovedEmail({ email: userBefore.email, fullName: userBefore.fullName }).catch(() => {});
       } else if (status === "rejected") {
         sendKycRejectedEmail({ email: userBefore.email, fullName: userBefore.fullName }, notes).catch(() => {});

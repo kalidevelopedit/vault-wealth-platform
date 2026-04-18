@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import { usersTable, activityLogTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
-import { sendWelcomeEmail } from "../lib/email.js";
+import { sendWelcomeEmail, sendForgotPinEmail } from "../lib/email.js";
 
 const router: IRouter = Router();
 
@@ -143,10 +143,108 @@ router.get("/me", async (req, res) => {
       onboardingComplete: user.onboardingComplete,
       profilePhotoUrl: user.profilePhotoUrl ?? null,
       createdAt: user.createdAt.toISOString(),
+      mustSetPin: user.mustSetPin ?? false,
+      hasPin: !!user.pinHash,
+      pinVerified: (req.session as any).pinVerified ?? false,
     });
   } catch (err) {
     req.log.error({ err }, "Get me error");
     res.status(500).json({ error: "server_error", message: "Failed to get user" });
+  }
+});
+
+router.post("/set-pin", async (req, res) => {
+  const userId = (req.session as any).userId;
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
+    return;
+  }
+  try {
+    const { pin } = req.body;
+    if (!pin || !/^\d{6}$/.test(pin)) {
+      res.status(400).json({ error: "validation_error", message: "PIN must be exactly 6 digits" });
+      return;
+    }
+    const pinHash = hashPassword(pin);
+    await db.update(usersTable).set({
+      pinHash,
+      mustSetPin: false,
+      updatedAt: new Date(),
+    }).where(eq(usersTable.id, userId));
+    (req.session as any).pinVerified = true;
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "pin_set",
+      description: "Account passcode set",
+    });
+    res.json({ message: "Passcode set successfully" });
+  } catch (err) {
+    req.log.error({ err }, "Set PIN error");
+    res.status(500).json({ error: "server_error", message: "Failed to set passcode" });
+  }
+});
+
+router.post("/verify-pin", async (req, res) => {
+  const userId = (req.session as any).userId;
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
+    return;
+  }
+  try {
+    const { pin } = req.body;
+    if (!pin) {
+      res.status(400).json({ error: "validation_error", message: "PIN required" });
+      return;
+    }
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (!user || !user.pinHash) {
+      res.status(400).json({ error: "no_pin", message: "No passcode set for this account" });
+      return;
+    }
+    if (!verifyPassword(pin, user.pinHash)) {
+      res.status(401).json({ error: "invalid_pin", message: "Incorrect passcode. Please try again." });
+      return;
+    }
+    (req.session as any).pinVerified = true;
+    await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, userId));
+    res.json({ message: "Passcode verified" });
+  } catch (err) {
+    req.log.error({ err }, "Verify PIN error");
+    res.status(500).json({ error: "server_error", message: "Failed to verify passcode" });
+  }
+});
+
+router.post("/forgot-pin", async (req, res) => {
+  const userId = (req.session as any).userId;
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
+    return;
+  }
+  try {
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (!user) {
+      res.status(404).json({ error: "not_found", message: "User not found" });
+      return;
+    }
+    const tempPassword = Math.random().toString(36).slice(2, 10).toUpperCase();
+    const passwordHash = hashPassword(tempPassword);
+    await db.update(usersTable).set({
+      passwordHash,
+      pinHash: null,
+      mustSetPin: true,
+      updatedAt: new Date(),
+    }).where(eq(usersTable.id, userId));
+    (req.session as any).pinVerified = false;
+    sendForgotPinEmail({ email: user.email, fullName: user.fullName, tempPassword }).catch(() => {});
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "pin_reset_requested",
+      description: "Passcode reset requested",
+    });
+    res.json({ message: "Reset instructions sent" });
+  } catch (err) {
+    req.log.error({ err }, "Forgot PIN error");
+    res.status(500).json({ error: "server_error", message: "Failed to reset passcode" });
   }
 });
 

@@ -458,6 +458,56 @@ export async function sendKycRejectedEmail(user: { email: string; fullName: stri
   });
 }
 
+export async function sendAccountActivatedEmail(user: { email: string; fullName: string; tempPassword: string }): Promise<void> {
+  const firstName = user.fullName.split(" ")[0];
+  const html = baseLayout(`
+    <h1>Your Account Has Been Activated</h1>
+    <p>Hi ${firstName},</p>
+    <p>Great news! Your identity has been verified and your <strong>Vault Wealth</strong> account is now fully activated. You can now log in and start investing.</p>
+    <div class="info-box">
+      <p><span class="label">Email:</span> &nbsp;${user.email}</p>
+      <p style="margin-top:8px;"><span class="label">Temporary Password:</span></p>
+      <p style="font-size:22px; font-family:monospace; font-weight:900; color:#0d1520; letter-spacing:0.2em; margin:8px 0;">${user.tempPassword}</p>
+    </div>
+    <p><strong>Important:</strong> When you log in for the first time, you will be asked to create a secure 6-digit passcode. This passcode will be required every time you sign in.</p>
+    <a class="btn" href="https://vaultwealth.com/login">Log In to Your Account →</a>
+    <hr class="divider" />
+    <p style="font-size:12px; color:#8b9aae;">For security reasons, please do not share your temporary password with anyone. Change your passcode immediately after your first login. If you did not request this, contact us at support@vaultwealth.com</p>
+  `);
+
+  await sendEmail({
+    to: [{ email: user.email, name: user.fullName }],
+    subject: "Your Vault Wealth account is activated — login details inside",
+    htmlContent: html,
+    textContent: `Hi ${firstName}, your Vault Wealth account has been activated. Your temporary password is: ${user.tempPassword}. Please log in and set your 6-digit passcode.`,
+  });
+}
+
+export async function sendForgotPinEmail(user: { email: string; fullName: string; tempPassword: string }): Promise<void> {
+  const firstName = user.fullName.split(" ")[0];
+  const html = baseLayout(`
+    <h1>Passcode Reset</h1>
+    <p>Hi ${firstName},</p>
+    <p>A passcode reset was requested for your Vault Wealth account. Use the temporary password below to log in, then you'll be prompted to create a new passcode.</p>
+    <div class="info-box">
+      <p><span class="label">Email:</span> &nbsp;${user.email}</p>
+      <p style="margin-top:8px;"><span class="label">Temporary Password:</span></p>
+      <p style="font-size:22px; font-family:monospace; font-weight:900; color:#0d1520; letter-spacing:0.2em; margin:8px 0;">${user.tempPassword}</p>
+    </div>
+    <p>After logging in, you'll be asked to create a new 6-digit passcode.</p>
+    <a class="btn" href="https://vaultwealth.com/login">Log In Now →</a>
+    <hr class="divider" />
+    <p style="font-size:12px; color:#8b9aae;">If you did not request a passcode reset, please contact us immediately at support@vaultwealth.com</p>
+  `);
+
+  await sendEmail({
+    to: [{ email: user.email, name: user.fullName }],
+    subject: "Vault Wealth — Passcode Reset",
+    htmlContent: html,
+    textContent: `Hi ${firstName}, your temporary password is: ${user.tempPassword}. Log in and create a new passcode.`,
+  });
+}
+
 export async function sendDepositConfirmationEmail(user: { email: string; fullName: string }, amount: number): Promise<void> {
   const formattedAmount = amount.toLocaleString("en-US", { style: "currency", currency: "USD" });
   const html = baseLayout(`

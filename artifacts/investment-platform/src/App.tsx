@@ -1,14 +1,27 @@
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 // Components
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Loader2 } from "lucide-react";
+
+// PIN Pages
+import PinSetup from "@/pages/PinSetup";
+import PinEntry from "@/pages/PinEntry";
+
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location]);
+  return null;
+}
 
 // Public Pages
 import Home from "@/pages/Home";
@@ -167,7 +180,7 @@ function PendingApproval({ user }: { user: any }) {
 
 // Auth Guard Wrapper
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout, refreshUser } = useAuth();
   
   if (isLoading) {
     return (
@@ -189,6 +202,22 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   // Show pending approval screen if onboarding complete but KYC still pending
   if (user.onboardingComplete && user.kycStatus === "pending") {
     return <PendingApproval user={user} />;
+  }
+
+  // First login: must set a PIN
+  if (user.mustSetPin) {
+    return <PinSetup onComplete={refreshUser} />;
+  }
+
+  // Has PIN but hasn't verified this session
+  if (user.hasPin && !user.pinVerified) {
+    return (
+      <PinEntry
+        userEmail={user.email ?? ""}
+        onSuccess={refreshUser}
+        onLogout={logout}
+      />
+    );
   }
 
   return (
@@ -290,6 +319,7 @@ function App() {
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
         <AuthProvider>
           <TooltipProvider>
+            <ScrollToTop />
             <Router />
             <Toaster />
           </TooltipProvider>
