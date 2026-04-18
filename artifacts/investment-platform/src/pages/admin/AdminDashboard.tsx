@@ -1,268 +1,265 @@
 import { useState } from "react";
 import { useGetAdminStats, useGetAdminUsers, useUpdateUserKycStatus } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { Loader2, Search, Users, CheckCircle, Clock, XCircle, TrendingUp, Snowflake } from "lucide-react";
+import {
+  Loader2, Search, Users, CheckCircle2, Clock, XCircle,
+  TrendingUp, Snowflake, ChevronRight, CheckCircle,
+} from "lucide-react";
 
-const BG = "#080c14";
-const CARD = "#0f1523";
-const BORD = "rgba(255,255,255,0.07)";
-const TEXT = "rgba(255,255,255,0.92)";
-const MUTED = "rgba(255,255,255,0.36)";
-const BLUE = "#3b82f6";
+const CARD  = "#111827";
+const BORD  = "rgba(255,255,255,0.07)";
+const TEXT  = "rgba(255,255,255,0.92)";
+const MUTED = "rgba(255,255,255,0.38)";
+const BLUE  = "#3b82f6";
+const GAIN  = "#22c55e";
+const LOSS  = "#ef4444";
+const AMB   = "#f59e0b";
 
-const KYC_COLOR: Record<string, { bg: string; text: string; dot: string }> = {
-  approved:    { bg: "rgba(34,197,94,0.1)",   text: "#22c55e", dot: "#22c55e" },
-  pending:     { bg: "rgba(245,158,11,0.1)",  text: "#f59e0b", dot: "#f59e0b" },
-  rejected:    { bg: "rgba(239,68,68,0.1)",   text: "#ef4444", dot: "#ef4444" },
-  flagged:     { bg: "rgba(249,115,22,0.1)",  text: "#f97316", dot: "#f97316" },
-  not_started: { bg: "rgba(107,114,128,0.1)", text: "#6b7280", dot: "#6b7280" },
+const KYC_COLOR: Record<string, { bg: string; fg: string }> = {
+  approved:    { bg: "rgba(34,197,94,0.12)",  fg: "#22c55e" },
+  pending:     { bg: "rgba(245,158,11,0.12)", fg: "#f59e0b" },
+  rejected:    { bg: "rgba(239,68,68,0.12)",  fg: "#ef4444" },
+  flagged:     { bg: "rgba(249,115,22,0.12)", fg: "#f97316" },
+  not_started: { bg: "rgba(107,114,128,0.1)", fg: "#6b7280" },
 };
+
+const FILTERS = [
+  { id: "all",      label: "All" },
+  { id: "approved", label: "Approved" },
+  { id: "pending",  label: "Pending" },
+  { id: "rejected", label: "Rejected" },
+  { id: "frozen",   label: "Frozen" },
+];
 
 export default function AdminDashboard() {
   const { data: stats, isLoading: sl } = useGetAdminStats();
   const { data: users, isLoading: ul, refetch } = useGetAdminUsers({ limit: 100 });
   const updateKyc = useUpdateUserKycStatus();
-  const [search, setSearch] = useState("");
-  const [kycFilter, setKycFilter] = useState("all");
-  const [tab, setTab] = useState<"users" | "applications">("users");
-  const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [search, setSearch]     = useState("");
+  const [filter, setFilter]     = useState("all");
+  const [tab, setTab]           = useState<"users" | "applications">("users");
+  const [actioning, setActioning] = useState<number | null>(null);
 
   const allUsers = users?.users ?? [];
-  const filtered = allUsers.filter((u) => {
-    const matchSearch = !search
-      || u.fullName.toLowerCase().includes(search.toLowerCase())
-      || u.email.toLowerCase().includes(search.toLowerCase());
-    const matchKyc = kycFilter === "all" || u.kycStatus === kycFilter;
-    const matchFrozen = kycFilter === "frozen" ? (u as any).isFrozen : !((u as any).isFrozen && kycFilter !== "all");
-    if (kycFilter === "frozen") return (u as any).isFrozen && matchSearch;
+
+  const displayed = allUsers.filter(u => {
+    const q = search.toLowerCase();
+    const matchSearch = !search || u.fullName.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+    if (filter === "frozen") return (u as any).isFrozen && matchSearch;
+    const matchKyc = filter === "all" || u.kycStatus === filter;
     return matchSearch && matchKyc;
   });
 
-  const pendingApplications = allUsers.filter(u => u.kycStatus === "pending" && u.onboardingComplete);
+  const pending = allUsers.filter(u => u.kycStatus === "pending" && u.onboardingComplete);
 
-  const handleApprove = async (userId: number) => {
-    setActionLoading(userId);
-    try {
-      await updateKyc.mutateAsync({ userId, data: { status: "approved", notes: "Approved via admin dashboard" } });
-      refetch();
-    } catch { } finally { setActionLoading(null); }
+  const doApprove = async (id: number) => {
+    setActioning(id);
+    try { await updateKyc.mutateAsync({ userId: id, data: { status: "approved", notes: "Approved via admin" } }); refetch(); }
+    catch {} finally { setActioning(null); }
+  };
+  const doDecline = async (id: number) => {
+    setActioning(id);
+    try { await updateKyc.mutateAsync({ userId: id, data: { status: "rejected", notes: "Declined via admin" } }); refetch(); }
+    catch {} finally { setActioning(null); }
   };
 
-  const handleDecline = async (userId: number) => {
-    setActionLoading(userId);
-    try {
-      await updateKyc.mutateAsync({ userId, data: { status: "rejected", notes: "Declined via admin dashboard" } });
-      refetch();
-    } catch { } finally { setActionLoading(null); }
-  };
-
-  const statCards = [
-    { icon: Users,       label: "Total Users",      value: stats?.totalUsers,     color: BLUE },
-    { icon: CheckCircle, label: "KYC Verified",      value: stats?.verifiedUsers,  color: "#22c55e" },
-    { icon: Clock,       label: "Pending Review",    value: stats?.pendingKyc,     color: "#f59e0b" },
-    { icon: XCircle,     label: "Rejected",          value: stats?.rejectedKyc,    color: "#ef4444" },
-    { icon: Snowflake,   label: "Frozen Accounts",   value: (stats as any)?.frozenUsers ?? 0, color: "#a78bfa" },
-    { icon: TrendingUp,  label: "Platform AUM",
-      value: `$${((stats?.totalPlatformAssets || 0) / 1000).toFixed(1)}K`,
-      color: "#3b82f6" },
+  const statCards = sl ? [] : [
+    { icon: Users,        label: "Total Users",     value: stats?.totalUsers,      accent: BLUE,  bg: "rgba(59,130,246,0.1)"  },
+    { icon: CheckCircle2, label: "KYC Verified",    value: stats?.verifiedUsers,   accent: GAIN,  bg: "rgba(34,197,94,0.1)"  },
+    { icon: Clock,        label: "Pending Review",  value: stats?.pendingKyc,      accent: AMB,   bg: "rgba(245,158,11,0.1)" },
+    { icon: Snowflake,    label: "Frozen",          value: (stats as any)?.frozenUsers ?? 0, accent: "#a78bfa", bg: "rgba(167,139,250,0.1)" },
   ];
 
   return (
-    <div style={{ maxWidth: 1300, margin: "0 auto", padding: "32px 24px 60px", fontFamily: "Inter,system-ui,sans-serif" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", fontFamily: "Inter,system-ui,sans-serif" }}>
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .admin-row:hover { background: rgba(255,255,255,0.025) !important; }
+        .pill-filter:hover { background: rgba(255,255,255,0.07) !important; color: rgba(255,255,255,0.75) !important; }
+        .manage-btn:hover { background: rgba(59,130,246,0.2) !important; }
+        @media (max-width: 640px) {
+          .stat-grid { grid-template-columns: 1fr 1fr !important; }
+          .table-wrap table { min-width: 640px; }
+        }
+      `}</style>
 
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 4 }}>Administration</div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: TEXT, letterSpacing: "-0.02em", margin: 0 }}>Platform Dashboard</h1>
-        </div>
-        <div style={{ fontSize: 10, color: MUTED, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-          {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-        </div>
+      {/* Page title */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: MUTED, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Administration</div>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: TEXT, letterSpacing: "-0.025em", margin: 0 }}>Platform Dashboard</h1>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 14, marginBottom: 28 }}>
-        {sl ? (
-          <div style={{ gridColumn: "1/-1", padding: 32, display: "flex", justifyContent: "center" }}>
-            <Loader2 size={18} style={{ color: MUTED, animation: "spin 1s linear infinite" }} />
-          </div>
-        ) : statCards.map(({ icon: Icon, label, value, color }, i) => (
-          <div key={i} style={{
-            background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: "18px 20px",
-            display: "flex", flexDirection: "column", gap: 8,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Icon size={13} style={{ color }} strokeWidth={1.5} />
+      {/* Stat cards */}
+      {sl ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: "40px 0 32px" }}>
+          <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
+        </div>
+      ) : (
+        <div className="stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 36 }}>
+          {statCards.map(({ icon: Icon, label, value, accent, bg }, i) => (
+            <div key={i} style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, padding: "22px 24px" }}>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: bg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                <Icon size={18} color={accent} strokeWidth={1.6} />
               </div>
-              <span style={{ fontSize: 9, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em" }}>{label}</span>
+              <div style={{ fontSize: 28, fontWeight: 800, color: TEXT, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>{value ?? "—"}</div>
+              <div style={{ fontSize: 12, color: MUTED, marginTop: 6, fontWeight: 500 }}>{label}</div>
             </div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: TEXT, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums" }}>{value ?? "—"}</div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* Tab bar */}
-      <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.04)", padding: 4, borderRadius: 99, width: "fit-content", marginBottom: 20 }}>
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 2, padding: 4, background: "rgba(255,255,255,0.04)", borderRadius: 14, width: "fit-content", marginBottom: 24 }}>
         {[
-          { id: "users", label: "User Directory" },
-          { id: "applications", label: "Applications", badge: pendingApplications.length },
+          { id: "users",        label: "User Directory" },
+          { id: "applications", label: "Applications", badge: pending.length },
         ].map(({ id, label, badge }) => (
-          <button key={id} onClick={() => setTab(id as any)}
-            style={{
-              padding: "8px 20px", borderRadius: 99, border: "none", cursor: "pointer",
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
-              background: tab === id ? BLUE : "transparent",
-              color: tab === id ? "#fff" : MUTED,
-              display: "flex", alignItems: "center", gap: 8,
-              transition: "all 0.15s",
-            }}>
+          <button key={id} onClick={() => setTab(id as any)} style={{
+            padding: "9px 22px", borderRadius: 11, border: "none", cursor: "pointer",
+            fontSize: 12, fontWeight: 600,
+            background: tab === id ? BLUE : "transparent",
+            color: tab === id ? "#fff" : MUTED,
+            display: "flex", alignItems: "center", gap: 8, transition: "all 0.14s",
+          }}>
             {label}
-            {badge && badge > 0 && (
-              <span style={{ background: "#f59e0b", color: "#000", borderRadius: 99, fontSize: 8, fontWeight: 800, padding: "2px 6px" }}>
-                {badge}
-              </span>
+            {badge != null && badge > 0 && (
+              <span style={{ background: AMB, color: "#000", borderRadius: 99, fontSize: 9, fontWeight: 800, padding: "2px 7px" }}>{badge}</span>
             )}
           </button>
         ))}
       </div>
 
-      {/* ── USER DIRECTORY TAB ── */}
+      {/* ─── USER DIRECTORY ─── */}
       {tab === "users" && (
-        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
-          {/* Table Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 24px", borderBottom: `1px solid ${BORD}`, flexWrap: "wrap" }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: MUTED, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 2 }}>Registry</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>All Users</div>
+        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, overflow: "hidden" }}>
+          {/* Toolbar */}
+          <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 160 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>All Users</div>
+              <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>
+                {ul ? "Loading…" : `${displayed.length} member${displayed.length !== 1 ? "s" : ""}`}
+              </div>
             </div>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              {/* Search */}
-              <div style={{ position: "relative" }}>
-                <Search size={13} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: MUTED }} />
-                <input
-                  style={{
-                    height: 36, background: "rgba(255,255,255,0.04)", border: `1px solid ${BORD}`, borderRadius: 10,
-                    paddingLeft: 34, paddingRight: 12, fontSize: 12, color: TEXT, outline: "none", width: 200,
-                  }}
-                  placeholder="Search users…"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                />
-              </div>
-              {/* Filter pills */}
-              <div style={{ display: "flex", gap: 3, background: "rgba(255,255,255,0.04)", padding: 3, borderRadius: 99 }}>
-                {["all", "approved", "pending", "rejected", "frozen"].map(s => (
-                  <button key={s} onClick={() => setKycFilter(s)}
-                    style={{
-                      padding: "5px 12px", borderRadius: 99, border: "none", cursor: "pointer",
-                      fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "capitalize",
-                      background: kycFilter === s ? "rgba(255,255,255,0.08)" : "transparent",
-                      color: kycFilter === s ? TEXT : MUTED,
-                      transition: "all 0.14s",
-                    }}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+
+            {/* Search */}
+            <div style={{ position: "relative" }}>
+              <Search size={13} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: MUTED, pointerEvents: "none" }} />
+              <input
+                value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search name or email…"
+                style={{
+                  height: 38, background: "rgba(255,255,255,0.05)", border: `1px solid ${BORD}`,
+                  borderRadius: 11, paddingLeft: 36, paddingRight: 14, fontSize: 13,
+                  color: TEXT, outline: "none", width: 220,
+                }}
+              />
+            </div>
+
+            {/* Filter pills */}
+            <div style={{ display: "flex", gap: 4 }}>
+              {FILTERS.map(f => (
+                <button key={f.id} className="pill-filter" onClick={() => setFilter(f.id)} style={{
+                  padding: "6px 14px", borderRadius: 99, border: "none", cursor: "pointer",
+                  fontSize: 11, fontWeight: 600, transition: "all 0.14s",
+                  background: filter === f.id ? "rgba(255,255,255,0.1)" : "transparent",
+                  color: filter === f.id ? TEXT : MUTED,
+                }}>{f.label}</button>
+              ))}
             </div>
           </div>
 
+          {/* Table */}
           {ul ? (
-            <div style={{ padding: 48, display: "flex", justifyContent: "center" }}>
-              <Loader2 size={18} style={{ color: MUTED, animation: "spin 1s linear infinite" }} />
+            <div style={{ padding: 60, display: "flex", justifyContent: "center" }}>
+              <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
             </div>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+            <div className="table-wrap" style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
-                  <tr style={{ borderBottom: `1px solid ${BORD}`, background: "rgba(255,255,255,0.02)" }}>
-                    {["User", "Email", "Country", "Portfolio", "Joined", "KYC Status", "Onboarding", "Actions"].map((h, i) => (
-                      <th key={h} style={{
-                        padding: "10px 16px", fontSize: 9, fontWeight: 700, textTransform: "uppercase",
-                        letterSpacing: "0.14em", color: MUTED,
-                        textAlign: i === 0 ? "left" : i === 7 ? "right" : "left",
+                  <tr style={{ borderBottom: `1px solid ${BORD}` }}>
+                    {["Member", "Email", "Country", "Portfolio", "KYC Status", "Onboarding", ""].map((h, i) => (
+                      <th key={i} style={{
+                        padding: "13px 16px", fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                        letterSpacing: "0.12em", color: MUTED, textAlign: "left",
                         paddingLeft: i === 0 ? 24 : 16,
-                        paddingRight: i === 7 ? 24 : 16,
+                        paddingRight: i === 6 ? 24 : 16,
                       }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {(kycFilter === "frozen"
-                    ? allUsers.filter(u => (u as any).isFrozen && (!search || u.fullName.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())))
-                    : filtered
-                  ).map(u => {
-                    const kyc = KYC_COLOR[u.kycStatus] ?? KYC_COLOR.not_started;
+                  {displayed.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ padding: 56, textAlign: "center", color: MUTED, fontSize: 13 }}>
+                        No users match this filter.
+                      </td>
+                    </tr>
+                  ) : displayed.map(u => {
+                    const kyc    = KYC_COLOR[u.kycStatus] ?? KYC_COLOR.not_started;
                     const frozen = (u as any).isFrozen;
+                    const initials = u.fullName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
                     return (
-                      <tr key={u.id} style={{ borderBottom: `1px solid rgba(255,255,255,0.04)`, transition: "background 0.12s" }}
-                        onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")}
-                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                        <td style={{ padding: "14px 16px 14px 24px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <tr key={u.id} className="admin-row" style={{ borderBottom: `1px solid rgba(255,255,255,0.04)`, transition: "background 0.12s" }}>
+                        {/* Member */}
+                        <td style={{ padding: "16px 16px 16px 24px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                             <div style={{
-                              width: 30, height: 30, borderRadius: "50%",
-                              background: frozen ? "rgba(167,139,250,0.15)" : "rgba(59,130,246,0.15)",
+                              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                              background: frozen ? "rgba(167,139,250,0.15)" : "rgba(59,130,246,0.12)",
                               display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 11, fontWeight: 700, color: frozen ? "#a78bfa" : BLUE, flexShrink: 0,
-                            }}>
-                              {u.fullName.charAt(0)}
-                            </div>
+                              fontSize: 12, fontWeight: 700, color: frozen ? "#a78bfa" : BLUE,
+                            }}>{initials}</div>
                             <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{u.fullName}</div>
-                              {frozen && <div style={{ fontSize: 9, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.1em" }}>Frozen</div>}
+                              <div style={{ fontWeight: 600, color: TEXT }}>{u.fullName}</div>
+                              {frozen && (
+                                <div style={{ fontSize: 9, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>
+                                  ❄ Frozen
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: "14px 16px", color: MUTED, fontFamily: "monospace", fontSize: 11 }}>{u.email}</td>
-                        <td style={{ padding: "14px 16px", color: MUTED }}>{u.country || "—"}</td>
-                        <td style={{ padding: "14px 16px", color: TEXT, fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
+                        {/* Email */}
+                        <td style={{ padding: "16px", color: MUTED, fontFamily: "monospace", fontSize: 11 }}>{u.email}</td>
+                        {/* Country */}
+                        <td style={{ padding: "16px", color: MUTED }}>{u.country || "—"}</td>
+                        {/* Portfolio */}
+                        <td style={{ padding: "16px", fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums" }}>
                           ${((u as any).totalAssets || 0).toLocaleString("en-US", { maximumFractionDigits: 0 })}
                         </td>
-                        <td style={{ padding: "14px 16px", color: MUTED, fontFamily: "monospace", fontSize: 11 }}>
-                          {new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })}
-                        </td>
-                        <td style={{ padding: "14px 16px" }}>
+                        {/* KYC */}
+                        <td style={{ padding: "16px" }}>
                           <span style={{
                             display: "inline-flex", alignItems: "center", gap: 5,
-                            fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 99,
-                            background: kyc.bg, color: kyc.text,
+                            fontSize: 11, fontWeight: 600, padding: "4px 11px", borderRadius: 99,
+                            background: kyc.bg, color: kyc.fg,
                           }}>
-                            <span style={{ width: 5, height: 5, borderRadius: "50%", background: kyc.dot, flexShrink: 0 }} />
+                            <span style={{ width: 5, height: 5, borderRadius: "50%", background: kyc.fg, flexShrink: 0 }} />
                             {u.kycStatus?.replace("_", " ")}
                           </span>
                         </td>
-                        <td style={{ padding: "14px 16px" }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, color: MUTED }}>
-                            <span style={{ width: 5, height: 5, borderRadius: "50%", background: u.onboardingComplete ? "#22c55e" : "#f59e0b", flexShrink: 0 }} />
+                        {/* Onboarding */}
+                        <td style={{ padding: "16px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, color: MUTED }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0, background: u.onboardingComplete ? GAIN : AMB }} />
                             {u.onboardingComplete ? "Complete" : `Step ${u.onboardingStep || 0}/8`}
                           </span>
                         </td>
-                        <td style={{ padding: "14px 24px 14px 16px", textAlign: "right" }}>
-                          <Link href={`/admin/users/${u.id}`}
-                            style={{
-                              display: "inline-flex", alignItems: "center", gap: 5,
-                              fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                              padding: "6px 14px", borderRadius: 8,
-                              background: "rgba(59,130,246,0.1)", color: BLUE,
-                              border: "1px solid rgba(59,130,246,0.2)", textDecoration: "none",
-                              transition: "all 0.14s",
-                            }}>
-                            Manage →
+                        {/* Action */}
+                        <td style={{ padding: "16px 24px 16px 16px", textAlign: "right" }}>
+                          <Link href={`/admin/users/${u.id}`} className="manage-btn" style={{
+                            display: "inline-flex", alignItems: "center", gap: 4, padding: "7px 16px",
+                            borderRadius: 10, background: "rgba(59,130,246,0.1)", color: BLUE,
+                            border: "1px solid rgba(59,130,246,0.18)", textDecoration: "none",
+                            fontSize: 11, fontWeight: 600, transition: "all 0.14s",
+                          }}>
+                            Manage <ChevronRight size={13} />
                           </Link>
                         </td>
                       </tr>
                     );
                   })}
-                  {filtered.length === 0 && (
-                    <tr>
-                      <td colSpan={8} style={{ padding: 40, textAlign: "center", color: MUTED, fontSize: 13 }}>
-                        No users match the current filters.
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
@@ -270,90 +267,81 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* ── APPLICATIONS TAB ── */}
+      {/* ─── APPLICATIONS ─── */}
       {tab === "applications" && (
-        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
-          <div style={{ padding: "18px 24px", borderBottom: `1px solid ${BORD}` }}>
-            <div style={{ fontSize: 10, color: MUTED, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 2 }}>KYC Review Queue</div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>Pending Applications</div>
+        <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, overflow: "hidden" }}>
+          <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORD}` }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>Pending Applications</div>
+            <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>KYC review queue</div>
           </div>
 
           {ul ? (
-            <div style={{ padding: 48, display: "flex", justifyContent: "center" }}>
-              <Loader2 size={18} style={{ color: MUTED, animation: "spin 1s linear infinite" }} />
+            <div style={{ padding: 60, display: "flex", justifyContent: "center" }}>
+              <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
             </div>
-          ) : pendingApplications.length === 0 ? (
-            <div style={{ padding: 60, textAlign: "center" }}>
-              <CheckCircle size={32} style={{ color: "rgba(255,255,255,0.1)", margin: "0 auto 12px" }} />
-              <div style={{ fontSize: 14, color: MUTED }}>No pending applications.</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", marginTop: 4 }}>All applications have been reviewed.</div>
+          ) : pending.length === 0 ? (
+            <div style={{ padding: 80, textAlign: "center" }}>
+              <CheckCircle size={40} color="rgba(255,255,255,0.08)" style={{ margin: "0 auto 14px" }} />
+              <div style={{ fontSize: 15, color: MUTED, fontWeight: 600 }}>All caught up</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 6 }}>No pending applications to review.</div>
             </div>
-          ) : (
-            <div>
-              {pendingApplications.map(u => (
-                <div key={u.id} style={{
-                  padding: "20px 24px", borderBottom: `1px solid rgba(255,255,255,0.04)`,
-                  display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap",
+          ) : pending.map(u => (
+            <div key={u.id} style={{
+              padding: "20px 24px", borderBottom: `1px solid rgba(255,255,255,0.05)`,
+              display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 200 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12, background: "rgba(59,130,246,0.12)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 16, fontWeight: 700, color: BLUE, flexShrink: 0,
                 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 200 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(59,130,246,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
-                      {u.fullName.charAt(0)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>{u.fullName}</div>
-                      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{u.email}</div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", gap: 24, flexShrink: 0 }}>
-                    {[
-                      { label: "Country", value: u.country || "—" },
-                      { label: "Submitted", value: new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) },
-                      { label: "Balance", value: `$${(u.availableBalance || 0).toLocaleString()}` },
-                    ].map(({ label, value }) => (
-                      <div key={label}>
-                        <div style={{ fontSize: 9, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 3 }}>{label}</div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                    <Link href={`/admin/users/${u.id}`}
-                      style={{
-                        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                        padding: "8px 14px", borderRadius: 8, border: `1px solid ${BORD}`, color: MUTED,
-                        textDecoration: "none", transition: "all 0.14s",
-                      }}>
-                      Details
-                    </Link>
-                    <button onClick={() => handleDecline(u.id)} disabled={actionLoading === u.id}
-                      style={{
-                        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                        padding: "8px 14px", borderRadius: 8, border: "1px solid rgba(239,68,68,0.3)",
-                        background: "rgba(239,68,68,0.08)", color: "#ef4444", cursor: "pointer",
-                        opacity: actionLoading === u.id ? 0.5 : 1,
-                      }}>
-                      {actionLoading === u.id ? <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} /> : "Decline"}
-                    </button>
-                    <button onClick={() => handleApprove(u.id)} disabled={actionLoading === u.id}
-                      style={{
-                        fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                        padding: "8px 16px", borderRadius: 8, border: "none",
-                        background: "#22c55e", color: "#fff", cursor: "pointer",
-                        opacity: actionLoading === u.id ? 0.5 : 1,
-                      }}>
-                      {actionLoading === u.id ? <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} /> : "Approve"}
-                    </button>
-                  </div>
+                  {u.fullName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()}
                 </div>
-              ))}
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>{u.fullName}</div>
+                  <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>{u.email}</div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 28, flexShrink: 0 }}>
+                {[
+                  { label: "Country",   value: u.country || "—" },
+                  { label: "Submitted", value: new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) },
+                ].map(({ label, value }) => (
+                  <div key={label}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>{label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                <Link href={`/admin/users/${u.id}`} style={{
+                  padding: "9px 16px", borderRadius: 10, border: `1px solid ${BORD}`, color: MUTED,
+                  fontSize: 12, fontWeight: 600, textDecoration: "none",
+                }}>
+                  Review
+                </Link>
+                <button onClick={() => doDecline(u.id)} disabled={actioning === u.id} style={{
+                  padding: "9px 16px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.25)",
+                  background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 12, fontWeight: 600,
+                  cursor: "pointer", opacity: actioning === u.id ? 0.5 : 1,
+                }}>
+                  {actioning === u.id ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : "Decline"}
+                </button>
+                <button onClick={() => doApprove(u.id)} disabled={actioning === u.id} style={{
+                  padding: "9px 18px", borderRadius: 10, border: "none",
+                  background: GAIN, color: "#fff", fontSize: 12, fontWeight: 600,
+                  cursor: "pointer", opacity: actioning === u.id ? 0.5 : 1,
+                }}>
+                  {actioning === u.id ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : "Approve"}
+                </button>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
-
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
