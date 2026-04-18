@@ -2,17 +2,24 @@ import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { Check, ArrowUpRight, ChevronRight, Shield, Zap, TrendingUp, Lock } from "lucide-react";
+import { AssetIcon } from "@/components/AssetIcon";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
 
 const COINS = [
-  { sym: "BTC", name: "Bitcoin", price: "$107,842", chg: "+2.41%", up: true, market: "$2.1T", desc: "The original digital gold. Store of value with limited supply." },
-  { sym: "ETH", name: "Ethereum", price: "$2,941", chg: "+3.14%", up: true, market: "$354B", desc: "Smart contract platform powering DeFi and Web3 applications." },
-  { sym: "SOL", name: "Solana", price: "$164.20", chg: "+5.82%", up: true, market: "$75B", desc: "High-speed blockchain with low fees and growing ecosystem." },
-  { sym: "BNB", name: "BNB", price: "$612.40", chg: "+1.23%", up: true, market: "$88B", desc: "Binance Smart Chain's native token with DeFi utility." },
-  { sym: "XRP", name: "XRP", price: "$2.14", chg: "-0.82%", up: false, market: "$123B", desc: "Fast, low-cost international payment network." },
-  { sym: "ADA", name: "Cardano", price: "$0.83", chg: "+2.10%", up: true, market: "$29B", desc: "Peer-reviewed, proof-of-stake blockchain platform." },
+  { sym: "BTC",  name: "Bitcoin",  price: "$107,842", chg: "+2.41%", up: true,  market: "$2.1T",  desc: "The original digital gold. Store of value with limited supply." },
+  { sym: "ETH",  name: "Ethereum", price: "$2,941",   chg: "+3.14%", up: true,  market: "$354B",  desc: "Smart contract platform powering DeFi and Web3 applications." },
+  { sym: "SOL",  name: "Solana",   price: "$164.20",  chg: "+5.82%", up: true,  market: "$75B",   desc: "High-speed blockchain with low fees and growing ecosystem." },
+  { sym: "BNB",  name: "BNB",      price: "$612.40",  chg: "+1.23%", up: true,  market: "$88B",   desc: "Binance Smart Chain's native token with DeFi utility." },
+  { sym: "XRP",  name: "XRP",      price: "$2.14",    chg: "-0.82%", up: false, market: "$123B",  desc: "Fast, low-cost international payment network." },
+  { sym: "ADA",  name: "Cardano",  price: "$0.83",    chg: "+2.10%", up: true,  market: "$29B",   desc: "Peer-reviewed, proof-of-stake blockchain platform." },
+  { sym: "AVAX", name: "Avalanche",price: "$38.90",   chg: "+4.15%", up: true,  market: "$16B",   desc: "Blazing-fast, low-cost smart contracts platform." },
+  { sym: "DOT",  name: "Polkadot", price: "$8.42",    chg: "+1.78%", up: true,  market: "$12B",   desc: "Multi-chain interoperability with shared security." },
+  { sym: "LINK", name: "Chainlink",price: "$18.60",   chg: "+3.02%", up: true,  market: "$11B",   desc: "Decentralized oracle network powering smart contracts." },
+  { sym: "UNI",  name: "Uniswap",  price: "$12.44",   chg: "+2.45%", up: true,  market: "$9.3B",  desc: "The leading decentralized trading protocol on Ethereum." },
+  { sym: "ATOM", name: "Cosmos",   price: "$9.18",    chg: "+1.93%", up: true,  market: "$3.5B",  desc: "Internet of blockchains with cross-chain IBC protocol." },
+  { sym: "MATIC",name: "Polygon",  price: "$0.74",    chg: "+3.88%", up: true,  market: "$7.2B",  desc: "Ethereum scaling with fast, near-free transactions." },
 ];
 
 const WHY_VAULT_CRYPTO = [
@@ -65,9 +72,7 @@ export default function CryptoPage() {
           <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E6E8EB", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
             {COINS.map((c, i) => (
               <div key={c.sym} style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 24px", borderBottom: i < COINS.length - 1 ? "1px solid #E6E8EB" : "none", flexWrap: "wrap" }}>
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: "linear-gradient(135deg,#0f1320,#1a2234)", border: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: "#f59e0b" }}>{c.sym.slice(0, 3)}</span>
-                </div>
+                <AssetIcon symbol={c.sym} size={44} borderRadius={12} />
                 <div style={{ flex: 1, minWidth: 140 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A" }}>{c.name}</div>
                   <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>{c.desc}</div>
@@ -86,7 +91,7 @@ export default function CryptoPage() {
               </div>
             ))}
           </div>
-          <p style={{ textAlign: "center", fontSize: 12, color: "#9CA3AF", marginTop: 16 }}>+ 54 more cryptocurrencies available on the platform</p>
+          <p style={{ textAlign: "center", fontSize: 12, color: "#9CA3AF", marginTop: 16 }}>+ 48 more cryptocurrencies available on the platform</p>
         </div>
       </section>
 

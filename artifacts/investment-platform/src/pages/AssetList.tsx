@@ -1,6 +1,7 @@
 import { useRoute, Link } from "wouter";
 import { useListAssets } from "@workspace/api-client-react";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { AssetIcon } from "@/components/AssetIcon";
 
 const TYPE_MAP: Record<string, string> = {
   crypto: "Digital Assets",
@@ -76,9 +77,7 @@ export default function AssetList() {
                     <td className="py-3.5 pl-5 pr-4 text-muted-foreground font-mono text-[10px]">{idx + 1}</td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#F2F3F5] flex items-center justify-center text-foreground text-[9px] font-bold shrink-0">
-                          {a.symbol.substring(0, 2).toUpperCase()}
-                        </div>
+                        <AssetIcon symbol={a.symbol} size={32} borderRadius={9} />
                         <div>
                           <div className="font-semibold text-foreground">{a.name}</div>
                           <div className="text-muted-foreground font-mono text-[10px]">{a.symbol}</div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { AssetIcon } from "@/components/AssetIcon";
 import {
   useGetPortfolioSummary, useGetPortfolioPerformance,
   useGetHoldings, useGetAssetMix, useGetMarketNews,
@@ -373,14 +374,8 @@ export default function Dashboard() {
                   {recs.map((r) => (
                     <Link key={r.symbol} href={`/assets/${r.symbol}`} style={{ display: "flex", alignItems: "center", padding: "16px 24px", textDecoration: "none", transition: "background 0.12s" }}
                       className="hover:bg-white/50">
-                      <div style={{
-                        width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.9)",
-                        border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 9, fontWeight: 800, color: "#0F172A", letterSpacing: "0.04em",
-                        flexShrink: 0, marginRight: 14,
-                        boxShadow: "0 1px 4px rgba(16,24,40,0.06)",
-                      }}>
-                        {r.symbol.slice(0, 3)}
+                      <div style={{ flexShrink: 0, marginRight: 14 }}>
+                        <AssetIcon symbol={r.symbol} size={36} borderRadius={10} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
@@ -440,11 +435,7 @@ export default function Dashboard() {
                               className="hover:bg-white/40">
                               <td style={{ padding: "12px 16px" }}>
                                 <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-                                  <div style={{
-                                    width: 30, height: 30, borderRadius: 8, background: "rgba(255,255,255,0.9)",
-                                    border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: 8, fontWeight: 800, color: "#0F172A", flexShrink: 0,
-                                  }}>{h.symbol.slice(0,3)}</div>
+                                  <AssetIcon symbol={h.symbol} size={30} borderRadius={8} />
                                   <div>
                                     <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
                                     <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>
@@ -515,13 +506,7 @@ export default function Dashboard() {
                           background: idx === 0 ? "rgba(255,255,255,0.5)" : "transparent",
                         }}
                       >
-                        <div style={{
-                          width: 28, height: 28, borderRadius: 8,
-                          background: "rgba(245,246,247,0.9)",
-                          border: "1px solid #E6E8EB",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 7, fontWeight: 800, color: "#0F172A", flexShrink: 0,
-                        }}>{trade.asset.symbol.slice(0,3)}</div>
+                        <AssetIcon symbol={trade.asset.symbol} size={28} borderRadius={8} />
 
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 1 }}>
@@ -664,9 +649,7 @@ export default function Dashboard() {
                               className="hover:bg-white/40">
                               <td style={{ padding: "13px 16px" }}>
                                 <Link href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-                                  <div style={{ width: 32, height: 32, borderRadius: 9, background: "rgba(255,255,255,0.9)", border: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 800, color: "#0F172A" }}>
-                                    {h.symbol.slice(0,2).toUpperCase()}
-                                  </div>
+                                  <AssetIcon symbol={h.symbol} size={32} borderRadius={9} />
                                   <div>
                                     <div style={{ fontSize: 12, fontWeight: 600, color: "#0F172A" }}>{h.name}</div>
                                     <div style={{ fontSize: 10, color: "#9ca3af", fontFamily: "monospace" }}>{h.symbol}</div>

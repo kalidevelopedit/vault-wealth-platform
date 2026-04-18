@@ -3,6 +3,7 @@ import { useGetAssetDetail, useGetAssetChart, useCreateTransaction } from "@work
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { AssetIcon } from "@/components/AssetIcon";
 import { toast } from "sonner";
 
 const CARD = "bg-white rounded-2xl border border-[#E6E8EB] shadow-[0_1px_2px_rgba(16,24,40,0.04),0_1px_3px_rgba(16,24,40,0.06)]";
@@ -63,9 +64,7 @@ export default function AssetDetail() {
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-4 flex-1">
-          <div className="w-10 h-10 rounded-xl bg-[#F2F3F5] flex items-center justify-center text-foreground text-[11px] font-bold shrink-0">
-            {asset.symbol.substring(0, 2).toUpperCase()}
-          </div>
+          <AssetIcon symbol={asset.symbol} size={42} borderRadius={12} />
           <div>
             <div className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
               {asset.assetType} · {asset.symbol}

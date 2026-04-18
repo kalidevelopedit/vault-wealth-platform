@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useListAssets, useSearchAssets } from "@workspace/api-client-react";
 import { Search, Loader2 } from "lucide-react";
 import { Link } from "wouter";
+import { AssetIcon } from "@/components/AssetIcon";
 
 const ASSET_TYPES = [
   { key: "all", label: "All" },
@@ -71,9 +72,7 @@ export default function Invest() {
                   <Link key={a.symbol} href={`/assets/${a.symbol}`}
                     className="flex items-center justify-between px-4 py-3 hover:bg-[#F5F6F7] transition-colors border-b last:border-0 border-[#E6E8EB]">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-[#F2F3F5] flex items-center justify-center text-foreground text-[8px] font-bold shrink-0">
-                        {a.symbol.substring(0, 2).toUpperCase()}
-                      </div>
+                      <AssetIcon symbol={a.symbol} size={28} borderRadius={8} />
                       <div>
                         <div className="text-[12px] font-semibold text-foreground">{a.name}</div>
                         <div className="text-[10px] text-muted-foreground font-mono">{a.symbol} · <span className="capitalize">{a.assetType}</span></div>
@@ -113,9 +112,7 @@ export default function Invest() {
                   <tr key={a.symbol} className="hover:bg-[#F5F6F7] transition-colors cursor-pointer">
                     <td className="py-3.5 pl-5 pr-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#F2F3F5] flex items-center justify-center text-foreground text-[9px] font-bold shrink-0">
-                          {a.symbol.substring(0, 2).toUpperCase()}
-                        </div>
+                        <AssetIcon symbol={a.symbol} size={32} borderRadius={10} />
                         <div>
                           <div className="font-semibold text-foreground text-[12px]">{a.name}</div>
                           <div className="text-muted-foreground font-mono text-[10px]">{a.symbol}</div>
