@@ -51,6 +51,7 @@ export default function PinSetup({ onComplete }: PinSetupProps) {
   if (step === "enter") {
     return (
       <PinPad
+        key="enter"
         title="Create Your Passcode"
         subtitle="Choose a 6-digit passcode you'll use to secure your account every time you log in."
         onComplete={handleFirstPin}
@@ -62,6 +63,7 @@ export default function PinSetup({ onComplete }: PinSetupProps) {
 
   return (
     <PinPad
+      key="confirm"
       title="Confirm Your Passcode"
       subtitle="Enter your passcode again to confirm. Make sure it matches exactly."
       onComplete={handleConfirmPin}

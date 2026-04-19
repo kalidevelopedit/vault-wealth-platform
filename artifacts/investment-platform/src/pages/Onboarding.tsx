@@ -59,12 +59,9 @@ const DOC_TYPES = [
 
 const BIOMETRIC_STEPS = [
   { label: "Look LEFT", icon: "←", hint: "Turn your head slowly to the left", color: "#3b82f6" },
-  { label: "Look RIGHT", icon: "→", hint: "Turn your head slowly to the right", color: "#8b5cf6" },
-  { label: "Look UP", icon: "↑", hint: "Tilt your head gently upward", color: "#10b981" },
-  { label: "Look DOWN", icon: "↓", hint: "Tilt your head gently downward", color: "#f59e0b" },
-  { label: "Rotate slowly", icon: "↻", hint: "Rotate your head in a slow circle", color: "#c8102e" },
+  { label: "Look RIGHT", icon: "→", hint: "Now turn your head to the right", color: "#8b5cf6" },
 ];
-const STEP_DURATION = 2800;
+const STEP_DURATION = 3200;
 const TOTAL_STEPS = 6;
 
 // ── Light-theme style constants ─────────────────────────────────────────────
@@ -173,21 +170,54 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   const [bStep, setBStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [countdown, setCountdown] = useState(3);
+  const [faceDetected, setFaceDetected] = useState(false);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const progRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const detectRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearAll = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (progRef.current) clearInterval(progRef.current);
+    if (detectRef.current) clearInterval(detectRef.current);
   };
 
   useEffect(() => () => {
     clearAll();
     streamRef.current?.getTracks().forEach(t => t.stop());
   }, []);
+
+  // Face detection via canvas pixel sampling
+  useEffect(() => {
+    if (phase !== "camera") return;
+    setFaceDetected(false);
+    let detected = false;
+    const canvas = document.createElement("canvas");
+    canvas.width = 48; canvas.height = 48;
+    const ctx = canvas.getContext("2d");
+
+    detectRef.current = setInterval(() => {
+      if (!ctx || !videoRef.current || detected || videoRef.current.readyState < 2) return;
+      try {
+        ctx.drawImage(videoRef.current, 0, 0, 48, 48);
+        const { data } = ctx.getImageData(8, 8, 32, 32);
+        let skinPixels = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          if (r > 60 && g > 40 && b > 15 && r > b && r > g * 0.85 && Math.abs(r - g) > 8) skinPixels++;
+        }
+        if (skinPixels > 120) {
+          detected = true;
+          setFaceDetected(true);
+          if (detectRef.current) clearInterval(detectRef.current);
+        }
+      } catch {}
+    }, 220);
+
+    return () => { if (detectRef.current) clearInterval(detectRef.current); };
+  }, [phase]);
 
   const startCamera = async () => {
     try {
@@ -201,6 +231,7 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   };
 
   const startCountdown = () => {
+    if (!faceDetected) return;
     setPhase("countdown");
     setCountdown(3);
     let c = 3;
@@ -299,15 +330,15 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
         </div>
         <div style={{ padding: 16 }}>
           <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-            {[["↔", "Look left & right"], ["↕", "Look up & down"], ["↻", "Rotate slowly"]].map(([icon, tip], i) => (
-              <div key={i} style={{ flex: 1, textAlign: "center", padding: "10px 6px", background: "#F5F6F7", borderRadius: 8, border: "1px solid #E6E8EB" }}>
-                <div style={{ fontSize: 16, marginBottom: 5, color: "#374151" }}>{icon}</div>
-                <p style={{ fontSize: 10, color: "#6B7280", lineHeight: 1.4, fontWeight: 500 }}>{tip}</p>
+            {[["←", "Look Left first"], ["→", "Then Look Right"]].map(([icon, tip], i) => (
+              <div key={i} style={{ flex: 1, textAlign: "center", padding: "12px 8px", background: "#F5F6F7", borderRadius: 8, border: "1px solid #E6E8EB" }}>
+                <div style={{ fontSize: 18, marginBottom: 5, color: "#374151" }}>{icon}</div>
+                <p style={{ fontSize: 10, color: "#6B7280", lineHeight: 1.4, fontWeight: 600 }}>{tip}</p>
               </div>
             ))}
           </div>
           <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 14, lineHeight: 1.65 }}>
-            Position your face within the oval guide. Good lighting required — remove glasses, hats and ensure your full face is visible. The check takes about 15 seconds.
+            Position your face within the oval guide. Good lighting required — remove glasses, hats and ensure your full face is visible. Follow the on-screen arrows in order.
           </p>
           <button onClick={startCamera}
             style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
@@ -319,7 +350,7 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   }
 
   // ── camera / countdown / recording ──
-  const ovalColor = phase === "recording" ? currentBStep.color : phase === "countdown" ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.75)";
+  const ovalColor = phase === "recording" ? currentBStep.color : faceDetected ? "#22c55e" : phase === "countdown" ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.75)";
 
   return (
     <div className={CARD} style={{ overflow: "hidden" }}>
@@ -328,15 +359,21 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <Video size={15} color="#6B7280" />
           <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>
-            {phase === "camera" ? "Position your face in the oval" :
+            {phase === "camera" ? (faceDetected ? "Face detected — ready to start" : "Detecting face…") :
              phase === "countdown" ? "Get ready…" :
-             currentBStep.label}
+             `Step ${bStep + 1} of ${BIOMETRIC_STEPS.length}: ${currentBStep.label}`}
           </span>
         </div>
         {phase === "recording" && (
           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#ef4444" }} />
             <span style={{ fontSize: 10, fontWeight: 700, color: "#ef4444", letterSpacing: "0.05em" }}>REC</span>
+          </div>
+        )}
+        {phase === "camera" && faceDetected && (
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e" }} />
+            <span style={{ fontSize: 10, fontWeight: 700, color: "#22c55e", letterSpacing: "0.05em" }}>FACE OK</span>
           </div>
         )}
       </div>
@@ -347,13 +384,13 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
           style={{ width: "100%", height: "100%", display: "block", transform: "scaleX(-1)", objectFit: "cover" }} />
 
         {/* Face oval SVG overlay */}
-        <FaceOvalSvg color={ovalColor} pulsing={phase === "camera"} />
+        <FaceOvalSvg color={ovalColor} pulsing={phase === "camera" && !faceDetected} />
 
         {/* Guidance tip bar at bottom of video */}
         {phase === "camera" && (
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "10px 16px", background: "linear-gradient(transparent, rgba(0,0,0,0.7))", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 500, textAlign: "center" }}>
-              Centre your face · Look directly at the camera
+              {faceDetected ? "Face confirmed — click Start Verification" : "Centre your face · Look directly at the camera"}
             </span>
           </div>
         )}
@@ -390,7 +427,7 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
               <div style={{ display: "flex", gap: 6 }}>
                 {BIOMETRIC_STEPS.map((s, i) => (
                   <div key={i} style={{
-                    width: i === bStep ? 20 : 7, height: 7, borderRadius: 99,
+                    width: i === bStep ? 24 : 8, height: 8, borderRadius: 99,
                     background: i < bStep ? "#0F172A" : i === bStep ? currentBStep.color : "#E6E8EB",
                     transition: "all 0.35s ease",
                   }} />
@@ -402,9 +439,18 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
         )}
 
         {phase === "camera" && (
-          <button onClick={startCountdown}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#c8102e", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
-            <Video size={14} /> I'm ready — Start Verification
+          <button
+            onClick={startCountdown}
+            disabled={!faceDetected}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              background: faceDetected ? "#c8102e" : "#E6E8EB",
+              color: faceDetected ? "white" : "#9ca3af",
+              fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase",
+              padding: "12px 0", borderRadius: 8, cursor: faceDetected ? "pointer" : "not-allowed",
+              border: "none", transition: "all 0.3s",
+            }}>
+            <Video size={14} /> {faceDetected ? "I'm Ready — Start Verification" : "Waiting for face detection…"}
           </button>
         )}
       </div>
@@ -450,8 +496,14 @@ export default function Onboarding() {
   // Step 4
   const [idType, setIdType] = useState("passport");
   // Step 5
-  const [idFile, setIdFile] = useState<File | null>(null);
+  const [idFile, setIdFile] = useState<File | null>(null);          // passport / national_id
+  const [idFileFront, setIdFileFront] = useState<File | null>(null); // driver's license front
+  const [idFileBack, setIdFileBack] = useState<File | null>(null);   // driver's license back
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [redirectCount, setRedirectCount] = useState(5);
+
+  // Computed: are all required docs uploaded?
+  const idReady = idType === "drivers_license" ? (!!idFileFront && !!idFileBack) : !!idFile;
 
   const goTo = (next: number) => {
     setDir(next > step ? "right" : "left");
@@ -528,17 +580,28 @@ export default function Onboarding() {
   };
 
   const handleIdUpload = async () => {
-    if (!idFile) return;
+    if (!idReady) return;
     setLoading(true);
-    setUploadProgress(20);
+    setUploadProgress(10);
     try {
-      let fileUrl = `/uploads/${Date.now()}`;
-      try {
-        const path = await uploadFileToStorage(idFile);
-        fileUrl = `/api/storage${path}`;
+      if (idType === "drivers_license") {
+        // Upload front
+        let frontUrl = `/uploads/front-${Date.now()}`;
+        try { const p = await uploadFileToStorage(idFileFront!); frontUrl = `/api/storage${p}`; } catch {}
+        setUploadProgress(40);
+        await uploadId.mutateAsync({ data: { documentType: idType as any, side: "front" as any, fileUrl: frontUrl } });
+
+        // Upload back
+        let backUrl = `/uploads/back-${Date.now()}`;
+        try { const p = await uploadFileToStorage(idFileBack!); backUrl = `/api/storage${p}`; } catch {}
         setUploadProgress(80);
-      } catch {}
-      await uploadId.mutateAsync({ data: { documentType: idType as any, side: "front" as any, fileUrl } });
+        await uploadId.mutateAsync({ data: { documentType: idType as any, side: "back" as any, fileUrl: backUrl } });
+      } else {
+        let fileUrl = `/uploads/${Date.now()}`;
+        try { const path = await uploadFileToStorage(idFile!); fileUrl = `/api/storage${path}`; } catch {}
+        setUploadProgress(80);
+        await uploadId.mutateAsync({ data: { documentType: idType as any, side: "front" as any, fileUrl } });
+      }
       setUploadProgress(100);
       goTo(6);
     } catch {} finally { setLoading(false); setUploadProgress(0); }
@@ -546,7 +609,21 @@ export default function Onboarding() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    try { await submitKyc.mutateAsync(); setSubmitted(true); } catch {} finally { setLoading(false); }
+    try {
+      await submitKyc.mutateAsync();
+      setSubmitted(true);
+      // Auto-redirect to login after 5 seconds
+      let count = 5;
+      setRedirectCount(count);
+      const tick = setInterval(() => {
+        count--;
+        setRedirectCount(count);
+        if (count <= 0) {
+          clearInterval(tick);
+          window.location.href = "/login";
+        }
+      }, 1000);
+    } catch {} finally { setLoading(false); }
   };
 
   // ── Success screen ──
@@ -619,6 +696,10 @@ export default function Onboarding() {
             </div>
 
             {/* Actions */}
+            <div style={{ marginBottom: 16, padding: "12px 16px", background: "#F5F6F7", border: "1px solid #E6E8EB", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 12, color: "#6B7280" }}>Redirecting to sign-in in {redirectCount}s…</span>
+              <a href="/login" style={{ fontSize: 12, fontWeight: 700, color: "#0d1520", textDecoration: "none" }}>Sign In Now →</a>
+            </div>
             <div style={{ display: "flex", gap: 10 }}>
               <a href="/" style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "#0d1520", color: "white", fontWeight: 700, fontSize: 13, padding: "13px", textDecoration: "none", borderRadius: 12 }}>Return to Home</a>
               <a href="/login" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "white", border: "1px solid #E6E8EB", color: "#374151", fontWeight: 600, fontSize: 13, padding: "13px 20px", textDecoration: "none", borderRadius: 12 }}>Sign In</a>
@@ -863,30 +944,80 @@ export default function Onboarding() {
                   <h2 className="text-[22px] font-bold text-[#0F172A] leading-tight mb-1.5">
                     Upload your {idType === "passport" ? "passport" : idType === "drivers_license" ? "driver's license" : "national ID"}
                   </h2>
-                  <p className="text-[#6B7280] text-sm">Take a clear photo. All four corners must be visible.</p>
+                  <p className="text-[#6B7280] text-sm">
+                    {idType === "drivers_license" ? "Upload both the front and back of your driver's license." : "Take a clear photo. All four corners must be visible."}
+                  </p>
                 </div>
 
-                {/* Document upload */}
-                <label htmlFor="id-file"
-                  className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all mb-4 ${idFile ? "border-[#c8102e]/40 bg-[#c8102e]/[0.03]" : "border-[#E6E8EB] bg-white hover:border-[#0d1520]/30"}`}>
-                  <input id="id-file" type="file" accept="image/*,.pdf" className="hidden"
-                    onChange={e => setIdFile(e.target.files?.[0] || null)} />
-                  {idFile ? (
+                {/* ── Driver's license: front + back ── */}
+                {idType === "drivers_license" ? (
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    {/* Front */}
                     <div>
-                      <div style={{ width: 44, height: 44, margin: "0 auto 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <Check size={20} color="#22c55e" />
+                      <p className={LABEL + " mb-2"}>Front side</p>
+                      <label htmlFor="id-front"
+                        className={`block border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all ${idFileFront ? "border-[#c8102e]/40 bg-[#c8102e]/[0.03]" : "border-[#E6E8EB] bg-white hover:border-[#0d1520]/30"}`}>
+                        <input id="id-front" type="file" accept="image/*,.pdf" className="hidden"
+                          onChange={e => setIdFileFront(e.target.files?.[0] || null)} />
+                        {idFileFront ? (
+                          <div>
+                            <Check size={22} color="#22c55e" style={{ margin: "0 auto 6px" }} />
+                            <p className="text-[#0F172A] font-semibold text-[11px] truncate">{idFileFront.name}</p>
+                            <p className="text-[#9ca3af] text-[10px] mt-0.5">Click to change</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <UploadCloud size={22} color="#9ca3af" style={{ margin: "0 auto 6px" }} />
+                            <p className="text-[#374151] font-medium text-[11px]">Front of license</p>
+                            <p className="text-[#9ca3af] text-[10px] mt-0.5">PNG, JPG, PDF</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                    {/* Back */}
+                    <div>
+                      <p className={LABEL + " mb-2"}>Back side</p>
+                      <label htmlFor="id-back"
+                        className={`block border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all ${idFileBack ? "border-[#c8102e]/40 bg-[#c8102e]/[0.03]" : "border-[#E6E8EB] bg-white hover:border-[#0d1520]/30"}`}>
+                        <input id="id-back" type="file" accept="image/*,.pdf" className="hidden"
+                          onChange={e => setIdFileBack(e.target.files?.[0] || null)} />
+                        {idFileBack ? (
+                          <div>
+                            <Check size={22} color="#22c55e" style={{ margin: "0 auto 6px" }} />
+                            <p className="text-[#0F172A] font-semibold text-[11px] truncate">{idFileBack.name}</p>
+                            <p className="text-[#9ca3af] text-[10px] mt-0.5">Click to change</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <UploadCloud size={22} color="#9ca3af" style={{ margin: "0 auto 6px" }} />
+                            <p className="text-[#374151] font-medium text-[11px]">Back of license</p>
+                            <p className="text-[#9ca3af] text-[10px] mt-0.5">PNG, JPG, PDF</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── Passport / National ID: single upload ── */
+                  <label htmlFor="id-file"
+                    className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all mb-4 ${idFile ? "border-[#c8102e]/40 bg-[#c8102e]/[0.03]" : "border-[#E6E8EB] bg-white hover:border-[#0d1520]/30"}`}>
+                    <input id="id-file" type="file" accept="image/*,.pdf" className="hidden"
+                      onChange={e => setIdFile(e.target.files?.[0] || null)} />
+                    {idFile ? (
+                      <div>
+                        <Check size={22} color="#22c55e" style={{ margin: "0 auto 8px" }} />
+                        <p className="text-[#0F172A] font-semibold text-sm mb-1">{idFile.name}</p>
+                        <p className="text-[#9ca3af] text-xs">{(idFile.size / 1024 / 1024).toFixed(2)} MB · Click to change</p>
                       </div>
-                      <p className="text-[#0F172A] font-semibold text-sm mb-1">{idFile.name}</p>
-                      <p className="text-[#9ca3af] text-xs">{(idFile.size / 1024 / 1024).toFixed(2)} MB · Click to change</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <UploadCloud size={28} color="#9ca3af" style={{ margin: "0 auto 10px" }} />
-                      <p className="text-[#374151] font-medium text-sm mb-1">Click to upload or drag & drop</p>
-                      <p className="text-[#9ca3af] text-xs">PNG, JPG or PDF — max 10MB</p>
-                    </div>
-                  )}
-                </label>
+                    ) : (
+                      <div>
+                        <UploadCloud size={28} color="#9ca3af" style={{ margin: "0 auto 10px" }} />
+                        <p className="text-[#374151] font-medium text-sm mb-1">Click to upload or drag & drop</p>
+                        <p className="text-[#9ca3af] text-xs">PNG, JPG or PDF — max 10MB</p>
+                      </div>
+                    )}
+                  </label>
+                )}
 
                 {uploadProgress > 0 && uploadProgress < 100 && (
                   <div className="mb-4">
@@ -897,11 +1028,26 @@ export default function Onboarding() {
                   </div>
                 )}
 
-                {/* Biometric */}
-                <div className="mb-6">
-                  <p className={LABEL + " mb-3"}>Biometric selfie</p>
+                {/* Biometric — required before Next */}
+                <div className="mb-4">
+                  <p className={LABEL + " mb-3"}>Biometric face verification <span style={{ color: "#c8102e" }}>*</span></p>
                   <BiometricRecorder onComplete={() => setBiometricDone(true)} />
+                  {!biometricDone && (
+                    <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>Complete the face check above to continue.</p>
+                  )}
                 </div>
+
+                {/* Both required notice */}
+                {(!idReady || !biometricDone) && (
+                  <div className={CARD + " p-3.5 flex items-center gap-3 mb-4"}>
+                    <AlertCircle size={14} color="#9ca3af" className="shrink-0" />
+                    <span className="text-[11px] text-[#9ca3af]">
+                      {!idReady && !biometricDone ? "Upload your document and complete the face check to continue." :
+                       !idReady ? "Upload your document to continue." :
+                       "Complete the biometric face check to continue."}
+                    </span>
+                  </div>
+                )}
 
                 <div className={CARD + " p-3.5 flex items-center gap-3 mb-6"}>
                   <Shield size={14} color="#9ca3af" className="shrink-0" />
@@ -910,7 +1056,7 @@ export default function Onboarding() {
 
                 <div className="flex gap-3">
                   <SecondaryBtn onClick={() => goTo(4)}><ChevronLeft size={15} /></SecondaryBtn>
-                  <PrimaryBtn onClick={handleIdUpload} disabled={!idFile || loading}>
+                  <PrimaryBtn onClick={handleIdUpload} disabled={!idReady || !biometricDone || loading}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Upload & Continue</span><ChevronRight size={16} /></>}
                   </PrimaryBtn>
                 </div>
@@ -949,8 +1095,13 @@ export default function Onboarding() {
                       title: "Identity Documents",
                       rows: [
                         { label: "Document Type", value: DOC_TYPES.find(d => d.id === idType)?.label || "—" },
-                        { label: "Document Upload", value: idFile ? "✓ Uploaded" : "—" },
-                        { label: "Biometric Check", value: biometricDone ? "✓ Completed" : "Skipped" },
+                        ...(idType === "drivers_license"
+                          ? [
+                              { label: "Front Side", value: idFileFront ? "✓ Uploaded" : "—" },
+                              { label: "Back Side", value: idFileBack ? "✓ Uploaded" : "—" },
+                            ]
+                          : [{ label: "Document Upload", value: idFile ? "✓ Uploaded" : "—" }]),
+                        { label: "Biometric Check", value: biometricDone ? "✓ Completed" : "—" },
                       ]
                     }
                   ].map(section => (

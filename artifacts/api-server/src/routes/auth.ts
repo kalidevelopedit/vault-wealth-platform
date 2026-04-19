@@ -88,6 +88,10 @@ router.post("/login", async (req, res) => {
       res.status(403).json({ error: "account_frozen", message: "Your account has been suspended. Please contact support." });
       return;
     }
+    if (user.kycStatus === "pending" && user.role !== "admin") {
+      res.status(403).json({ error: "kyc_pending", message: "Your application is currently under review. You'll be notified once our compliance team has made a decision." });
+      return;
+    }
     await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, user.id));
     await db.insert(activityLogTable).values({
       userId: user.id,

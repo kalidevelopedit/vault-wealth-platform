@@ -538,34 +538,70 @@ export default function AdminUserDetail() {
           <Card title="KYC Documents" sub="Documents">
             <div style={{ padding: "18px 24px" }}>
               {kycDocuments?.length ? (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  {kycDocuments.map((doc: any) => (
-                    <div key={doc.id} style={{ border: `1px solid ${BORD}`, borderRadius: 12, overflow: "hidden" }}>
-                      <div style={{ padding: "9px 13px", borderBottom: `1px solid ${BORD}`, background: "rgba(255,255,255,0.02)" }}>
-                        <div style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                          {doc.documentType?.replace("_", " ")} — {doc.side}
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  {kycDocuments.map((doc: any) => {
+                    const isVideo = doc.fileUrl && (doc.fileUrl.endsWith(".webm") || doc.fileUrl.endsWith(".mp4") || doc.fileUrl.endsWith(".mov"));
+                    return (
+                      <div key={doc.id} style={{ border: `1px solid ${BORD}`, borderRadius: 12, overflow: "hidden" }}>
+                        <div style={{ padding: "9px 14px", borderBottom: `1px solid ${BORD}`, background: "rgba(255,255,255,0.02)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                            {doc.documentType?.replace(/_/g, " ")} — {doc.side}
+                          </div>
+                          {doc.fileUrl && (
+                            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download
+                              style={{ fontSize: 10, color: BLUE, fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+                              ↗ Open
+                            </a>
+                          )}
                         </div>
+                        <div style={{ background: "rgba(255,255,255,0.02)", minHeight: 140, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                          {doc.fileUrl ? (
+                            isVideo ? (
+                              <video src={doc.fileUrl} controls style={{ width: "100%", maxHeight: 240, display: "block" }} />
+                            ) : (
+                              <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", width: "100%" }}>
+                                <img
+                                  src={doc.fileUrl}
+                                  alt={`${doc.documentType} ${doc.side}`}
+                                  style={{ width: "100%", maxHeight: 220, objectFit: "contain", display: "block" }}
+                                  onError={e => {
+                                    (e.target as HTMLImageElement).style.display = "none";
+                                    const p = document.createElement("p");
+                                    p.textContent = "Preview unavailable — click Open to view";
+                                    p.style.cssText = "font-size:11px;color:#6b7280;padding:24px;text-align:center";
+                                    (e.target as HTMLImageElement).parentElement?.appendChild(p);
+                                  }}
+                                />
+                              </a>
+                            )
+                          ) : (
+                            <span style={{ fontSize: 11, color: MUTED }}>No document uploaded</span>
+                          )}
+                        </div>
+                        {doc.fileUrl && (
+                          <div style={{ padding: "8px 14px", borderTop: `1px solid ${BORD}` }}>
+                            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" download
+                              style={{ fontSize: 11, color: MUTED, wordBreak: "break-all", fontFamily: "monospace", textDecoration: "none" }}>
+                              {doc.fileUrl}
+                            </a>
+                          </div>
+                        )}
                       </div>
-                      <div style={{ aspectRatio: "16/9", background: "rgba(255,255,255,0.03)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        {doc.fileUrl
-                          ? <img src={doc.fileUrl} alt="Doc" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : <span style={{ fontSize: 11, color: MUTED }}>No document</span>}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div style={{ padding: 36, textAlign: "center", color: MUTED, fontSize: 13 }}>No documents uploaded</div>
               )}
 
               <div style={{ marginTop: 20, paddingTop: 18, borderTop: `1px solid ${BORD}` }}>
-                <div style={{ fontSize: 11, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>Selfie / Biometric</div>
+                <div style={{ fontSize: 11, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 10 }}>Selfie / Biometric Video</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  {selfieStatus === "approved"  && <CheckCircle2   size={16} color={GAIN} />}
-                  {selfieStatus === "submitted" && <AlertTriangle  size={16} color={AMB}  />}
-                  {!selfieStatus || (selfieStatus !== "approved" && selfieStatus !== "submitted") && <XCircle size={16} color={MUTED} />}
+                  {selfieStatus === "approved"  && <CheckCircle2   size={14} color={GAIN} />}
+                  {selfieStatus === "submitted" && <AlertTriangle  size={14} color={AMB}  />}
+                  {(!selfieStatus || (selfieStatus !== "approved" && selfieStatus !== "submitted")) && <XCircle size={14} color={MUTED} />}
                   <span style={{ fontSize: 13, fontWeight: 600, color: TEXT, textTransform: "capitalize" }}>
-                    {selfieStatus?.replace("_", " ") || "Not submitted"}
+                    {selfieStatus === "submitted" ? "Video submitted — pending review" : selfieStatus?.replace("_", " ") || "Not submitted"}
                   </span>
                 </div>
               </div>
