@@ -17,7 +17,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { login, user, refreshUser } = useAuth();
   const [, setLocation] = useLocation();
   const [frozenPopup, setFrozenPopup] = useState(false);
   const [pendingPopup, setPendingPopup] = useState(false);
@@ -55,11 +55,17 @@ export default function Login() {
   const handleDemo = async () => {
     setDemoLoading(true);
     try {
-      await login({ email: "demo@vestplatform.com", password: "demo1234" });
-      toast.success("Welcome, Demo User!");
-      // redirect via useEffect
+      const res = await fetch("/api/auth/demo-login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Demo login failed");
+      await refreshUser();
+      toast.success("Welcome to the demo!");
+      setLocation("/dashboard");
     } catch (err: any) {
-      toast.error(err?.data?.message || err?.message || "Demo login failed");
+      toast.error(err?.message || "Demo login failed — please try again");
     } finally {
       setDemoLoading(false);
     }

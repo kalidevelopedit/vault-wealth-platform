@@ -121,6 +121,80 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// ── One-click demo login ───────────────────────────────────────────────────
+router.post("/demo-login", async (req, res) => {
+  try {
+    const DEMO_EMAIL = "demo@vestplatform.com";
+    const DEMO_PASS  = "demo1234";
+    const DEMO_NAME  = "Demo User";
+
+    let [user] = await db.select().from(usersTable).where(eq(usersTable.email, DEMO_EMAIL)).limit(1);
+
+    if (!user) {
+      // Create the demo user fresh
+      const [created] = await db.insert(usersTable).values({
+        fullName: DEMO_NAME,
+        email: DEMO_EMAIL,
+        passwordHash: hashPassword(DEMO_PASS),
+        phone: "+1-800-000-0000",
+        country: "United States",
+        role: "user",
+        kycStatus: "approved",
+        onboardingStep: 8,
+        onboardingComplete: true,
+        availableCash: "10000.00",
+        mustSetPin: false,
+        pinHash: null,
+      }).returning();
+      user = created;
+    } else {
+      // Ensure demo user is always in a good state (approved, no PIN gate, not frozen)
+      await db.update(usersTable).set({
+        kycStatus: "approved",
+        onboardingComplete: true,
+        onboardingStep: 8,
+        mustSetPin: false,
+        pinHash: null,
+        isFrozen: false,
+        frozenReason: null,
+        updatedAt: new Date(),
+      } as any).where(eq(usersTable.id, user.id));
+      // Re-fetch updated state
+      [user] = await db.select().from(usersTable).where(eq(usersTable.id, user.id)).limit(1);
+    }
+
+    await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, user.id));
+
+    (req.session as any).userId     = user.id;
+    (req.session as any).pinVerified = true; // bypass PIN gate for demo
+
+    res.json({
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        country: user.country,
+        role: user.role,
+        kycStatus: user.kycStatus,
+        onboardingStep: user.onboardingStep,
+        onboardingComplete: user.onboardingComplete,
+        profilePhotoUrl: user.profilePhotoUrl ?? null,
+        createdAt: user.createdAt.toISOString(),
+        mustSetPin: false,
+        hasPin: false,
+        pinVerified: true,
+        isFrozen: false,
+        frozenReason: null,
+      },
+      message: "Demo login successful",
+    });
+  } catch (err) {
+    req.log.error({ err }, "Demo login error");
+    res.status(500).json({ error: "server_error", message: "Demo login failed" });
+  }
+});
+
 router.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.json({ message: "Logged out successfully" });

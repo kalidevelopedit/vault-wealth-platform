@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetAdminStats, useGetAdminUsers, useUpdateUserKycStatus } from "@workspace/api-client-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   Loader2, Search, Users, CheckCircle2, Clock, XCircle,
   TrendingUp, Snowflake, ChevronRight, CheckCircle,
@@ -32,13 +32,22 @@ const FILTERS = [
 ];
 
 export default function AdminDashboard() {
-  const { data: stats, isLoading: sl } = useGetAdminStats();
-  const { data: users, isLoading: ul, refetch } = useGetAdminUsers({ limit: 100 });
+  const [, setLocation] = useLocation();
+  const { data: stats, isLoading: sl, isError: se } = useGetAdminStats();
+  const { data: users, isLoading: ul, isError: ue, refetch } = useGetAdminUsers({ limit: 100 });
   const updateKyc = useUpdateUserKycStatus();
   const [search, setSearch]     = useState("");
   const [filter, setFilter]     = useState("all");
   const [tab, setTab]           = useState<"users" | "applications">("users");
   const [actioning, setActioning] = useState<number | null>(null);
+
+  // Detect admin session expiry (server restart clears session → API returns 401)
+  useEffect(() => {
+    if (se || ue) {
+      localStorage.removeItem("adminAuthenticated");
+      setLocation("/admin");
+    }
+  }, [se, ue]);
 
   const allUsers = users?.users ?? [];
 
