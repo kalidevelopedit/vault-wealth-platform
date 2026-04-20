@@ -3,7 +3,18 @@ import { db } from "@workspace/db";
 import { usersTable, holdingsTable, assetsTable, transactionsTable, kycDocumentsTable, activityLogTable } from "@workspace/db/schema";
 import { eq, and, ilike, or, desc, sql, count } from "drizzle-orm";
 import crypto from "crypto";
-import { sendKycApprovedEmail, sendKycRejectedEmail, sendAccountActivatedEmail } from "../lib/email.js";
+import {
+  sendApplicationReceivedEmail,
+  sendWelcomeEmail,
+  sendKycSubmittedEmail,
+  sendKycApprovedEmail,
+  sendKycRejectedEmail,
+  sendAccountActivatedEmail,
+  sendForgotPinEmail,
+  sendDepositConfirmationEmail,
+  sendWithdrawalConfirmationEmail,
+  sendTradeConfirmationEmail,
+} from "../lib/email.js";
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt_investment_platform").digest("hex");
@@ -509,6 +520,56 @@ router.post("/users/:userId/transactions", requireAdminSession, async (req, res)
   } catch (err) {
     req.log.error({ err }, "Add transaction error");
     res.status(500).json({ error: "server_error", message: "Failed to add transaction" });
+  }
+});
+
+router.post("/test-email", requireAdminSession, async (req: any, res: any) => {
+  const { template, email, name } = req.body;
+  const recipient = { email: email ?? "demo@vestplatform.com", fullName: name ?? "Test User" };
+
+  try {
+    switch (template) {
+      case "application_received":
+        await sendApplicationReceivedEmail({ ...recipient, applicationNumber: "VW-TEST-001" });
+        break;
+      case "welcome":
+        await sendWelcomeEmail(recipient);
+        break;
+      case "kyc_submitted":
+        await sendKycSubmittedEmail(recipient);
+        break;
+      case "kyc_approved":
+        await sendKycApprovedEmail(recipient);
+        break;
+      case "kyc_rejected":
+        await sendKycRejectedEmail(recipient, "Document image was blurry or unreadable.");
+        break;
+      case "account_activated":
+        await sendAccountActivatedEmail({ ...recipient, tempPassword: "DEMO-1234" });
+        break;
+      case "forgot_pin":
+        await sendForgotPinEmail({ ...recipient, tempPassword: "RESET-5678" });
+        break;
+      case "deposit":
+        await sendDepositConfirmationEmail(recipient, 5000);
+        break;
+      case "withdrawal":
+        await sendWithdrawalConfirmationEmail(recipient, 2500);
+        break;
+      case "trade":
+        await sendTradeConfirmationEmail(recipient, {
+          type: "buy", symbol: "BTC", name: "Bitcoin",
+          quantity: 0.05, price: 65000, total: 3250,
+        });
+        break;
+      default:
+        res.status(400).json({ error: "unknown_template", message: `Unknown template: ${template}` });
+        return;
+    }
+    res.json({ ok: true, message: `Test email "${template}" dispatched to ${recipient.email}` });
+  } catch (err: any) {
+    req.log.error({ err }, "Test email error");
+    res.status(500).json({ error: "send_failed", message: err?.message ?? "Email send failed" });
   }
 });
 
