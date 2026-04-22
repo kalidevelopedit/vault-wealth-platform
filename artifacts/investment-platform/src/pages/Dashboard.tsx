@@ -1,25 +1,19 @@
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/contexts/ThemeContext";
 import { AssetIcon } from "@/components/AssetIcon";
 import {
   useGetPortfolioSummary, useGetHoldings, useGetTransactions, useGetMarketSummary
 } from "@workspace/api-client-react";
 import { ArrowDownToLine, ArrowUpFromLine, TrendingUp, TrendingDown, ArrowLeftRight, Zap, Loader2 } from "lucide-react";
 
-const BG = "#050505";
-const CARD = "#0C0F14";
-const BORD = "rgba(255,255,255,0.08)";
-const TEXT = "rgba(255,255,255,0.96)";
-const MUTED = "rgba(255,255,255,0.45)";
-const BLUE = "#2563FF";
-const GREEN = "#16a34a";
-const RED = "#dc2626";
-
 const fmtUSD = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const mask = (val: string, hide: boolean) => hide ? "******" : val;
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED, inputBg } = colors;
   const { data: summary, isLoading: ls } = useGetPortfolioSummary();
   const { data: holdings, isLoading: lh } = useGetHoldings();
   const { data: txData, isLoading: txl } = useGetTransactions({ limit: 5 });
@@ -38,34 +32,32 @@ export default function Dashboard() {
   ];
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 1440, margin: "0 auto", background: BG, minHeight: "100%" }}>
+    <div style={{ padding: "20px 16px", maxWidth: 1440, margin: "0 auto", background: BG, minHeight: "100%" }}>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
       
       {/* Balance Hero Panel */}
-      <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: "32px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 24 }}>
-        <div>
-          <div style={{ fontSize: 14, color: MUTED, marginBottom: 8, fontWeight: 500 }}>Portfolio Overview</div>
-          {ls ? <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite" }} /> : (
-            <>
-              <div style={{ fontSize: 48, fontWeight: 700, color: TEXT, fontFamily: "monospace", letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 8 }}>
+      <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: "24px", marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 13, color: MUTED, marginBottom: 6, fontWeight: 500 }}>Total Portfolio Value</div>
+            {ls ? <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite" }} /> : (
+              <div style={{ fontSize: 36, fontWeight: 700, color: TEXT, fontFamily: "monospace", letterSpacing: "-1px", lineHeight: 1.1 }}>
                 ${mask(fmtUSD(totalValue), hideBalance)}
               </div>
-              <div style={{ fontSize: 14, color: MUTED, fontFamily: "monospace" }}>
-                ≈ {mask(fmtUSD(totalValue), hideBalance)} USD
-              </div>
-            </>
-          )}
-        </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <Link href="/wallet" style={{
-            height: 44, padding: "0 24px", background: BLUE, color: "#fff",
-            borderRadius: 999, fontSize: 14, fontWeight: 600, textDecoration: "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>Deposit</Link>
-          <Link href="/wallet" style={{
-            height: 44, padding: "0 24px", background: "transparent", color: TEXT, border: `1px solid ${BORD}`,
-            borderRadius: 999, fontSize: 14, fontWeight: 600, textDecoration: "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>Withdraw</Link>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <Link href="/wallet" style={{
+              height: 38, padding: "0 20px", background: BLUE, color: "#fff",
+              borderRadius: 999, fontSize: 13.5, fontWeight: 600, textDecoration: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>Deposit</Link>
+            <Link href="/wallet" style={{
+              height: 38, padding: "0 20px", background: "transparent", color: TEXT, border: `1px solid ${BORD}`,
+              borderRadius: 999, fontSize: 13.5, fontWeight: 600, textDecoration: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>Withdraw</Link>
+          </div>
         </div>
       </div>
 
@@ -80,7 +72,7 @@ export default function Dashboard() {
         {actions.map(a => (
           <Link key={a.label} href={a.href} style={{
             display: "flex", alignItems: "center", gap: 8, padding: "8px 16px", height: 40,
-            background: "#11141A", border: `1px solid ${BORD}`, borderRadius: 999,
+            background: inputBg, border: `1px solid ${BORD}`, borderRadius: 999,
             color: TEXT, fontSize: 13, fontWeight: 500, textDecoration: "none",
           }}>
             <a.icon style={{ width: 14, height: 14, color: MUTED }} strokeWidth={2} />

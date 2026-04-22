@@ -3,7 +3,7 @@ import { useGetAdminStats, useGetAdminUsers, useUpdateUserKycStatus } from "@wor
 import { Link, useLocation } from "wouter";
 import {
   Loader2, Search, Users, CheckCircle2, Clock, XCircle,
-  TrendingUp, Snowflake, ChevronRight, CheckCircle,
+  TrendingUp, Snowflake, ChevronRight, CheckCircle, Mail,
 } from "lucide-react";
 
 const CARD  = "#111827";
@@ -93,9 +93,19 @@ export default function AdminDashboard() {
       `}</style>
 
       {/* Page title */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: MUTED, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Administration</div>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: TEXT, letterSpacing: "-0.025em", margin: 0 }}>Platform Dashboard</h1>
+      <div style={{ marginBottom: 32, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: MUTED, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Administration</div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: TEXT, letterSpacing: "-0.025em", margin: 0 }}>Platform Dashboard</h1>
+        </div>
+        <Link href="/admin/email-templates" style={{
+          display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 18px",
+          background: CARD, border: `1px solid ${BORD}`, borderRadius: 12,
+          color: TEXT, textDecoration: "none", fontSize: 13, fontWeight: 500,
+        }}>
+          <Mail size={14} color={MUTED} strokeWidth={1.5} />
+          Email Templates
+        </Link>
       </div>
 
       {/* Stat cards */}

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import {
   Loader2, ArrowLeft, CheckCircle2, XCircle, AlertTriangle,
-  Snowflake, Flame, Trash2, Plus, DollarSign, TrendingUp, Clock,
+  Snowflake, Flame, Trash2, Plus, DollarSign, TrendingUp, Clock, Eye, EyeOff, KeyRound,
 } from "lucide-react";
 
 const CARD  = "#111827";
@@ -131,6 +131,11 @@ export default function AdminUserDetail() {
   const [cashDeltaSign, setCashDeltaSign] = useState<"add" | "sub">("add");
   const [cashDeltaLoading, setCashDeltaLoading] = useState(false);
 
+  // Password reset
+  const [newPassword,  setNewPassword]  = useState("");
+  const [pwLoading,    setPwLoading]    = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   if (isLoading) return (
     <div style={{ padding: 80, display: "flex", justifyContent: "center" }}>
       <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
@@ -252,6 +257,17 @@ export default function AdminUserDetail() {
       refetch();
     } catch (e: any) { toast.error(e.message); }
     finally { setTxLoading(false); }
+  };
+
+  const doSetPassword = async () => {
+    if (!newPassword || newPassword.length < 6) { toast.error("Minimum 6 characters"); return; }
+    setPwLoading(true);
+    try {
+      await adminFetch(`/admin/users/${userId}/password`, { method: "PATCH", body: JSON.stringify({ password: newPassword }) });
+      toast.success("Password updated successfully");
+      setNewPassword("");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setPwLoading(false); }
   };
 
   return (
@@ -402,6 +418,43 @@ export default function AdminUserDetail() {
               ].map(({ label, value }) => <InfoRow key={label} label={label} value={value} />)}
               <div style={{ height: 4 }} />
             </Card>
+
+            {/* Password Reset */}
+            <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 18, overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ padding: "18px 24px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", gap: 10 }}>
+                <KeyRound size={14} color={MUTED} />
+                <div style={{ fontSize: 10, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em" }}>Account Security</div>
+              </div>
+              <div style={{ padding: "20px 24px" }}>
+                <div style={{ fontSize: 13, color: MUTED, marginBottom: 14 }}>Set a new password for this user's account.</div>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="New password (min 6 characters)"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && doSetPassword()}
+                    style={{ ...inputSx, paddingRight: 40 }}
+                  />
+                  <button onClick={() => setShowPassword(v => !v)} style={{
+                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 0, display: "flex",
+                  }}>
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                <button onClick={doSetPassword} disabled={pwLoading} style={{
+                  marginTop: 10, width: "100%", height: 40, background: "rgba(59,130,246,0.12)",
+                  border: "1px solid rgba(59,130,246,0.25)", borderRadius: 11,
+                  color: BLUE, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  opacity: pwLoading ? 0.6 : 1,
+                }}>
+                  {pwLoading ? <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> : <KeyRound size={14} />}
+                  Update Password
+                </button>
+              </div>
+            </div>
 
             {isFrozen && (
               <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 14, padding: "18px 22px" }}>

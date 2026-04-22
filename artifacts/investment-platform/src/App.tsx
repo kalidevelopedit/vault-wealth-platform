@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
 
 // Components
@@ -89,6 +90,7 @@ import Settings from "@/pages/Settings";
 import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminUserDetail from "@/pages/admin/AdminUserDetail";
+import AdminEmailTemplates from "@/pages/admin/AdminEmailTemplates";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -328,6 +330,9 @@ function Router() {
       <Route path="/admin/users">
         <AdminLayout><AdminDashboard /></AdminLayout>
       </Route>
+      <Route path="/admin/email-templates">
+        <AdminLayout><AdminEmailTemplates /></AdminLayout>
+      </Route>
       
       {/* Protected App Routes */}
       <Route path="/onboarding">
@@ -358,17 +363,19 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <AuthProvider>
-          <TooltipProvider>
-            <ScrollToTop />
-            <Router />
-            <Toaster />
-          </TooltipProvider>
-        </AuthProvider>
-      </WouterRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <AuthProvider>
+            <TooltipProvider>
+              <ScrollToTop />
+              <Router />
+              <Toaster />
+            </TooltipProvider>
+          </AuthProvider>
+        </WouterRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

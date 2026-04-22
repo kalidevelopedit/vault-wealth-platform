@@ -589,4 +589,184 @@ router.post("/test-email", requireAdminSession, async (req: any, res: any) => {
   }
 });
 
+// ── Set / Reset User Password ──────────────────────────────────────────────
+router.patch("/users/:userId/password", requireAdminSession, async (req, res) => {
+  const userId = Number(req.params.userId);
+  const { password } = req.body;
+  if (!password || String(password).length < 6) {
+    res.status(400).json({ error: "invalid", message: "Password must be at least 6 characters" });
+    return;
+  }
+  try {
+    const newHash = hashPassword(String(password));
+    await db.update(usersTable).set({ passwordHash: newHash }).where(eq(usersTable.id, userId));
+    await db.insert(activityLogTable).values({
+      userId, type: "password_reset", description: "Password reset by admin",
+    });
+    res.json({ ok: true, message: "Password updated" });
+  } catch (err: any) {
+    res.status(500).json({ error: "server_error", message: "Failed to update password" });
+  }
+});
+
+// ── Email preview HTML ─────────────────────────────────────────────────────
+router.get("/email-preview/:template", requireAdminSession, (req, res) => {
+  const { template } = req.params;
+
+  const LOGO_SRC = "https://20c145d0-7ea9-42f0-b115-f223a4c4ea88-00-2rfqdxecvl3ty.kirk.replit.dev/investment-platform/logo-dark.png";
+  const DEMO_NAME = "James Harrison";
+  const DEMO_FIRST = "James";
+  const DEMO_APP = "APP-294710";
+
+  const header = `
+    <tr><td style="background:#0d1520;padding:28px 40px 24px;">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td><img src="${LOGO_SRC}" alt="Vault Wealth" height="30" style="display:block;"></td>
+        <td align="right" style="vertical-align:middle;"><span style="color:#8b9aae;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;">Institutional Investment</span></td>
+      </tr></table>
+    </td></tr>`;
+
+  const wrap = (content: string) => `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+  <body style="margin:0;padding:0;background:#f0f2f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:40px 16px;"><tr><td align="center">
+  <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e2e5ea;">
+  ${header}${content}
+  <tr><td style="background:#f8f9fb;padding:24px 40px;border-top:1px solid #e2e5ea;text-align:center;">
+    <p style="margin:0;font-size:12px;color:#8b9aae;">Vault Wealth · Institutional Investment · support@intbrokers.app</p>
+  </td></tr>
+  </table></td></tr></table></body></html>`;
+
+  const TEMPLATES: Record<string, string> = {
+    application_received: wrap(`
+      <tr><td style="background:#0a3d2e;padding:14px 40px;">
+        <span style="color:#bbf7d0;font-size:13px;font-weight:600;">✓ Application Successfully Received · Ref: ${DEMO_APP}</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <p style="margin:0 0 4px;font-size:11px;color:#8b9aae;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Dear ${DEMO_FIRST},</p>
+        <h1 style="margin:8px 0 20px;font-size:26px;font-weight:700;color:#0d1520;line-height:1.25;letter-spacing:-0.5px;">Your application has<br>been received.</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Thank you for applying to open an account with <strong>Vault Wealth</strong>. Our compliance team has begun the review process and will contact you within 2 business days.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+          <tr><td style="padding:16px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Applicant Name</td><td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;">${DEMO_NAME}</td></tr></table></td></tr>
+          <tr><td style="padding:16px 24px;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Reference Number</td><td style="font-size:13px;color:#0d1520;font-weight:700;text-align:right;font-family:monospace;">${DEMO_APP}</td></tr></table></td></tr>
+        </table>
+      </td></tr>`),
+
+    welcome: wrap(`
+      <tr><td style="padding:48px 40px 36px;text-align:center;">
+        <div style="width:64px;height:64px;background:#eef2ff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <span style="font-size:28px;">👋</span>
+        </div>
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Welcome to Vault Wealth</h1>
+        <p style="margin:0 0 28px;font-size:15px;line-height:1.7;color:#4a5568;max-width:420px;margin-left:auto;margin-right:auto;">Your account has been created. Complete your KYC to unlock full access to trading, deposits, and withdrawals.</p>
+        <a href="#" style="display:inline-block;background:#2563ff;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;">Get Started →</a>
+      </td></tr>`),
+
+    kyc_submitted: wrap(`
+      <tr><td style="background:#fffbeb;padding:14px 40px;border-left:4px solid #f59e0b;">
+        <span style="color:#92400e;font-size:13px;font-weight:600;">⏳ KYC Under Review</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0d1520;">Documents under review</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Thank you, ${DEMO_FIRST}. Your identity verification documents have been received and are now being reviewed by our compliance team. This typically takes 1–2 business days.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+          <tr><td style="font-size:14px;color:#92400e;font-weight:500;">You will be notified via email once the review is complete. No action is required from you at this time.</td></tr>
+        </table>
+      </td></tr>`),
+
+    kyc_approved: wrap(`
+      <tr><td style="background:#0a3d2e;padding:14px 40px;">
+        <span style="color:#bbf7d0;font-size:13px;font-weight:600;">✅ Identity Verification Approved</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Your account is verified</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Congratulations ${DEMO_FIRST}. Your identity has been verified and your Vault Wealth account is now fully activated. You can now trade, deposit, and withdraw.</p>
+        <a href="#" style="display:inline-block;background:#2563ff;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;">Access Your Account →</a>
+      </td></tr>`),
+
+    kyc_rejected: wrap(`
+      <tr><td style="background:#3b0a0a;padding:14px 40px;">
+        <span style="color:#fca5a5;font-size:13px;font-weight:600;">⚠ Action Required: Verification Unsuccessful</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0d1520;">Verification unsuccessful</h1>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#4a5568;">Unfortunately we were unable to verify your identity with the documents provided. Please resubmit clearer, valid government-issued identification documents.</p>
+        <a href="#" style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;">Resubmit Documents</a>
+      </td></tr>`),
+
+    account_activated: wrap(`
+      <tr><td style="background:#0a3d2e;padding:14px 40px;">
+        <span style="color:#bbf7d0;font-size:13px;font-weight:600;">🔓 Account Activated — Login Details</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Your account is ready</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Your Vault Wealth account has been activated. Use the credentials below to sign in. Please change your password after first login.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+          <tr><td style="padding:16px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Email</td><td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;">james@example.com</td></tr></table></td></tr>
+          <tr><td style="padding:16px 24px;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Temporary Password</td><td style="font-size:13px;color:#0d1520;font-weight:700;text-align:right;font-family:monospace;">TEMP-8X2K9M</td></tr></table></td></tr>
+        </table>
+        <a href="#" style="display:inline-block;background:#2563ff;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;">Sign In →</a>
+      </td></tr>`),
+
+    forgot_pin: wrap(`
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0d1520;">Passcode Reset</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">A passcode reset was requested for your account. Use the temporary credentials below to regain access.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+          <tr><td style="font-size:14px;color:#0d1520;font-weight:700;font-family:monospace;letter-spacing:2px;font-size:18px;">RESET-5678</td></tr>
+          <tr><td style="font-size:12px;color:#8b9aae;margin-top:6px;padding-top:8px;">Valid for 24 hours</td></tr>
+        </table>
+      </td></tr>`),
+
+    deposit_confirmation: wrap(`
+      <tr><td style="background:#0a3d2e;padding:14px 40px;">
+        <span style="color:#bbf7d0;font-size:13px;font-weight:600;">✅ Deposit Confirmed — $5,000.00</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Deposit confirmed</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Your deposit of <strong>$5,000.00 USD</strong> has been received and credited to your account.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+          <tr><td style="padding:16px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Amount</td><td style="font-size:14px;color:#22c55e;font-weight:700;text-align:right;font-family:monospace;">+$5,000.00</td></tr></table></td></tr>
+          <tr><td style="padding:16px 24px;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Status</td><td style="font-size:13px;color:#22c55e;font-weight:600;text-align:right;">Confirmed</td></tr></table></td></tr>
+        </table>
+      </td></tr>`),
+
+    withdrawal_confirmation: wrap(`
+      <tr><td style="background:#1a1a2e;padding:14px 40px;">
+        <span style="color:#c7d2fe;font-size:13px;font-weight:600;">📤 Withdrawal Initiated — $2,500.00</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Withdrawal initiated</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Your withdrawal of <strong>$2,500.00 USD</strong> has been submitted and is being processed.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+          <tr><td style="padding:16px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Amount</td><td style="font-size:14px;color:#0d1520;font-weight:700;text-align:right;font-family:monospace;">-$2,500.00</td></tr></table></td></tr>
+          <tr><td style="padding:16px 24px;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Status</td><td style="font-size:13px;color:#f59e0b;font-weight:600;text-align:right;">Processing (1–3 days)</td></tr></table></td></tr>
+        </table>
+      </td></tr>`),
+
+    trade_confirmation: wrap(`
+      <tr><td style="background:#0a3d2e;padding:14px 40px;">
+        <span style="color:#bbf7d0;font-size:13px;font-weight:600;">✅ Trade Confirmed — Bought 0.05 BTC</span>
+      </td></tr>
+      <tr><td style="padding:40px 40px 32px;">
+        <h1 style="margin:0 0 16px;font-size:26px;font-weight:700;color:#0d1520;">Trade executed</h1>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#4a5568;">Your order to <strong>buy 0.05 BTC</strong> has been executed successfully.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;border:1px solid #e2e5ea;border-radius:12px;overflow:hidden;margin-bottom:28px;">
+          <tr><td style="padding:14px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Asset</td><td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;">Bitcoin (BTC)</td></tr></table></td></tr>
+          <tr><td style="padding:14px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Quantity</td><td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;font-family:monospace;">0.05 BTC</td></tr></table></td></tr>
+          <tr><td style="padding:14px 24px;border-bottom:1px solid #e2e5ea;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Price</td><td style="font-size:13px;color:#0d1520;font-weight:600;text-align:right;font-family:monospace;">$65,000.00</td></tr></table></td></tr>
+          <tr><td style="padding:14px 24px;"><table width="100%"><tr><td style="font-size:13px;color:#8b9aae;">Total</td><td style="font-size:14px;color:#22c55e;font-weight:700;text-align:right;font-family:monospace;">$3,250.00</td></tr></table></td></tr>
+        </table>
+      </td></tr>`),
+  };
+
+  const html = TEMPLATES[template];
+  if (!html) {
+    res.status(404).json({ error: "not_found", message: `Template '${template}' not found` });
+    return;
+  }
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.send(html);
+});
+
 export default router;
