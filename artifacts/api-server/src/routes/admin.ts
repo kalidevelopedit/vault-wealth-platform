@@ -589,6 +589,46 @@ router.post("/test-email", requireAdminSession, async (req: any, res: any) => {
   }
 });
 
+// ── One-time batch test-email sender (passcode in body, no session needed) ──
+router.post("/send-test-batch", async (req: any, res: any) => {
+  const { passcode, recipients } = req.body;
+  if (!passcode || passcode !== ADMIN_PASSCODE) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+  if (!Array.isArray(recipients) || recipients.length === 0) {
+    res.status(400).json({ error: "recipients required" });
+    return;
+  }
+
+  const results: any[] = [];
+  for (const { email, fullName } of recipients) {
+    const r = { email, fullName };
+    const appNo = `VW-TEST-${Math.floor(Math.random() * 90000) + 10000}`;
+    const templates = [
+      { label: "welcome", fn: () => sendWelcomeEmail(r) },
+      { label: "application_received", fn: () => sendApplicationReceivedEmail({ ...r, applicationNumber: appNo }) },
+      { label: "kyc_submitted", fn: () => sendKycSubmittedEmail(r) },
+      { label: "kyc_approved", fn: () => sendKycApprovedEmail(r) },
+      { label: "kyc_rejected", fn: () => sendKycRejectedEmail(r, "Document image was blurry. Please re-upload.") },
+      { label: "account_activated", fn: () => sendAccountActivatedEmail({ ...r, tempPassword: "DEMO-4821" }) },
+      { label: "deposit", fn: () => sendDepositConfirmationEmail(r, 25000) },
+      { label: "withdrawal", fn: () => sendWithdrawalConfirmationEmail(r, 5000) },
+      { label: "trade", fn: () => sendTradeConfirmationEmail(r, { type: "buy" as any, symbol: "BTC", name: "Bitcoin", quantity: 0.1, price: 65000, total: 6500 }) },
+    ];
+    for (const t of templates) {
+      try {
+        await t.fn();
+        results.push({ email, template: t.label, ok: true });
+        await new Promise(resolve => setTimeout(resolve, 250));
+      } catch (err: any) {
+        results.push({ email, template: t.label, ok: false, error: err?.message });
+      }
+    }
+  }
+  res.json({ ok: true, results });
+});
+
 // ── Set / Reset User Password ──────────────────────────────────────────────
 router.patch("/users/:userId/password", requireAdminSession, async (req, res) => {
   const userId = Number(req.params.userId);
