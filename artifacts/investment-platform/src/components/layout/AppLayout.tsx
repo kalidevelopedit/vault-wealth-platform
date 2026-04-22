@@ -1,12 +1,74 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import {
   LayoutDashboard, BarChart2, Wallet, User, LogOut, Search, Menu, X, Shield, Settings,
-  ArrowDownToLine, Bell
+  RefreshCw, ArrowLeftRight, TrendingUp
 } from "lucide-react";
 
 interface AppLayoutProps { children: ReactNode; }
+
+const BG   = "#050505";
+const SIDE = "#050505";
+const BORD = "rgba(255,255,255,0.08)";
+const MUTED= "rgba(255,255,255,0.45)";
+const TEXT = "rgba(255,255,255,0.96)";
+const BLUE = "#2563FF";
+
+function NewsTicker() {
+  const [headlines, setHeadlines] = useState<string[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/market/news?limit=20")
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setHeadlines(data.map((n: any) => n.title));
+      })
+      .catch(() => {
+        setHeadlines([
+          "BTC/USD +2.4% — Bitcoin holds $72,000 support level",
+          "ETH rallies 3.1% ahead of EIP upgrade announcement",
+          "Gold hits 6-month high at $2,380/oz amid macro uncertainty",
+          "NVDA +4.2% after record AI chip revenue beat",
+          "S&P 500 closes at all-time high for third straight week",
+          "Solana processes record 65M daily transactions",
+          "XRP partial SEC ruling lifts token 8% in early trading",
+          "Fed signals rate pause — dollar weakens vs major peers",
+          "Oil dips on surprise inventory build; WTI at $78.30",
+          "Copper prices surge on China manufacturing rebound",
+        ]);
+      });
+  }, []);
+
+  if (!headlines.length) return null;
+
+  const text = headlines.join("   •   ");
+
+  return (
+    <div style={{
+      height: 32, background: "#0A0A14", borderBottom: `1px solid ${BORD}`,
+      overflow: "hidden", display: "flex", alignItems: "center", position: "relative",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 12px", flexShrink: 0, borderRight: `1px solid ${BORD}` }}>
+        <TrendingUp style={{ width: 12, height: 12, color: BLUE }} strokeWidth={2} />
+        <span style={{ fontSize: 10, fontWeight: 700, color: BLUE, letterSpacing: "0.08em", textTransform: "uppercase" }}>LIVE</span>
+      </div>
+      <div ref={containerRef} style={{ overflow: "hidden", flex: 1 }}>
+        <div style={{
+          display: "inline-block",
+          whiteSpace: "nowrap",
+          animation: "ticker-scroll 60s linear infinite",
+          fontSize: 12,
+          color: MUTED,
+          letterSpacing: "0.01em",
+        }}>
+          {text}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{text}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, logout } = useAuth();
@@ -18,16 +80,17 @@ export function AppLayout({ children }: AppLayoutProps) {
     { label: "Portfolio", href: "/dashboard" },
     { label: "Wallet", href: "/wallet" },
     { label: "Trade", href: "/invest" },
-    { label: "Account", href: "/profile" },
+    { label: "Convert", href: "/convert" },
   ];
 
   const sideNavLinks = [
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
     { icon: BarChart2, label: "Markets", href: "/markets" },
     { icon: Wallet, label: "Wallet", href: "/wallet" },
+    { icon: ArrowLeftRight, label: "Convert", href: "/convert" },
     { icon: User, label: "Profile", href: "/profile" },
     { icon: Shield, label: "Security", href: "/account/security" },
-    { icon: Settings, label: "Settings", href: "/profile" }, // maps to profile for now
+    { icon: Settings, label: "Settings", href: "/settings" },
   ];
 
   const isActive = (href: string) => {
@@ -40,13 +103,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     ? user.fullName.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
     : "U";
   const uid = user?.id ? `VW-${String(user.id).padStart(6, "0")}` : "VW-000000";
-
-  const BG   = "#050505";
-  const SIDE = "#050505";
-  const BORD = "rgba(255,255,255,0.08)";
-  const MUTED= "rgba(255,255,255,0.45)";
-  const TEXT = "rgba(255,255,255,0.96)";
-  const BLUE = "#2563FF";
 
   const SidebarContent = () => (
     <>
@@ -74,20 +130,19 @@ export function AppLayout({ children }: AppLayoutProps) {
         })}
       </nav>
 
-      {/* Bottom user section */}
       <div style={{ padding: "16px", borderTop: `1px solid ${BORD}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "0 8px" }}>
           <div style={{
             width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
-            background: "#191F28", border: `1px solid ${BORD}`,
+            background: "linear-gradient(135deg,#1d4ed8,#2563FF)", border: `1px solid rgba(37,99,255,0.3)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 12, fontWeight: 600, color: TEXT,
+            fontSize: 12, fontWeight: 700, color: "#fff",
           }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {user?.fullName || "User"}
             </div>
-            <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+            <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
           </div>
         </div>
         <button onClick={logout} style={{
@@ -108,16 +163,20 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column" }}>
+      {/* ── News Ticker ── */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 101 }}>
+        <NewsTicker />
+      </div>
+
       {/* ── Top Navigation Bar ── */}
       <header style={{
         height: 64, background: "#0A0A0A", borderBottom: `1px solid ${BORD}`,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 24px", position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        padding: "0 24px", position: "fixed", top: 32, left: 0, right: 0, zIndex: 100,
       }}>
-        {/* Left side */}
         <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <img src="/logo-white.png" alt="Vault Wealth" style={{ height: 20, width: "auto", objectFit: "contain" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 34, width: "auto", objectFit: "contain" }} />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             {topNavLinks.map(link => {
@@ -138,7 +197,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </nav>
         </div>
 
-        {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div className="hidden lg:flex" style={{
             height: 36, width: 200, background: "#11141A", borderRadius: 999, border: `1px solid ${BORD}`,
@@ -152,16 +210,17 @@ export function AppLayout({ children }: AppLayoutProps) {
           <Link href="/wallet" style={{
             height: 36, padding: "0 16px", background: BLUE, color: "#fff",
             borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none",
-            display: "flex", alignItems: "center", justifyContent: "center", transition: "opacity 0.15s",
-          }} onMouseEnter={e => e.currentTarget.style.opacity = "0.9"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
             Deposit
           </Link>
-          <Link href="/wallet" className="hidden sm:block" style={{ fontSize: 14, fontWeight: 500, color: MUTED, textDecoration: "none" }}>Wallets</Link>
           <Link href="/profile" style={{
-            width: 32, height: 32, borderRadius: "50%", background: "#11141A", border: `1px solid ${BORD}`,
-            display: "flex", alignItems: "center", justifyContent: "center", color: TEXT, textDecoration: "none",
+            width: 34, height: 34, borderRadius: "50%",
+            background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff", textDecoration: "none", fontSize: 12, fontWeight: 700,
           }}>
-            <User style={{ width: 16, height: 16 }} strokeWidth={1.5} />
+            {initials}
           </Link>
           <button className="md:hidden" onClick={() => setMobileOpen(true)} style={{
             background: "none", border: "none", color: TEXT, cursor: "pointer", padding: 4, display: "flex"
@@ -172,11 +231,11 @@ export function AppLayout({ children }: AppLayoutProps) {
       </header>
 
       {/* ── Main Layout ── */}
-      <div style={{ display: "flex", flex: 1, marginTop: 64 }}>
+      <div style={{ display: "flex", flex: 1, marginTop: 96 }}>
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex" style={{
           width: 240, background: SIDE, borderRight: `1px solid ${BORD}`,
-          flexDirection: "column", height: "calc(100vh - 64px)", position: "fixed", left: 0, top: 64,
+          flexDirection: "column", height: "calc(100vh - 96px)", position: "fixed", left: 0, top: 96,
         }}>
           <SidebarContent />
         </aside>
@@ -190,7 +249,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               display: "flex", flexDirection: "column", height: "100%", zIndex: 1,
             }}>
               <div style={{ height: 64, borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", padding: "0 24px", justifyContent: "space-between" }}>
-                <img src="/logo-white.png" alt="Vault" style={{ height: 16 }} />
+                <img src="/logo-white.png" alt="INT Brokers" style={{ height: 28 }} />
                 <button onClick={() => setMobileOpen(false)} style={{ background: "none", border: "none", color: MUTED, cursor: "pointer" }}>
                   <X style={{ width: 20, height: 20 }} strokeWidth={1.5} />
                 </button>
@@ -201,10 +260,17 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
 
         {/* Content Area */}
-        <main className="flex-1 md:ml-[240px]" style={{ background: BG, minHeight: "calc(100vh - 64px)" }}>
+        <main className="flex-1 md:ml-[240px]" style={{ background: BG, minHeight: "calc(100vh - 96px)" }}>
           {children}
         </main>
       </div>
+
+      <style>{`
+        @keyframes ticker-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
   );
 }

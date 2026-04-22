@@ -1,0 +1,322 @@
+You are not designing freely. You are replicating a HIGH-END TRADING PLATFORM UI exactly in structure, spacing, density, and hierarchy.
+
+This is NOT a generic dashboard.
+This is NOT a SaaS UI.
+This is NOT Dribbble style.
+
+If anything looks “soft”, “rounded too much”, “spaced out”, or “friendly” → it is WRONG.
+
+The UI must feel:
+- dense
+- sharp
+- engineered
+- slightly intimidating
+- financial-grade
+- zero decoration
+
+--------------------------------
+CRITICAL RULES (NON-NEGOTIABLE)
+--------------------------------
+
+1. REMOVE ALL “SOFT UI”
+- No big rounded blobs
+- No oversized padding
+- No airy layout
+- No friendly spacing
+- No “card floating in space” look
+
+2. REMOVE ALL “COLORED UI BLOCKS”
+- NO blue backgrounds except buttons
+- NO green/red backgrounds
+- NO colored tiles
+- NO gradient sections
+- NO “highlight cards”
+
+3. EVERYTHING IS DARK + STRUCTURED
+- Background almost black
+- Panels slightly lighter
+- Borders define structure (NOT spacing alone)
+
+4. DENSITY OVER BREATHING ROOM
+- Your current UI is too spaced out → WRONG
+- Trading UI is compact, tight, efficient
+
+--------------------------------
+LAYOUT (MATCH IMAGE EXACTLY)
+--------------------------------
+
+TOP BAR:
+- Height: ~60px (not tall)
+- Very tight vertical alignment
+- Left: nav items in a row (Markets, Portfolio, Wallet, Trade, Account)
+- Font small (14–15px), medium weight
+- Active tab = ONLY subtle brightness or underline (NOT pill, NOT background)
+
+RIGHT SIDE:
+- Search bar (compact pill, ~36px height)
+- Deposit button (pill, blue)
+- Wallets text
+- Icon (menu/avatar)
+
+Spacing between items: 12px–16px ONLY (not wide)
+
+--------------------------------
+SIDEBAR (VERY IMPORTANT)
+--------------------------------
+
+Width: ~220px MAX (yours is too wide)
+
+Items:
+- Overview
+- Markets
+- Wallet
+- Profile
+- Security
+- Settings
+
+Each item:
+- Height: 40–44px (NOT big)
+- Padding: 12px horizontal
+- Radius: 10–12px (small, not pill)
+
+ACTIVE ITEM:
+- Slightly lighter background ONLY
+- NO glow
+- NO bright blue
+- NO big contrast jump
+
+Icons:
+- Monochrome
+- Small (16px–18px)
+
+BOTTOM USER BLOCK:
+- Small avatar circle
+- Name + ID stacked
+- VERY compact
+
+--------------------------------
+MAIN CONTENT (THIS IS WHERE YOU FAILED)
+--------------------------------
+
+You made it “cardy” and soft.
+
+Correct behavior:
+
+SECTION WIDTH:
+- Wide and tight
+- Align everything left
+- No centered “hero card”
+
+--------------------------------
+PORTFOLIO CARD (CRITICAL)
+--------------------------------
+
+This must feel like a trading terminal panel:
+
+- Height: ~140px–160px
+- NOT oversized
+- NOT floating
+
+BACKGROUND:
+- Slightly lighter than page (very subtle)
+
+BORDER:
+- 1px subtle border REQUIRED (you likely missed this)
+
+CONTENT:
+
+TOP:
+- "Portfolio Overview" small label (muted text)
+
+MAIN VALUE:
+- VERY LARGE number
+- Tight letter spacing
+- Strong contrast
+- No glow
+- No gradient
+
+UNDER VALUE:
+- smaller USD equivalent
+
+RIGHT SIDE:
+- Deposit + Withdraw buttons INLINE (not floating away)
+- Buttons medium size (~40px height)
+
+--------------------------------
+ACTION BUTTON ROW (YOU DID THIS WRONG)
+--------------------------------
+
+Your buttons are too big and too soft.
+
+Correct:
+
+- Height: 34px–38px
+- Dark background
+- Thin border
+- Tight padding
+
+Layout:
+[ Deposit ] [ Withdraw ] [ Buy ] [ Sell ] [ Convert ] [ Markets ]
+
+Spacing: 8px gap ONLY
+
+No big pills. No soft capsules.
+
+--------------------------------
+HOLDINGS TABLE (MOST IMPORTANT)
+--------------------------------
+
+This is where “pro vs amateur” shows.
+
+TABLE MUST BE:
+- Dense
+- Aligned
+- Sharp
+
+ROW HEIGHT:
+~56px (NOT big)
+
+COLUMNS:
+Asset | Quantity | Value | 24h Change | Action
+
+ALIGNMENT:
+- Text left
+- Numbers RIGHT (CRITICAL)
+- Action button right
+
+ROW STYLE:
+- No big cards
+- Just rows
+- Subtle divider OR very slight background difference
+
+HOVER:
+- Slight darker background
+- NO animation bounce
+
+ICONS:
+- Small (20px)
+- Left of asset name
+
+ASSET TEXT:
+- Symbol bold
+- Name smaller under it
+
+--------------------------------
+TRENDING PANEL (RIGHT SIDE)
+--------------------------------
+
+Width: ~260px–300px
+
+NOT a big card.
+
+- Compact list
+- Tight rows (~40px–48px height)
+- Name left, % right
+- Green/red ONLY for text (no background)
+
+--------------------------------
+SPACING SYSTEM (STRICT)
+--------------------------------
+
+If your UI feels “luxurious” → you failed.
+It should feel “efficient”.
+
+Use this ONLY:
+
+4px / 8px / 12px / 16px / 20px / 24px
+
+DO NOT exceed 24px gaps in most places.
+
+--------------------------------
+TYPOGRAPHY (YOU MADE IT TOO PRETTY BEFORE)
+--------------------------------
+
+Font:
+- Inter or system UI
+
+Weights:
+- 400 / 500 / 600 ONLY
+
+NO extra bold everywhere.
+
+SIZES:
+- Nav: 14px
+- Labels: 12–13px
+- Body: 14–15px
+- Table: 14px
+- Big number: 40–48px (not oversized hero)
+
+--------------------------------
+COLORS (LOCK THIS IN)
+--------------------------------
+
+Background: #05070B
+Panels: #0D1117
+Elevated: #11161D
+
+Borders: rgba(255,255,255,0.06)
+
+Text:
+- Primary: #E6EDF3
+- Secondary: #8B949E
+
+Blue:
+- #2F6BFF (buttons ONLY)
+
+Green:
+- muted (text only)
+
+Red:
+- muted (text only)
+
+--------------------------------
+ANIMATIONS (YOU OVERDID BEFORE)
+--------------------------------
+
+Only allow:
+- hover fade (0.15s)
+- dropdown fade + slight translateY
+
+NO:
+- scaling
+- bouncing
+- glow
+- blur transitions
+
+--------------------------------
+WHY YOUR CURRENT VERSION LOOKS CHILDISH
+--------------------------------
+
+You did:
+- too much padding
+- too rounded
+- too soft
+- too centered
+- too “card separated”
+- too colorful
+- too airy
+
+REAL UI is:
+- tighter
+- flatter
+- sharper
+- more compressed
+- more grid-aligned
+
+--------------------------------
+FINAL COMMAND
+--------------------------------
+
+Rebuild the entire post-login dashboard using:
+
+- tighter spacing
+- smaller radii
+- denser layout
+- table-first structure
+- minimal color usage
+- sharp alignment
+- no decorative UI
+
+If it looks like a startup dashboard → it is WRONG.
+
+It must look like a serious trading terminal.

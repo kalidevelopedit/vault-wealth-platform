@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { usersTable, holdingsTable, assetsTable, transactionsTable } from "@workspace/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { usersTable, holdingsTable, assetsTable, transactionsTable, kycDocumentsTable } from "@workspace/db/schema";
+import { eq, sql, desc } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -115,6 +115,26 @@ router.get("/balance", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Get balance error");
     res.status(500).json({ error: "server_error", message: "Failed to get balance" });
+  }
+});
+
+router.get("/kyc-documents", requireAuth, async (req, res) => {
+  const userId = (req.session as any).userId;
+  try {
+    const docs = await db.select().from(kycDocumentsTable)
+      .where(eq(kycDocumentsTable.userId, userId))
+      .orderBy(desc(kycDocumentsTable.uploadedAt));
+    res.json(docs.map(d => ({
+      id: d.id,
+      documentType: d.documentType,
+      side: d.side,
+      fileUrl: d.fileUrl,
+      status: d.status,
+      uploadedAt: d.uploadedAt.toISOString(),
+    })));
+  } catch (err) {
+    req.log.error({ err }, "Get KYC docs error");
+    res.status(500).json({ error: "server_error", message: "Failed to get KYC documents" });
   }
 });
 

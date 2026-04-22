@@ -370,4 +370,39 @@ router.post("/forgot-pin", async (req, res) => {
   }
 });
 
+router.post("/change-password", async (req, res) => {
+  const { userId } = getAuthContext(req);
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
+    return;
+  }
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ error: "validation_error", message: "Current and new password required" });
+      return;
+    }
+    if (newPassword.length < 8) {
+      res.status(400).json({ error: "validation_error", message: "New password must be at least 8 characters" });
+      return;
+    }
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (!user || !verifyPassword(currentPassword, user.passwordHash)) {
+      res.status(401).json({ error: "invalid_credentials", message: "Current password is incorrect" });
+      return;
+    }
+    const newHash = hashPassword(newPassword);
+    await db.update(usersTable).set({ passwordHash: newHash, updatedAt: new Date() }).where(eq(usersTable.id, userId));
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "password_changed",
+      description: "Login password changed",
+    });
+    res.json({ message: "Password changed successfully" });
+  } catch (err) {
+    req.log.error({ err }, "Change password error");
+    res.status(500).json({ error: "server_error", message: "Failed to change password" });
+  }
+});
+
 export default router;
