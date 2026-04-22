@@ -1,98 +1,70 @@
-import { useState } from "react";
+import { ReactNode } from "react";
 
-// Commodity / Futures fallback colors and labels
-const COMMODITY_MAP: Record<string, { bg: string; color: string; label: string }> = {
-  XAU:   { bg: "#b8860b", color: "#fff8e1", label: "Au" },
-  XAG:   { bg: "#9e9e9e", color: "#ffffff", label: "Ag" },
-  CRUDE: { bg: "#4a3728", color: "#f5deb3", label: "OIL" },
-  OIL:   { bg: "#4a3728", color: "#f5deb3", label: "OIL" },
-  GAS:   { bg: "#2a4a5e", color: "#cce5ff", label: "GAS" },
-  WHEAT: { bg: "#c8a96e", color: "#fff", label: "WHT" },
-  CORN:  { bg: "#d4a017", color: "#fff", label: "CRN" },
-  ES:    { bg: "#1a3a5e", color: "#90c8ff", label: "ES" },
-  NQ:    { bg: "#1a3a5e", color: "#90c8ff", label: "NQ" },
-  YM:    { bg: "#1a3a5e", color: "#90c8ff", label: "YM" },
-  RTY:   { bg: "#1a3a5e", color: "#90c8ff", label: "RTY" },
-  GC:    { bg: "#b8860b", color: "#fff8e1", label: "GC" },
-  SI:    { bg: "#9e9e9e", color: "#ffffff", label: "SI" },
-  CL:    { bg: "#4a3728", color: "#f5deb3", label: "CL" },
+const CRYPTO_LOGOS: Record<string, string> = {
+  BTC: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  ETH: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  BNB: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png",
+  SOL: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  XRP: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png",
+  USDT: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+  ADA: "https://assets.coingecko.com/coins/images/975/small/cardano.png",
+  AVAX: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png",
+  DOGE: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",
+  DOT: "https://assets.coingecko.com/coins/images/12171/small/polkadot.png",
+  LINK: "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
+  MATIC: "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png",
+};
+
+const STOCK_LOGOS: Record<string, string> = {
+  AAPL: "https://logo.clearbit.com/apple.com",
+  MSFT: "https://logo.clearbit.com/microsoft.com",
+  GOOGL: "https://logo.clearbit.com/google.com",
+  AMZN: "https://logo.clearbit.com/amazon.com",
+  TSLA: "https://logo.clearbit.com/tesla.com",
+  META: "https://logo.clearbit.com/meta.com",
+  NVDA: "https://logo.clearbit.com/nvidia.com",
+  JPM: "https://logo.clearbit.com/jpmorganchase.com",
+  V: "https://logo.clearbit.com/visa.com",
+  BAC: "https://logo.clearbit.com/bankofamerica.com",
+};
+
+const COMMODITY_MAP: Record<string, string> = {
+  XAU: "AU",
+  XAG: "AG",
+  WTI: "OIL",
+  CRUDE: "OIL",
+  COPPER: "CU",
 };
 
 interface AssetIconProps {
   symbol: string;
   size?: number;
-  borderRadius?: number;
+  borderRadius?: string | number;
   className?: string;
 }
 
-export function AssetIcon({ symbol, size = 36, borderRadius = 10, className = "" }: AssetIconProps) {
-  const [cryptoFailed, setCryptoFailed] = useState(false);
-  const [stockFailed, setStockFailed] = useState(false);
+export function AssetIcon({ symbol, size = 32, borderRadius = "50%", className }: AssetIconProps) {
+  const sym = symbol?.toUpperCase() || "";
+  const isCrypto = !!CRYPTO_LOGOS[sym];
+  const isStock = !!STOCK_LOGOS[sym];
 
-  const sym = symbol?.toUpperCase() ?? "";
-  const symLower = symbol?.toLowerCase() ?? "";
-
-  // Check commodity/futures first
-  if (COMMODITY_MAP[sym]) {
-    const c = COMMODITY_MAP[sym];
-    return (
-      <div
-        className={className}
-        style={{
-          width: size, height: size, borderRadius,
-          background: `linear-gradient(135deg, ${c.bg}, ${c.bg}cc)`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: size * 0.28, fontWeight: 800, color: c.color,
-          letterSpacing: "0.03em", flexShrink: 0,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-        }}
-      >
-        {c.label}
-      </div>
-    );
+  if (isCrypto) {
+    return <img src={CRYPTO_LOGOS[sym]} alt={symbol} className={className} style={{ width: size, height: size, borderRadius, objectFit: "cover" }} />;
   }
-
-  // Try crypto icon
-  if (!cryptoFailed) {
-    return (
-      <img
-        src={`/icons/crypto/${symLower}.png`}
-        alt={symbol}
-        className={className}
-        style={{ width: size, height: size, borderRadius, objectFit: "contain", flexShrink: 0, background: "#fff" }}
-        onError={() => setCryptoFailed(true)}
-      />
-    );
+  if (isStock) {
+    return <img src={STOCK_LOGOS[sym]} alt={symbol} className={className} style={{ width: size, height: size, borderRadius, background: "white", padding: 2, objectFit: "contain" }} />;
   }
-
-  // Try stock icon
-  if (!stockFailed) {
-    return (
-      <img
-        src={`/icons/stocks/${sym}.png`}
-        alt={symbol}
-        className={className}
-        style={{ width: size, height: size, borderRadius, objectFit: "contain", flexShrink: 0, background: "#fff" }}
-        onError={() => setStockFailed(true)}
-      />
-    );
-  }
-
-  // Generic fallback — styled dark badge
-  const initials = sym.slice(0, 3);
+  
+  const text = COMMODITY_MAP[sym] || sym.substring(0, 2);
+  
   return (
-    <div
-      className={className}
-      style={{
-        width: size, height: size, borderRadius,
-        background: "linear-gradient(135deg, #1a2a3a, #0d1520)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: size * 0.27, fontWeight: 800, color: "#f59e0b",
-        letterSpacing: "0.04em", flexShrink: 0,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-      }}
-    >
-      {initials}
+    <div className={className} style={{
+      width: size, height: size, borderRadius,
+      background: "#11141A", border: "1px solid rgba(255,255,255,0.08)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: "rgba(255,255,255,0.96)", fontSize: size * 0.4, fontWeight: 600, fontFamily: "monospace"
+    }}>
+      {text}
     </div>
   );
 }

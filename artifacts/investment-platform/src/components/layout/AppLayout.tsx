@@ -1,62 +1,10 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  LayoutDashboard, TrendingUp, Wallet, User, LogOut, BarChart2, Bell, ChevronDown, Menu, X,
+  LayoutDashboard, BarChart2, Wallet, User, LogOut, Search, Menu, X, Shield, Settings,
+  ArrowDownToLine, Bell
 } from "lucide-react";
-
-const TICKER_ITEMS = [
-  { sym: "BTC/USD", price: "104,820.00", chg: "+2.34%", pos: true },
-  { sym: "ETH/USD", price: "3,421.50",   chg: "+1.12%", pos: true },
-  { sym: "SOL/USD", price: "182.40",     chg: "+5.67%", pos: true },
-  { sym: "BNB/USD", price: "608.20",     chg: "-0.43%", pos: false },
-  { sym: "AAPL",    price: "189.30",     chg: "+0.88%", pos: true },
-  { sym: "NVDA",    price: "875.40",     chg: "+3.21%", pos: true },
-  { sym: "XAU/USD", price: "2,348.80",   chg: "+0.52%", pos: true },
-  { sym: "TSLA",    price: "178.50",     chg: "-1.34%", pos: false },
-  { sym: "MSFT",    price: "415.20",     chg: "+0.67%", pos: true },
-  { sym: "META",    price: "512.40",     chg: "+2.11%", pos: true },
-];
-
-function Ticker() {
-  const [offset, setOffset] = useState(0);
-  const rafRef = useRef<number>(0);
-  const lastRef = useRef<number>(0);
-
-  useEffect(() => {
-    const step = (ts: number) => {
-      if (!lastRef.current) lastRef.current = ts;
-      const dt = ts - lastRef.current;
-      lastRef.current = ts;
-      setOffset(o => (o + dt * 0.04) % (TICKER_ITEMS.length * 160));
-      rafRef.current = requestAnimationFrame(step);
-    };
-    rafRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  const items = [...TICKER_ITEMS, ...TICKER_ITEMS];
-
-  return (
-    <div style={{
-      height: 36, background: "#0a0d14", borderBottom: "1px solid rgba(255,255,255,0.05)",
-      overflow: "hidden", display: "flex", alignItems: "center",
-    }}>
-      <div style={{ display: "flex", transform: `translateX(-${offset}px)`, willChange: "transform" }}>
-        {items.map((item, i) => (
-          <div key={i} style={{
-            display: "inline-flex", alignItems: "center", gap: 6, padding: "0 24px",
-            whiteSpace: "nowrap", width: 160, flexShrink: 0,
-          }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.55)", letterSpacing: "0.04em" }}>{item.sym}</span>
-            <span style={{ fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.85)", fontFamily: "monospace" }}>{item.price}</span>
-            <span style={{ fontSize: 9, fontWeight: 700, color: item.pos ? "#26a17b" : "#ef4444" }}>{item.chg}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 interface AppLayoutProps { children: ReactNode; }
 
@@ -65,16 +13,26 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const navItems = [
-    { icon: LayoutDashboard, label: "Overview",  href: "/dashboard" },
-    { icon: TrendingUp,       label: "Trade",     href: "/invest" },
-    { icon: BarChart2,        label: "Markets",   href: "/assets/crypto" },
-    { icon: Wallet,           label: "Wallet",    href: "/wallet" },
-    { icon: User,             label: "Profile",   href: "/profile" },
+  const topNavLinks = [
+    { label: "Markets", href: "/assets/crypto" },
+    { label: "Portfolio", href: "/dashboard" },
+    { label: "Wallet", href: "/wallet" },
+    { label: "Trade", href: "/invest" },
+    { label: "Account", href: "/profile" },
+  ];
+
+  const sideNavLinks = [
+    { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+    { icon: BarChart2, label: "Markets", href: "/assets/crypto" },
+    { icon: Wallet, label: "Wallet", href: "/wallet" },
+    { icon: User, label: "Profile", href: "/profile" },
+    { icon: Shield, label: "Security", href: "/security" },
+    { icon: Settings, label: "Settings", href: "/profile" }, // maps to profile for now
   ];
 
   const isActive = (href: string) => {
     if (href === "/assets/crypto") return location.startsWith("/assets");
+    if (href === "/dashboard") return location === "/dashboard";
     return location.startsWith(href);
   };
 
@@ -83,176 +41,170 @@ export function AppLayout({ children }: AppLayoutProps) {
     : "U";
   const uid = user?.id ? `VW-${String(user.id).padStart(6, "0")}` : "VW-000000";
 
-  const BG   = "#0b0e17";
-  const SIDE = "#0d1020";
-  const BORD = "rgba(255,255,255,0.06)";
-  const MUTED= "rgba(255,255,255,0.3)";
-  const TEXT = "rgba(255,255,255,0.88)";
-  const BLUE = "#3b82f6";
+  const BG   = "#050505";
+  const SIDE = "#050505";
+  const BORD = "rgba(255,255,255,0.08)";
+  const MUTED= "rgba(255,255,255,0.45)";
+  const TEXT = "rgba(255,255,255,0.96)";
+  const BLUE = "#2563FF";
 
   const SidebarContent = () => (
     <>
-      {/* Logo */}
-      <div style={{ padding: "18px 16px 14px", borderBottom: `1px solid ${BORD}` }}>
-        <Link href="/" onClick={() => setMobileOpen(false)}>
-          <img src="/logo-white.png" alt="INT Brokers"
-            style={{ width: 140, height: "auto", display: "block", mixBlendMode: "screen" }} />
-        </Link>
-      </div>
-
-      {/* Nav items */}
-      <nav style={{ flex: 1, padding: "10px 8px", display: "flex", flexDirection: "column", gap: 1 }}>
-        {navItems.map((item) => {
+      <nav style={{ flex: 1, padding: "24px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
+        {sideNavLinks.map((item) => {
           const active = isActive(item.href);
           return (
-            <Link key={item.href} href={item.href}
+            <Link key={item.label} href={item.href}
               onClick={() => setMobileOpen(false)}
               style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "9px 12px", borderRadius: 6, textDecoration: "none",
-                fontSize: 12, fontWeight: active ? 600 : 500,
-                color: active ? "#fff" : MUTED,
-                background: active ? "rgba(59,130,246,0.1)" : "transparent",
-                borderLeft: `2px solid ${active ? BLUE : "transparent"}`,
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "0 14px", height: 48, borderRadius: 14, textDecoration: "none",
+                fontSize: 14, fontWeight: 500,
+                color: active ? TEXT : MUTED,
+                background: active ? "#191F28" : "transparent",
                 transition: "all 0.12s",
               }}
               onMouseEnter={e => { if (!active) { e.currentTarget.style.color = TEXT; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}}
               onMouseLeave={e => { if (!active) { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; }}}
             >
-              <item.icon style={{ width: 14, height: 14, flexShrink: 0, color: active ? BLUE : undefined, opacity: active ? 1 : 0.5 }} strokeWidth={active ? 2 : 1.5} />
+              <item.icon style={{ width: 18, height: 18, flexShrink: 0, color: active ? TEXT : MUTED }} strokeWidth={1.5} />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* User row + sign out */}
-      <div style={{ padding: "10px 8px", borderTop: `1px solid ${BORD}` }}>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 9, padding: "9px 10px",
-          borderRadius: 6, background: "rgba(255,255,255,0.03)", marginBottom: 4,
-        }}>
+      {/* Bottom user section */}
+      <div style={{ padding: "16px", borderTop: `1px solid ${BORD}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "0 8px" }}>
           <div style={{
-            width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-            background: "linear-gradient(135deg,#3b82f6,#6366f1)",
+            width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+            background: "#191F28", border: `1px solid ${BORD}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 10, fontWeight: 700, color: "#fff",
+            fontSize: 12, fontWeight: 600, color: TEXT,
           }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {user?.fullName || "User"}
             </div>
-            <div style={{ fontSize: 9, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+            <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
           </div>
-          <ChevronDown size={11} color={MUTED} style={{ flexShrink: 0, marginLeft: "auto" }} />
         </div>
         <button onClick={logout} style={{
-          width: "100%", display: "flex", alignItems: "center", gap: 9,
-          padding: "7px 10px", background: "none", border: "none",
-          cursor: "pointer", color: MUTED, fontSize: 11, fontWeight: 500,
-          borderRadius: 6, transition: "color 0.12s", letterSpacing: "0.01em",
+          width: "100%", display: "flex", alignItems: "center", gap: 12,
+          padding: "0 14px", height: 40, background: "none", border: "none",
+          cursor: "pointer", color: MUTED, fontSize: 13, fontWeight: 500,
+          borderRadius: 12, transition: "color 0.12s",
         }}
-          onMouseEnter={e => e.currentTarget.style.color = TEXT}
-          onMouseLeave={e => e.currentTarget.style.color = MUTED}
+          onMouseEnter={e => { e.currentTarget.style.color = TEXT; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; }}
         >
-          <LogOut style={{ width: 13, height: 13, opacity: 0.6 }} strokeWidth={1.5} />
-          Sign Out
+          <LogOut style={{ width: 16, height: 16 }} strokeWidth={1.5} />
+          Log out
         </button>
       </div>
     </>
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, display: "flex" }}>
-      {/* ── Desktop Sidebar ── */}
-      <aside style={{
-        width: 190, background: SIDE, borderRight: `1px solid ${BORD}`,
-        display: "flex", flexDirection: "column", height: "100vh",
-        position: "sticky", top: 0, flexShrink: 0,
-      }} className="hidden md:flex">
-        <SidebarContent />
-      </aside>
-
-      {/* ── Mobile Overlay ── */}
-      {mobileOpen && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 200, display: "flex",
-        }} className="md:hidden">
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)" }} onClick={() => setMobileOpen(false)} />
-          <aside style={{
-            position: "relative", width: 200, background: SIDE,
-            borderRight: `1px solid ${BORD}`, display: "flex", flexDirection: "column",
-            height: "100%", zIndex: 1,
-          }}>
-            <button onClick={() => setMobileOpen(false)} style={{
-              position: "absolute", top: 12, right: 12,
-              background: "rgba(255,255,255,0.05)", border: "none", cursor: "pointer",
-              borderRadius: 6, padding: 5, color: MUTED,
-            }}>
-              <X size={14} />
-            </button>
-            <SidebarContent />
-          </aside>
-        </div>
-      )}
-
-      {/* ── Main ── */}
-      <main style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", overflow: "hidden" }}>
-        {/* Mobile topbar */}
-        <header className="md:hidden" style={{
-          height: 48, background: SIDE, borderBottom: `1px solid ${BORD}`,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 14px", position: "sticky", top: 0, zIndex: 100,
-        }}>
-          <button onClick={() => setMobileOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, padding: 4 }}>
-            <Menu size={18} />
-          </button>
-          <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers"
-              style={{ height: 36, width: "auto", objectFit: "contain", mixBlendMode: "screen" }} />
+    <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column" }}>
+      {/* ── Top Navigation Bar ── */}
+      <header style={{
+        height: 64, background: "#0A0A0A", borderBottom: `1px solid ${BORD}`,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 24px", position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+      }}>
+        {/* Left side */}
+        <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+            <img src="/logo-white.png" alt="Vault Wealth" style={{ height: 20, width: "auto", objectFit: "contain" }} />
           </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${BORD}`, borderRadius: 6, width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <Bell style={{ width: 13, height: 13, color: MUTED }} strokeWidth={1.5} />
-            </button>
-            <div style={{
-              width: 30, height: 30, borderRadius: "50%",
-              background: "linear-gradient(135deg,#3b82f6,#6366f1)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 10, fontWeight: 700, color: "#fff",
-            }}>{initials}</div>
-          </div>
-        </header>
-
-        {/* Ticker strip */}
-        <Ticker />
-
-        <div style={{ flex: 1, overflowY: "auto" }}>
-          {children}
+          <nav className="hidden md:flex items-center gap-6">
+            {topNavLinks.map(link => {
+              const active = isActive(link.href);
+              return (
+                <Link key={link.label} href={link.href} style={{
+                  fontSize: 14, fontWeight: 500, textDecoration: "none",
+                  color: active ? TEXT : MUTED,
+                  transition: "color 0.12s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.color = TEXT}
+                  onMouseLeave={e => { if (!active) e.currentTarget.style.color = MUTED; }}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Mobile bottom nav */}
-        <nav className="md:hidden" style={{
-          background: SIDE, borderTop: `1px solid ${BORD}`,
-          display: "flex", alignItems: "center", justifyContent: "space-around",
-          padding: "6px 4px 8px", position: "sticky", bottom: 0, zIndex: 50,
+        {/* Right side */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="hidden lg:flex" style={{
+            height: 36, width: 200, background: "#11141A", borderRadius: 999, border: `1px solid ${BORD}`,
+            display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
+          }}>
+            <Search style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+            <input type="text" placeholder="Coin, Stock, etc" style={{
+              background: "transparent", border: "none", outline: "none", color: TEXT, fontSize: 13, width: "100%",
+            }} />
+          </div>
+          <Link href="/wallet" style={{
+            height: 36, padding: "0 16px", background: BLUE, color: "#fff",
+            borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none",
+            display: "flex", alignItems: "center", justifyContent: "center", transition: "opacity 0.15s",
+          }} onMouseEnter={e => e.currentTarget.style.opacity = "0.9"} onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+            Deposit
+          </Link>
+          <Link href="/wallet" className="hidden sm:block" style={{ fontSize: 14, fontWeight: 500, color: MUTED, textDecoration: "none" }}>Wallets</Link>
+          <Link href="/profile" style={{
+            width: 32, height: 32, borderRadius: "50%", background: "#11141A", border: `1px solid ${BORD}`,
+            display: "flex", alignItems: "center", justifyContent: "center", color: TEXT, textDecoration: "none",
+          }}>
+            <User style={{ width: 16, height: 16 }} strokeWidth={1.5} />
+          </Link>
+          <button className="md:hidden" onClick={() => setMobileOpen(true)} style={{
+            background: "none", border: "none", color: TEXT, cursor: "pointer", padding: 4, display: "flex"
+          }}>
+            <Menu style={{ width: 24, height: 24 }} strokeWidth={1.5} />
+          </button>
+        </div>
+      </header>
+
+      {/* ── Main Layout ── */}
+      <div style={{ display: "flex", flex: 1, marginTop: 64 }}>
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:flex" style={{
+          width: 240, background: SIDE, borderRight: `1px solid ${BORD}`,
+          flexDirection: "column", height: "calc(100vh - 64px)", position: "fixed", left: 0, top: 64,
         }}>
-          {navItems.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <Link key={item.href} href={item.href} style={{
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
-                padding: "5px 10px", textDecoration: "none",
-                color: active ? BLUE : "rgba(255,255,255,0.24)",
-                transition: "color 0.12s",
-              }}>
-                <item.icon style={{ width: 17, height: 17 }} strokeWidth={active ? 2 : 1.5} />
-                <span style={{ fontSize: 9, fontWeight: active ? 700 : 500 }}>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </main>
+          <SidebarContent />
+        </aside>
+
+        {/* Mobile Overlay */}
+        {mobileOpen && (
+          <div className="md:hidden" style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex" }}>
+            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.8)" }} onClick={() => setMobileOpen(false)} />
+            <aside style={{
+              position: "relative", width: 260, background: "#0A0A0A", borderRight: `1px solid ${BORD}`,
+              display: "flex", flexDirection: "column", height: "100%", zIndex: 1,
+            }}>
+              <div style={{ height: 64, borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", padding: "0 24px", justifyContent: "space-between" }}>
+                <img src="/logo-white.png" alt="Vault" style={{ height: 16 }} />
+                <button onClick={() => setMobileOpen(false)} style={{ background: "none", border: "none", color: MUTED, cursor: "pointer" }}>
+                  <X style={{ width: 20, height: 20 }} strokeWidth={1.5} />
+                </button>
+              </div>
+              <SidebarContent />
+            </aside>
+          </div>
+        )}
+
+        {/* Content Area */}
+        <main className="flex-1 md:ml-[240px]" style={{ background: BG, minHeight: "calc(100vh - 64px)" }}>
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

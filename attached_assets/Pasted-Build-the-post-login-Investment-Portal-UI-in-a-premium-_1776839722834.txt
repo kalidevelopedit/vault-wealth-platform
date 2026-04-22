@@ -1,0 +1,545 @@
+Build the post-login Investment Portal UI in a premium ultra-clean dark exchange/dashboard style based on these references.
+
+IMPORTANT:
+- Do NOT copy brand logos, trademarks, or exact branded artwork.
+- Replicate only the UI language, spacing system, layout behavior, component styling, proportions, hierarchy, and interaction patterns.
+- This must feel institutional, high-trust, polished, restrained, and expensive.
+- Absolutely no playful startup vibe, no cheap gradients, no bright colored cards, no candy UI, no glassmorphism abuse, no dribbble gimmicks, no oversized shadows, no rounded cartoon styling.
+- Ban colored background alerts entirely.
+- Ban colorful icon circles, colored tiles, loud badges, and attention-seeking visual noise.
+- Any status, alerts, notices, helper states, or warnings must use neutral dark surfaces, subtle borders, and text hierarchy only.
+- Icons must be monochrome or near-monochrome.
+- Mobile responsive is required.
+
+OVERALL DESIGN DNA:
+The interface is a luxury dark trading platform aesthetic:
+- full black / near-black foundation
+- layered charcoal surfaces
+- very subtle navy undertones in some panels
+- clean thin dividers
+- sharp information density with disciplined spacing
+- large high-contrast typography where money/value matters
+- soft rounded rectangles, never bubbly
+- minimal color usage, reserved mostly for action buttons and market state accents
+- strong alignment, strict rhythm, strong edge control
+- everything feels engineered, not decorated
+
+COLOR SYSTEM:
+Use a restrained dark palette only.
+
+Base backgrounds:
+- page background: #050505 to #0A0A0A
+- main content surface: #0C0F14
+- secondary surface: #11141A
+- elevated panel: #151922
+- hover surface: #191F28
+- border lines: rgba(255,255,255,0.08)
+- stronger border for active or focused elements: rgba(255,255,255,0.14)
+
+Text:
+- primary text: rgba(255,255,255,0.96)
+- secondary text: rgba(255,255,255,0.68)
+- muted text: rgba(255,255,255,0.45)
+- disabled text: rgba(255,255,255,0.28)
+
+Actions:
+- primary action blue: #2563FF or slightly deeper
+- hover blue: #2D6BFF
+- pressed blue: #1C56E6
+- never use multiple accent colors across the base interface
+
+Semantic accents:
+- positive numbers: muted emerald, not neon
+- negative numbers: muted red, not saturated
+- warnings/info: use text + subtle border only, no colored fills
+
+DO NOT:
+- no pure bright white backgrounds
+- no big glows
+- no rainbow highlights
+- no colored page sections
+- no soft pastel anything
+- no frosted transparent cards unless extremely subtle
+- no emoji-style visual treatment
+
+LAYOUT STRUCTURE:
+Desktop layout should feel like a professional trading portal:
+
+1. Top global navigation bar
+- fixed height around 64px to 72px
+- full width
+- dark black background slightly distinct from page
+- very thin bottom border
+- left aligned product navigation
+- right aligned search, deposit CTA, wallet access, user menu / hamburger
+- content vertically centered
+- navigation items evenly spaced with tight disciplined gaps
+- no oversized paddings
+
+2. Optional left section navigation in account/security/portal views
+- fixed width around 220px to 260px desktop
+- black sidebar merging with page
+- active item shown by subtle filled state, not loud highlight
+- each nav item has icon + label
+- generous vertical spacing between groups
+- item height around 48px to 56px
+- rounded rectangle highlight with low-contrast dark fill
+- icons monochrome only
+
+3. Main content region
+- maximum content width wide, around 1280px to 1440px feel
+- large cards stacked vertically with 20px to 28px gaps
+- left aligned titles
+- data-dense but not cramped
+- sections separated by space, not heavy borders
+
+4. Right utility panels where needed
+- narrower side cards for tips / FAQs / referral / secondary actions
+- same surface language as main panels
+- no bright promo styling unless absolutely necessary, and even then keep it extremely subdued
+
+SPACING SYSTEM:
+Use an 8px grid.
+Core spacing:
+- 4, 8, 12, 16, 20, 24, 32, 40
+Typical usage:
+- card internal padding: 24px desktop, 20px tablet, 16px mobile
+- section gap: 24px to 32px
+- small control gap: 8px to 12px
+- nav item horizontal padding: 14px to 18px
+- chip/badge padding: 4px 8px or 6px 10px max
+- button height: 40px to 48px
+- large hero action button: about 48px to 52px
+
+BORDER RADIUS:
+Keep radii restrained and consistent:
+- cards: 16px to 20px
+- buttons: 999px for pill CTA only when matching reference top bar actions
+- regular inputs/dropdowns: 12px to 14px
+- nav active backgrounds: 14px to 16px
+- small chips/badges: 8px to 10px
+Do NOT over-round everything.
+
+TYPOGRAPHY:
+Use a modern neutral sans serif with strong clarity.
+Recommended feel:
+- Inter, SF Pro, Geist, or similar
+- slightly tight tracking for headings
+- no decorative fonts
+
+Type scale:
+- page titles: 44px to 56px, weight 700
+- section titles: 28px to 36px, weight 650 to 700
+- card titles: 20px to 24px, weight 600
+- body: 14px to 16px
+- supporting meta: 12px to 13px
+- large balance/value numbers: 44px to 56px desktop, 32px to 40px mobile
+
+Typography behavior:
+- strong contrast for values
+- secondary data beneath in muted text
+- dense market rows use tabular numerals
+- currency/value tables aligned right
+- labels aligned left
+- use line-height around 1.15 to 1.25 for headings, 1.4 to 1.55 for body
+
+SURFACE TREATMENT:
+Every panel should feel like machined matte metal in digital form.
+- background fill mostly solid dark, sometimes with a very slight deep navy gradient
+- borders are hairline and soft
+- shadows are minimal and mostly ambient:
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28)
+  or even less
+- avoid floating card chaos
+- cards should feel anchored and stable
+
+TOP NAV SPEC:
+Replicate this style language:
+- left side: compact wordmark area, then horizontal nav
+- nav items medium-weight, 14px to 16px
+- active items may show tiny underline or subtle text brightening, not large tabs
+- some items have small dropdown chevrons
+- right side contains:
+  - compact search field, pill-like, dark inner fill
+  - primary pill button for Deposit
+  - simple Wallets label/button
+  - user/menu icons
+- top nav padding left/right around 24px to 32px
+- nav gap around 20px to 28px
+
+Search field:
+- height around 36px to 40px
+- pill shape
+- dark inset fill
+- soft border or inner shadow
+- text muted until active
+- leading icon monochrome
+- no bright outline except focused subtle border
+
+BUTTONS:
+Primary CTA:
+- blue pill or soft capsule
+- height 42px to 48px
+- horizontal padding 18px to 24px
+- text medium/semibold
+- no thick gradient
+- slight top sheen optional but very subtle
+- hover = slightly brighter blue
+- active = slightly darker
+- shadow very light
+
+Secondary button:
+- dark surface
+- thin border
+- text white
+- hover fill slightly lighter dark
+- no ghost buttons with weak contrast
+
+Tertiary button / inline actions:
+- text only or pill-outline
+- muted until hover
+- clean, no underlines unless link pattern
+
+DROPDOWNS / MENUS:
+Menus in the references are premium dark flyouts:
+- background #171B22 to #1A1F27
+- border rgba(255,255,255,0.08)
+- radius 18px to 20px
+- internal padding 12px to 16px
+- menu rows 44px to 56px
+- each row contains small monochrome icon + title + optional secondary description
+- descriptions are muted and smaller
+- row hover uses darker/lighter neutral fill only
+- no menu item should have colored backgrounds
+- dropdown shadow should be soft and vertical, never dramatic
+
+CARDS:
+Several card archetypes are visible:
+
+A. Overview / balance card
+- very large dark panel
+- top-left small title
+- huge balance figure beneath
+- secondary fiat equivalent under it
+- actions aligned top-right or right side
+- content padded generously
+- strong hierarchy
+- feels like the most important block on page
+
+B. Data list card
+- title row at top
+- table/list inside
+- rows separated by space or subtle dividers
+- values right aligned
+- active/hover row uses faint surface shift
+
+C. Utility side card
+- compact
+- title + two or three lines
+- optional arrow
+- same background language
+- no promotional tackiness
+
+D. Settings/security card
+- section heading
+- stacked rows with label, helper text, current state, and right-side action button
+- row separators are faint
+- status indicators small and controlled
+
+SETTINGS / SECURITY ROWS:
+For rows like passkey, email verification, mobile verification:
+- row height about 76px to 96px
+- left side:
+  - monochrome icon
+  - label
+  - one line helper text
+- center/right:
+  - status text or subtle state icon
+- far right:
+  - small secondary action button
+- row dividers extremely subtle
+- no loud success green fills; just small icon or text
+
+MARKET TABLE DESIGN:
+For market/trading rows:
+- table header in muted text
+- rows tall enough to breathe: 56px to 72px
+- pair icon on far left inside small circular or soft square container, but keep it neutral if recreating generically
+- pair symbol bold
+- metadata beneath smaller muted
+- numeric columns aligned right
+- action button on far right pill-outline or dark filled
+- hover state slightly lifts contrast, not movement-heavy
+- row separator optional but very light
+- no zebra striping with strong contrast
+
+INPUTS / SELECTS:
+For deposit page and selection controls:
+- large dark select fields
+- height 48px to 56px
+- radius 12px to 14px
+- left icon slot, selected label center-left, chevron right
+- background slightly brighter than page
+- border subtle
+- focused state = crisp outline or outer ring using faint white/blue mix
+- no colored placeholders
+
+FAQ / TIPS PANELS:
+- right column cards
+- text uses small body size with strong spacing
+- bullets simple, subtle, muted
+- links can be slightly brighter blue or primary text
+- card padding 20px to 24px
+- card radius 16px to 18px
+
+BADGES / CHIPS:
+Use sparingly.
+- background: slightly lifted dark neutral or ultra-subtle tinted dark blue
+- text: small semibold
+- no bright neon pills
+- no huge corner radius unless tiny chip
+- badge height around 20px to 24px
+- examples: "New", "Verified", leverage labels, fee labels
+- keep them understated and compact
+
+ICONS:
+- monochrome or grayscale
+- thin to medium stroke
+- crisp 1.5px to 2px feel
+- no colorful icon backgrounds
+- if an icon container is needed, make it very dark neutral with subtle border
+- remove decorative icon glows
+
+ALERTS / NOTICES RULE:
+This is critical.
+Any alerts, warnings, confirmations, helper banners, or notices must NOT use:
+- green background
+- red background
+- yellow background
+- blue filled background
+- colorful side strips
+- bright icon circles
+
+Instead:
+- use dark card background
+- subtle border
+- small monochrome icon
+- title + body text
+- maybe one understated text link
+- if severity must be indicated, use text tone or a tiny colored dot only, but ideally keep even that minimal
+
+ANIMATION / MOTION SYSTEM:
+Motion must feel premium and nearly invisible.
+No flashy motion.
+
+Allowed animations:
+- hover background fade: 120ms to 180ms ease-out
+- dropdown open: opacity + translateY(4px to 8px), 160ms to 220ms cubic-bezier(0.2, 0.8, 0.2, 1)
+- card hover: maybe 1px translateY max or none at all
+- focus ring fade: 120ms
+- sidebar active shift: color/background transition only
+- table row hover: background and text contrast transition only
+
+Do NOT use:
+- bounce
+- springy overshoot
+- scale popping
+- large blur transitions
+- parallax
+- shimmer loaders unless extremely subtle skeletons
+- glow pulses
+- animated gradients
+
+Microinteractions:
+- buttons: slight brightness increase on hover
+- menus: smooth fade and anchored movement
+- selected nav item: subtle underline or background fill transition
+- tabs: crisp active state, no pill carnival
+- number changes in market widgets can flash slightly with muted semantic text color, but never with bright background
+
+SHAPE LANGUAGE:
+- predominant shape is rounded rectangle
+- circles only for tiny avatar/icon holders if needed
+- pills for main CTA and search
+- no weird angled corners
+- no blob shapes
+- no skeuomorphic nonsense
+- geometric discipline everywhere
+
+PAGE-SPECIFIC REPLICATION NOTES:
+
+1. LOGIN-TO-PORTAL TRANSITION
+After login, the portal should feel like:
+- same top navigation remains consistent
+- content area shifts into authenticated dashboard layout
+- no dramatic welcome splash
+- immediate access to account overview, deposit, wallet, markets, and settings
+- strong continuity between public and private areas
+
+2. PROFILE / ACCOUNT OVERVIEW
+- large summary card at top with account name/id/time metadata aligned in columns
+- below that, dashboard cards for assets, events, referrals, learning blocks
+- left sidebar for account sections
+- cards use the same dark elevated panel language
+- metadata text small and muted
+- key values bright and bold
+
+3. SECURITY PAGE
+- big page title
+- one large card containing stacked verification/security options
+- rows separated with hairlines
+- state labels aligned cleanly on right
+- action buttons compact and calm
+- security level indicator should be subtle, not gamified
+
+4. MARKET PAGE
+- top hero/banner area can exist but should be restrained
+- main focus is tables, tabs, category nav, market data
+- horizontal tabs for categories
+- sub-tabs under them
+- search on right
+- table dense but breathable
+- right utility popups should use same premium dark surface style
+
+5. DEPOSIT PAGE
+- title at top left
+- step indicator near top, horizontal, minimal
+- main content split between left main workflow and right tips/faq
+- stepper uses simple circles/numbers and thin connecting lines
+- input sections stacked vertically
+- wallet address container uses strong border and high-contrast internal spacing
+- QR slot can exist as neutral framed square
+- buttons clean and functional
+
+6. WALLET OVERVIEW
+- left product/account menu
+- huge balance panel at top
+- asset list below
+- compact transaction list lower on page
+- right-side quick action menu/dropdown with same menu styling
+- everything aligned on stable grid
+
+GRID + RESPONSIVE BEHAVIOR:
+Desktop:
+- 12-column grid feel
+- page gutters 24px to 32px
+- sidebar + content layout
+- cards can split 8/4 or 9/3 depending on page
+
+Tablet:
+- reduce to 8-column layout
+- sidebar may collapse into top segmented nav or drawer
+- right utility column drops below main content
+- top nav condenses spacing
+- search shrinks
+
+Mobile:
+- 4-column layout
+- sticky top bar remains compact
+- sidebar becomes drawer or bottom sheet
+- cards full width
+- paddings reduced to 16px
+- page titles around 28px to 34px
+- huge balances around 32px to 40px
+- tables convert to stacked list items, not tiny squeezed tables
+- dropdown menus become full-width sheets if necessary
+- action buttons full width where appropriate
+- step indicators on deposit page can wrap or become vertical
+- utility side cards move below content
+- preserve premium look, not generic bootstrap mobile
+
+MOBILE DETAILS:
+- top nav height 56px to 64px
+- only essential nav visible
+- search may collapse to icon
+- deposit button stays prominent
+- touch targets minimum 44px
+- no horizontal scrolling except advanced market tables, and even there provide alternate stacked list layout if possible
+
+ACCESSIBILITY / QUALITY BAR:
+- contrast must stay strong
+- focus states visible but refined
+- keyboard navigation supported
+- all interactive elements should have clear hover/focus/active/disabled states
+- text never too dim to read
+- use tabular numerals for financial values
+- alignment must be pixel-clean
+
+REPLIT IMPLEMENTATION NOTES:
+- Build a reusable design system first, then pages
+- Create tokens for colors, spacing, radius, shadows, borders, typography
+- Use one consistent Card component, one Button system, one Input/Select system, one Dropdown pattern, one SidebarItem pattern, one TableRow pattern
+- No random per-page styling
+- Every page after login should inherit this exact design language
+
+COMPONENT TOKEN GUIDE:
+
+Card:
+- bg: elevated dark
+- border: hairline
+- radius: 18px
+- padding: 24px
+- shadow: subtle ambient
+
+Button/Primary:
+- height: 44px
+- radius: 999px
+- bg: primary blue
+- text: semibold white
+
+Button/Secondary:
+- height: 44px
+- radius: 999px or 14px depending context
+- bg: dark neutral
+- border: subtle
+- text: white
+
+Input:
+- height: 48px to 52px
+- bg: dark neutral
+- border: subtle
+- radius: 14px
+- placeholder: muted
+
+Nav item:
+- height: 48px
+- radius: 14px
+- padding-x: 14px
+- active bg: slightly raised dark
+- icon color: muted white
+- active text: primary white
+
+Table row:
+- min-height: 64px
+- padding-y: 14px
+- hover bg: very subtle raised dark
+- numeric alignment: right
+- action alignment: far right
+
+STRICT DESIGN COMMANDS:
+- make it feel like a high-value financial product
+- make it feel calm, serious, premium, and trustworthy
+- keep visual language disciplined
+- reduce decoration by 30% from a typical modern SaaS dashboard
+- increase spacing precision and typography quality
+- never use colorful empty-state illustrations
+- never use glowing crypto-bro styling
+- never use “vibe coded” shortcuts or inconsistent component styling
+- keep all surfaces dark, neutral, and premium
+- use color only with intent
+
+FINAL GOAL:
+Replicate the post-login investment portal theme as a premium dark institutional interface system:
+- black luxury foundation
+- elevated charcoal cards
+- thin borders
+- strong typography
+- pill actions
+- crisp dropdowns
+- stable grids
+- subtle motion
+- mobile responsive
+- no colorful alert backgrounds
+- no colorful icon backgrounds
+- no cheap UI decisions
+- every screen after login must look like it belongs to the same refined portal ecosystem

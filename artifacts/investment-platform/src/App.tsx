@@ -81,6 +81,7 @@ import AssetList from "@/pages/AssetList";
 import AssetDetail from "@/pages/AssetDetail";
 import Wallet from "@/pages/Wallet";
 import Profile from "@/pages/Profile";
+import UserSecurity from "@/pages/UserSecurity";
 
 // Admin Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -343,6 +344,7 @@ function Router() {
       <Route path="/assets/:symbol"><ProtectedRoute component={AssetDetail} /></Route>
       <Route path="/wallet"><ProtectedRoute component={Wallet} /></Route>
       <Route path="/profile"><ProtectedRoute component={Profile} /></Route>
+      <Route path="/security"><ProtectedRoute component={UserSecurity} /></Route>
 
       <Route component={NotFound} />
     </Switch>
