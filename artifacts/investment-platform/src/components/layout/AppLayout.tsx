@@ -1,10 +1,10 @@
-import { ReactNode, useState, useEffect, useRef } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   LayoutDashboard, BarChart2, Wallet, User, ArrowLeftRight,
-  LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X, Menu,
+  LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X,
 } from "lucide-react";
 
 interface AppLayoutProps { children: ReactNode; }
@@ -91,26 +91,25 @@ export function AppLayout({ children }: AppLayoutProps) {
         <NewsTicker bord={BORD} muted={MUTED} />
       </div>
 
-      {/* ── Header ── */}
-      <header className="app-header" style={{
+      {/* ── Header — Desktop ── */}
+      <header className="app-header hidden md:flex" style={{
         height: 60, background: HEADER,
         borderBottom: `1px solid ${BORD}`,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 16px",
+        alignItems: "center", justifyContent: "space-between",
+        padding: "0 20px",
         position: "fixed", left: 0, right: 0, zIndex: 100,
         boxShadow: mode === "light" ? "0 1px 8px rgba(0,0,0,0.06)" : "none",
       }}>
-        {/* Left: Logo + desktop nav */}
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <img
               src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
               alt="INT Brokers"
-              style={{ height: 44, width: "auto", objectFit: "contain" }}
+              style={{ height: 40, width: "auto", objectFit: "contain" }}
               onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
             />
           </Link>
-          <nav className="hidden md:flex" style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <nav style={{ display: "flex", alignItems: "center", gap: 20 }}>
             {[
               { label: "Markets", href: "/markets" },
               { label: "Portfolio", href: "/dashboard" },
@@ -125,19 +124,16 @@ export function AppLayout({ children }: AppLayoutProps) {
                 }}
                   onMouseEnter={e => e.currentTarget.style.color = TEXT}
                   onMouseLeave={e => { if (!active) e.currentTarget.style.color = MUTED; }}
-                >
-                  {link.label}
-                </Link>
+                >{link.label}</Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Right: search + actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div className="hidden lg:flex" style={{
+          <div style={{
             height: 34, width: 180, background: INPUTBG, borderRadius: 999, border: `1px solid ${BORD}`,
-            alignItems: "center", padding: "0 12px", gap: 8,
+            display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
           }}>
             <Search style={{ width: 13, height: 13, color: MUTED }} strokeWidth={1.5} />
             <input type="text" placeholder="Search" style={{
@@ -145,8 +141,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               color: TEXT, fontSize: 13, width: "100%",
             }} />
           </div>
-
-          {/* Theme toggle */}
           <button onClick={toggle} style={{
             width: 34, height: 34, borderRadius: 999, background: INPUTBG,
             border: `1px solid ${BORD}`, cursor: "pointer", display: "flex",
@@ -156,27 +150,58 @@ export function AppLayout({ children }: AppLayoutProps) {
               ? <Sun style={{ width: 15, height: 15, color: MUTED }} strokeWidth={1.5} />
               : <Moon style={{ width: 15, height: 15, color: MUTED }} strokeWidth={1.5} />}
           </button>
-
           <Link href="/wallet" style={{
             height: 34, padding: "0 14px", background: BLUE, color: "#fff",
             borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>Deposit</Link>
-
           <Link href="/profile" style={{
             width: 32, height: 32, borderRadius: "50%",
             background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", textDecoration: "none", fontSize: 11, fontWeight: 700,
-            flexShrink: 0,
+            color: "#fff", textDecoration: "none", fontSize: 11, fontWeight: 700, flexShrink: 0,
           }}>{initials}</Link>
+        </div>
+      </header>
 
-          {/* Mobile menu toggle */}
-          <button className="md:hidden" onClick={() => setSidebarOpen(true)} style={{
-            background: "none", border: "none", color: TEXT, cursor: "pointer", padding: 4, display: "flex",
+      {/* ── Header — Mobile ── */}
+      <header className="app-header md:hidden" style={{
+        height: 64, background: HEADER,
+        borderBottom: `1px solid ${BORD}`,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 16px",
+        position: "fixed", left: 0, right: 0, zIndex: 100,
+      }}>
+        {/* Logo + greeting */}
+        <Link href="/dashboard" style={{ display: "flex", flexDirection: "column", gap: 1, textDecoration: "none" }}>
+          <img
+            src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
+            alt="INT Brokers"
+            style={{ height: 30, width: "auto", objectFit: "contain" }}
+            onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
+          />
+          <div style={{ fontSize: 11, color: MUTED, fontWeight: 400, letterSpacing: "0.01em" }}>
+            Welcome back, <span style={{ color: TEXT, fontWeight: 600 }}>{user?.fullName?.split(" ")[0] || "there"}</span>
+          </div>
+        </Link>
+
+        {/* Right: theme + avatar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button onClick={toggle} style={{
+            width: 34, height: 34, borderRadius: 999, background: INPUTBG,
+            border: `1px solid ${BORD}`, cursor: "pointer", display: "flex",
+            alignItems: "center", justifyContent: "center",
           }}>
-            <Menu style={{ width: 22, height: 22 }} strokeWidth={1.5} />
+            {mode === "dark"
+              ? <Sun style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+              : <Moon style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />}
           </button>
+          <Link href="/profile" style={{
+            width: 34, height: 34, borderRadius: "50%",
+            background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff", textDecoration: "none", fontSize: 12, fontWeight: 700, flexShrink: 0,
+          }}>{initials}</Link>
         </div>
       </header>
 
@@ -323,9 +348,11 @@ export function AppLayout({ children }: AppLayoutProps) {
       <style>{`
         @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        .app-main-layout { margin-top: 60px; }
+        /* Mobile: 64px header */
+        .app-main-layout { margin-top: 64px; }
         .app-header { top: 0 !important; }
-        .app-sidebar { top: 60px !important; height: calc(100vh - 60px) !important; }
+        .app-sidebar { top: 64px !important; height: calc(100vh - 64px) !important; }
+        /* Desktop: 32px ticker + 60px header = 92px */
         @media (min-width: 768px) {
           .app-main-layout { margin-top: 92px; }
           .app-header { top: 32px !important; }

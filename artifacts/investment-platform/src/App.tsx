@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { MarketPreferencesProvider } from "@/contexts/MarketPreferencesContext";
 import { useEffect } from "react";
 
 // Components
@@ -367,11 +368,13 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <AuthProvider>
-            <TooltipProvider>
-              <ScrollToTop />
-              <Router />
-              <Toaster />
-            </TooltipProvider>
+            <MarketPreferencesProvider>
+              <TooltipProvider>
+                <ScrollToTop />
+                <Router />
+                <Toaster />
+              </TooltipProvider>
+            </MarketPreferencesProvider>
           </AuthProvider>
         </WouterRouter>
       </QueryClientProvider>
