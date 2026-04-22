@@ -1,5 +1,5 @@
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
+const MANDRILL_API_URL = "https://mandrillapp.com/api/1.0/messages/send.json";
 
 const FROM_EMAIL = "support@intbrokers.app";
 const FROM_NAME = "INT Brokers";
@@ -12,38 +12,57 @@ interface EmailPayload {
 }
 
 async function sendEmail(payload: EmailPayload): Promise<void> {
-  if (!BREVO_API_KEY) {
-    console.warn("[email] BREVO_API_KEY not set — skipping email send");
+  if (!MAILCHIMP_API_KEY) {
+    console.warn("[email] MAILCHIMP_API_KEY not set — skipping email send");
     return;
   }
 
   const body = {
-    sender: { name: FROM_NAME, email: FROM_EMAIL },
-    to: payload.to.map(r => ({ email: r.email, name: r.name ?? r.email })),
-    subject: payload.subject,
-    htmlContent: payload.htmlContent,
-    textContent: payload.textContent ?? "",
+    key: MAILCHIMP_API_KEY,
+    message: {
+      html: payload.htmlContent,
+      text: payload.textContent ?? "",
+      subject: payload.subject,
+      from_email: FROM_EMAIL,
+      from_name: FROM_NAME,
+      to: payload.to.map(r => ({ email: r.email, name: r.name ?? r.email, type: "to" })),
+      important: false,
+      track_opens: true,
+      track_clicks: true,
+      auto_text: false,
+    },
   };
 
   try {
-    const res = await fetch(BREVO_API_URL, {
+    const res = await fetch(MANDRILL_API_URL, {
       method: "POST",
-      headers: {
-        "api-key": BREVO_API_KEY,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     const json = await res.json() as any;
 
+    // Log full raw response so we can debug exactly what Mandrill returns
+    console.info(`[email] Mandrill raw response (${res.status}):`, JSON.stringify(json));
+
     if (!res.ok) {
-      console.error(`[email] Brevo API error ${res.status}:`, JSON.stringify(json));
+      console.error(`[email] Mandrill HTTP error ${res.status}:`, JSON.stringify(json));
       return;
     }
 
-    console.info(`[email] Sent to ${payload.to.map(t => t.email).join(", ")}: "${payload.subject}" (messageId: ${json.messageId ?? "n/a"})`);
+    // Mandrill returns an array of results, one per recipient
+    const results: any[] = Array.isArray(json) ? json : [json];
+    for (const result of results) {
+      if (result?.status === "sent" || result?.status === "queued") {
+        console.info(`[email] ✅ Delivered to ${result.email}: "${payload.subject}" (${result.status})`);
+      } else if (result?.status === "rejected") {
+        console.error(`[email] ❌ Rejected for ${result.email}: reason="${result.reject_reason}" subject="${payload.subject}"`);
+      } else if (result?.status === "invalid") {
+        console.error(`[email] ❌ Invalid address ${result.email}: "${payload.subject}"`);
+      } else {
+        console.warn(`[email] ⚠️ Unexpected status for ${result.email ?? "?"}:`, JSON.stringify(result));
+      }
+    }
   } catch (err) {
     console.error("[email] Failed to send email:", err);
   }
