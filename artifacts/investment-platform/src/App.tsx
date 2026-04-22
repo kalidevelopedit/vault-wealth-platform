@@ -82,6 +82,8 @@ import AssetDetail from "@/pages/AssetDetail";
 import Wallet from "@/pages/Wallet";
 import Profile from "@/pages/Profile";
 import UserSecurity from "@/pages/UserSecurity";
+import Convert from "@/pages/Convert";
+import Settings from "@/pages/Settings";
 
 // Admin Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -346,6 +348,8 @@ function Router() {
       <Route path="/wallet"><ProtectedRoute component={Wallet} /></Route>
       <Route path="/profile"><ProtectedRoute component={Profile} /></Route>
       <Route path="/account/security"><ProtectedRoute component={UserSecurity} /></Route>
+      <Route path="/convert"><ProtectedRoute component={Convert} /></Route>
+      <Route path="/settings"><ProtectedRoute component={Settings} /></Route>
 
       <Route component={NotFound} />
     </Switch>

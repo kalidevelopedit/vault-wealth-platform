@@ -23,7 +23,10 @@ export default function AssetList() {
   const [activeTab, setActiveTab] = useState("crypto");
   const [search, setSearch] = useState("");
 
-  const { data: assets, isLoading } = useListAssets(activeTab !== "favorites" ? { type: activeTab as any } : undefined);
+  const { data: assets, isLoading } = useListAssets(
+    activeTab !== "favorites" ? { type: activeTab as any } : undefined,
+    { query: { refetchInterval: 30_000 } }
+  );
 
   // In a real app, favorites would come from useGetWatchlist
   const displayed = assets?.filter(a => a.name.toLowerCase().includes(search.toLowerCase()) || a.symbol.toLowerCase().includes(search.toLowerCase()));

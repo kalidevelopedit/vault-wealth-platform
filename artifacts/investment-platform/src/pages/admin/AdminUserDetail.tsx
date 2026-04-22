@@ -34,12 +34,15 @@ const KYC_FG: Record<string, string> = {
 };
 
 const TX_TYPES = [
-  { value: "deposit",           label: "Deposit" },
-  { value: "withdraw",          label: "Withdrawal" },
-  { value: "bank_withdrawal",   label: "Bank Withdrawal" },
-  { value: "crypto_withdrawal", label: "Crypto Withdrawal" },
-  { value: "buy",               label: "Buy Trade" },
-  { value: "sell",              label: "Sell Trade" },
+  { value: "deposit",             label: "Deposit",             group: "Cash" },
+  { value: "withdraw",            label: "Cash Withdrawal",     group: "Cash" },
+  { value: "bank_withdrawal",     label: "Bank Wire Transfer",  group: "Bank" },
+  { value: "crypto_withdrawal",   label: "Crypto Withdrawal",   group: "Crypto" },
+  { value: "buy",                 label: "Buy Trade",           group: "Trading" },
+  { value: "sell",                label: "Sell Trade",          group: "Trading" },
+  { value: "convert",             label: "Conversion",          group: "Trading" },
+  { value: "fee",                 label: "Platform Fee",        group: "Other" },
+  { value: "bonus",               label: "Bonus / Reward",      group: "Other" },
 ];
 
 const TABS = [
@@ -107,7 +110,26 @@ export default function AdminUserDetail() {
   const [txAmount,  setTxAmount]  = useState("");
   const [txName,    setTxName]    = useState("");
   const [txSymbol,  setTxSymbol]  = useState("");
+  const [txStatus,  setTxStatus]  = useState("completed");
   const [txLoading, setTxLoading] = useState(false);
+
+  // Bank withdrawal fields
+  const [bankName,    setBankName]    = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+  const [bankRouting, setBankRouting] = useState("");
+  const [bankIban,    setBankIban]    = useState("");
+  const [bankSwift,   setBankSwift]   = useState("");
+  const [bankRef,     setBankRef]     = useState("");
+
+  // Crypto withdrawal fields
+  const [cryptoAddress,  setCryptoAddress]  = useState("");
+  const [cryptoNetwork,  setCryptoNetwork]  = useState("ERC-20");
+  const [cryptoTxHash,   setCryptoTxHash]   = useState("");
+
+  // Cash increment
+  const [cashDelta,     setCashDelta]     = useState("");
+  const [cashDeltaSign, setCashDeltaSign] = useState<"add" | "sub">("add");
+  const [cashDeltaLoading, setCashDeltaLoading] = useState(false);
 
   if (isLoading) return (
     <div style={{ padding: 80, display: "flex", justifyContent: "center" }}>
@@ -179,13 +201,55 @@ export default function AdminUserDetail() {
     finally { setCashLoading(false); }
   };
 
+  const doCashDelta = async () => {
+    if (!cashDelta) { toast.error("Enter an amount"); return; }
+    const currentCash = balance?.availableCash || 0;
+    const delta = parseFloat(cashDelta);
+    const newAmount = cashDeltaSign === "add" ? currentCash + delta : Math.max(0, currentCash - delta);
+    setCashDeltaLoading(true);
+    try {
+      await adminFetch(`/admin/users/${userId}/cash`, { method: "PATCH", body: JSON.stringify({ amount: newAmount }) });
+      toast.success(`Cash balance ${cashDeltaSign === "add" ? "increased" : "decreased"} by $${delta.toFixed(2)}`);
+      setCashDelta(""); refetch();
+    } catch (e: any) { toast.error(e.message); }
+    finally { setCashDeltaLoading(false); }
+  };
+
   const doTx = async () => {
     if (!txAmount) { toast.error("Amount required"); return; }
     setTxLoading(true);
     try {
-      await adminFetch(`/admin/users/${userId}/transactions`, { method: "POST", body: JSON.stringify({ type: txType, amount: txAmount, name: txName || undefined, symbol: txSymbol || undefined }) });
-      toast.success("Transaction added");
-      setTxAmount(""); setTxName(""); setTxSymbol(""); setTxType("deposit"); refetch();
+      const bankDetails = txType === "bank_withdrawal" ? {
+        bankName: bankName || undefined,
+        bankAccount: bankAccount || undefined,
+        bankRouting: bankRouting || undefined,
+        bankIban: bankIban || undefined,
+        bankSwift: bankSwift || undefined,
+        bankRef: bankRef || undefined,
+      } : undefined;
+      const cryptoDetails = txType === "crypto_withdrawal" ? {
+        cryptoAddress: cryptoAddress || undefined,
+        cryptoNetwork: cryptoNetwork || undefined,
+        cryptoTxHash: cryptoTxHash || undefined,
+      } : undefined;
+      await adminFetch(`/admin/users/${userId}/transactions`, {
+        method: "POST",
+        body: JSON.stringify({
+          type: txType, amount: txAmount, name: txName || undefined,
+          symbol: txSymbol || undefined, status: txStatus,
+          ...(bankDetails || {}), ...(cryptoDetails || {}),
+          notes: bankDetails
+            ? `Bank: ${bankName || "—"} | Acc: ${bankAccount || "—"} | Routing: ${bankRouting || "—"} | IBAN: ${bankIban || "—"} | SWIFT: ${bankSwift || "—"} | Ref: ${bankRef || "—"}`
+            : cryptoDetails
+            ? `Addr: ${cryptoAddress || "—"} | Network: ${cryptoNetwork} | TxHash: ${cryptoTxHash || "—"}`
+            : undefined,
+        }),
+      });
+      toast.success("Activity record added");
+      setTxAmount(""); setTxName(""); setTxSymbol(""); setTxType("deposit");
+      setBankName(""); setBankAccount(""); setBankRouting(""); setBankIban(""); setBankSwift(""); setBankRef("");
+      setCryptoAddress(""); setCryptoTxHash("");
+      refetch();
     } catch (e: any) { toast.error(e.message); }
     finally { setTxLoading(false); }
   };
@@ -457,39 +521,62 @@ export default function AdminUserDetail() {
         </div>
       )}
 
-      {/* ═══════════════ TRANSACTIONS ═══════════════ */}
+      {/* ═══════════════ ACTIVITY ═══════════════ */}
       {tab === "transactions" && (
-        <div className="ud-asset-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 20 }}>
-          <Card title="Transaction History" sub="Activity">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }} className="ud-asset-grid">
+          {/* Activity Feed */}
+          <Card title="Recent Activity" sub="Transaction History">
             {!recentTransactions?.length ? (
-              <div style={{ padding: "48px 24px", textAlign: "center", color: MUTED, fontSize: 13 }}>No transactions yet</div>
+              <div style={{ padding: "48px 24px", textAlign: "center", color: MUTED, fontSize: 13 }}>No activity recorded yet</div>
             ) : recentTransactions.map((t: any) => {
-              const isCredit = ["deposit", "sell"].includes(t.type);
+              const isCredit = ["deposit", "sell", "bonus"].includes(t.type);
               const label = TX_TYPES.find(x => x.value === t.type)?.label ?? t.type;
+              const statusColor = t.status === "completed" ? GAIN : t.status === "pending" ? AMB : LOSS;
+              const typeIcon: Record<string, string> = {
+                deposit: "↓", withdraw: "↑", bank_withdrawal: "🏦", crypto_withdrawal: "₿",
+                buy: "B", sell: "S", convert: "⇄", fee: "F", bonus: "★",
+              };
               return (
                 <div key={t.id} style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "15px 24px", borderBottom: `1px solid rgba(255,255,255,0.04)`, gap: 12,
+                  display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+                  padding: "14px 24px", borderBottom: `1px solid rgba(255,255,255,0.04)`, gap: 12,
                 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                     <div style={{
-                      width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                      background: isCredit ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
+                      width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                      background: isCredit ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.08)",
+                      border: `1px solid ${isCredit ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.15)"}`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 14, color: isCredit ? GAIN : LOSS,
-                    }}>{isCredit ? "↓" : "↑"}</div>
+                      fontSize: t.type === "bank_withdrawal" || t.type === "crypto_withdrawal" ? 14 : 16,
+                      color: isCredit ? GAIN : LOSS,
+                    }}>{typeIcon[t.type] || (isCredit ? "↓" : "↑")}</div>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{t.name || label}</div>
-                      <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>
-                        {label} · {new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 2 }}>{t.name || label}</div>
+                      <div style={{ fontSize: 11, color: MUTED, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                        <span>{label}</span>
+                        <span style={{ color: "rgba(255,255,255,0.12)" }}>·</span>
+                        <span>{new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                        {t.symbol && <><span style={{ color: "rgba(255,255,255,0.12)" }}>·</span><span style={{ fontFamily: "monospace", color: BLUE }}>{t.symbol}</span></>}
                       </div>
+                      {/* Bank/Crypto details if present */}
+                      {(t.notes) && (
+                        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", marginTop: 4, fontFamily: "monospace", maxWidth: 360, wordBreak: "break-all" }}>
+                          {t.notes}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: isCredit ? GAIN : LOSS }}>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: isCredit ? GAIN : LOSS, fontVariantNumeric: "tabular-nums" }}>
                       {isCredit ? "+" : "-"}${Math.abs(t.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                     </div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: t.status === "completed" ? GAIN : AMB, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    <div style={{
+                      fontSize: 9, fontWeight: 700, color: statusColor,
+                      background: `${statusColor}18`, border: `1px solid ${statusColor}30`,
+                      borderRadius: 99, padding: "2px 7px",
+                      display: "inline-block", marginTop: 4,
+                      textTransform: "uppercase", letterSpacing: "0.1em",
+                    }}>
                       {t.status}
                     </div>
                   </div>
@@ -498,37 +585,162 @@ export default function AdminUserDetail() {
             })}
           </Card>
 
-          <Card title="Add Transaction" sub="Manual Entry">
-            <div style={{ padding: "18px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
-              <div>
-                <label style={labelSx}>Transaction Type</label>
-                <select style={{ ...inputSx, appearance: "none" }} value={txType} onChange={e => setTxType(e.target.value)}>
-                  {TX_TYPES.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-                </select>
+          {/* Right control panel */}
+          <div>
+            {/* Quick Cash Adjustment */}
+            <Card title="Quick Balance Adjustment" sub="Cash Control">
+              <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
+                  {(["add", "sub"] as const).map(sign => (
+                    <button key={sign} onClick={() => setCashDeltaSign(sign)} style={{
+                      flex: 1, padding: "8px 0", borderRadius: 8, border: "none", cursor: "pointer",
+                      fontSize: 11, fontWeight: 700,
+                      background: cashDeltaSign === sign ? (sign === "add" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.12)") : "rgba(255,255,255,0.04)",
+                      color: cashDeltaSign === sign ? (sign === "add" ? GAIN : LOSS) : MUTED,
+                    }}>
+                      {sign === "add" ? "+ Add" : "− Deduct"}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 2 }}>
+                  Current: <strong style={{ color: TEXT }}>${(balance?.availableCash || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</strong>
+                </div>
+                <input style={inputSx} type="number" placeholder="Amount to add or deduct" value={cashDelta} onChange={e => setCashDelta(e.target.value)} />
+                {cashDelta && parseFloat(cashDelta) > 0 && (
+                  <div style={{ fontSize: 11, color: MUTED }}>
+                    New balance: <strong style={{ color: cashDeltaSign === "add" ? GAIN : AMB }}>
+                      ${(cashDeltaSign === "add" ? (balance?.availableCash || 0) + parseFloat(cashDelta) : Math.max(0, (balance?.availableCash || 0) - parseFloat(cashDelta))).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </strong>
+                  </div>
+                )}
+                <button onClick={doCashDelta} disabled={cashDeltaLoading} style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  padding: "10px 0", borderRadius: 10, border: "none", cursor: "pointer",
+                  background: cashDeltaSign === "add" ? GAIN : LOSS,
+                  color: "#fff", fontSize: 12, fontWeight: 700, opacity: cashDeltaLoading ? 0.6 : 1,
+                }}>
+                  {cashDeltaLoading ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <DollarSign size={12} />}
+                  {cashDeltaLoading ? "Updating…" : cashDeltaSign === "add" ? "Add to Balance" : "Deduct from Balance"}
+                </button>
+                <div style={{ height: 1, background: BORD, margin: "4px 0" }} />
+                <label style={labelSx}>Or set exact balance</label>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <input style={{ ...inputSx, flex: 1 }} type="number" placeholder="0.00" value={cashAmount} onChange={e => setCashAmount(e.target.value)} />
+                  <button onClick={doCash} disabled={cashLoading} style={{
+                    padding: "0 14px", borderRadius: 10, border: "none", cursor: "pointer",
+                    background: BLUE, color: "#fff", fontSize: 12, fontWeight: 700, opacity: cashLoading ? 0.6 : 1,
+                    whiteSpace: "nowrap",
+                  }}>
+                    {cashLoading ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : "Set"}
+                  </button>
+                </div>
               </div>
-              <div>
-                <label style={labelSx}>Amount ($)</label>
-                <input style={inputSx} type="number" placeholder="0.00" value={txAmount} onChange={e => setTxAmount(e.target.value)} />
+            </Card>
+
+            {/* Add Activity */}
+            <Card title="Add Activity Record" sub="Manual Entry">
+              <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div>
+                  <label style={labelSx}>Activity Type</label>
+                  <select style={{ ...inputSx, appearance: "none" }} value={txType} onChange={e => setTxType(e.target.value)}>
+                    {TX_TYPES.map(({ value, label, group }) => (
+                      <option key={value} value={value}>[{group}] {label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelSx}>Amount ($)</label>
+                    <input style={inputSx} type="number" placeholder="0.00" value={txAmount} onChange={e => setTxAmount(e.target.value)} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelSx}>Status</label>
+                    <select style={{ ...inputSx, appearance: "none" }} value={txStatus} onChange={e => setTxStatus(e.target.value)}>
+                      {["completed","pending","processing","failed"].map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={labelSx}>Label / Description</label>
+                  <input style={inputSx} placeholder="e.g. Wire Transfer from Chase" value={txName} onChange={e => setTxName(e.target.value)} />
+                </div>
+                <div>
+                  <label style={labelSx}>Asset Symbol (optional)</label>
+                  <input style={inputSx} placeholder="e.g. BTC, AAPL" value={txSymbol} onChange={e => setTxSymbol(e.target.value.toUpperCase())} />
+                </div>
+
+                {/* Bank Withdrawal Fields */}
+                {txType === "bank_withdrawal" && (
+                  <>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4, paddingTop: 8, borderTop: `1px solid ${BORD}` }}>
+                      Bank Details
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div>
+                        <label style={labelSx}>Bank Name</label>
+                        <input style={inputSx} placeholder="Chase Bank" value={bankName} onChange={e => setBankName(e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={labelSx}>Account Number</label>
+                        <input style={inputSx} placeholder="****1234" value={bankAccount} onChange={e => setBankAccount(e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={labelSx}>Routing Number</label>
+                        <input style={inputSx} placeholder="021000021" value={bankRouting} onChange={e => setBankRouting(e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={labelSx}>SWIFT / BIC</label>
+                        <input style={inputSx} placeholder="CHASUS33" value={bankSwift} onChange={e => setBankSwift(e.target.value)} />
+                      </div>
+                    </div>
+                    <div>
+                      <label style={labelSx}>IBAN (international)</label>
+                      <input style={inputSx} placeholder="GB29 NWBK 6016 1331 9268 19" value={bankIban} onChange={e => setBankIban(e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={labelSx}>Reference / Memo</label>
+                      <input style={inputSx} placeholder="Wire ref or memo" value={bankRef} onChange={e => setBankRef(e.target.value)} />
+                    </div>
+                  </>
+                )}
+
+                {/* Crypto Withdrawal Fields */}
+                {txType === "crypto_withdrawal" && (
+                  <>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4, paddingTop: 8, borderTop: `1px solid ${BORD}` }}>
+                      Crypto Details
+                    </div>
+                    <div>
+                      <label style={labelSx}>Wallet Address</label>
+                      <input style={{ ...inputSx, fontFamily: "monospace", fontSize: 11 }} placeholder="0x1234…abcd" value={cryptoAddress} onChange={e => setCryptoAddress(e.target.value)} />
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={labelSx}>Network / Chain</label>
+                        <select style={{ ...inputSx, appearance: "none" }} value={cryptoNetwork} onChange={e => setCryptoNetwork(e.target.value)}>
+                          {["ERC-20 (Ethereum)","BEP-20 (BSC)","TRC-20 (Tron)","SOL (Solana)","BTC (Bitcoin)","Polygon","Avalanche","Arbitrum","Optimism"].map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={labelSx}>TX Hash (optional)</label>
+                      <input style={{ ...inputSx, fontFamily: "monospace", fontSize: 11 }} placeholder="0xabcd…" value={cryptoTxHash} onChange={e => setCryptoTxHash(e.target.value)} />
+                    </div>
+                  </>
+                )}
+
+                <button onClick={doTx} disabled={txLoading} style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+                  padding: "11px 0", borderRadius: 11, border: "none", cursor: "pointer",
+                  background: BLUE, color: "#fff", fontSize: 12, fontWeight: 700,
+                  opacity: txLoading ? 0.6 : 1, marginTop: 4,
+                }}>
+                  {txLoading ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <Plus size={13} />}
+                  {txLoading ? "Adding…" : "Add Activity Record"}
+                </button>
               </div>
-              <div>
-                <label style={labelSx}>Label (optional)</label>
-                <input style={inputSx} placeholder="e.g. Bank Transfer" value={txName} onChange={e => setTxName(e.target.value)} />
-              </div>
-              <div>
-                <label style={labelSx}>Symbol (optional)</label>
-                <input style={inputSx} placeholder="e.g. USDT, ETH" value={txSymbol} onChange={e => setTxSymbol(e.target.value.toUpperCase())} />
-              </div>
-              <button onClick={doTx} disabled={txLoading} style={{
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                padding: "11px 0", borderRadius: 11, border: "none", cursor: "pointer",
-                background: BLUE, color: "#fff", fontSize: 12, fontWeight: 700,
-                opacity: txLoading ? 0.6 : 1, marginTop: 4,
-              }}>
-                {txLoading ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <Plus size={13} />}
-                {txLoading ? "Adding…" : "Add Transaction"}
-              </button>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
 

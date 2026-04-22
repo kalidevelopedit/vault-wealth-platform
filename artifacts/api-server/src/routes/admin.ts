@@ -491,32 +491,48 @@ router.post("/users/:userId/assets", requireAdminSession, async (req, res) => {
 router.post("/users/:userId/transactions", requireAdminSession, async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    const { type, amount, name, symbol, notes, status } = req.body;
+    const { type, amount, name, symbol, notes, status,
+            bankName, bankAccount, bankRouting, bankIban, bankSwift, bankRef,
+            cryptoAddress, cryptoNetwork, cryptoTxHash } = req.body;
 
     if (!type || !amount) {
       res.status(400).json({ error: "validation_error", message: "type and amount required" });
       return;
     }
 
-    const validTypes = ["deposit", "withdraw", "buy", "sell", "bank_withdrawal", "crypto_withdrawal"];
-    const txType = validTypes.includes(type) ? type : "withdraw";
+    // Map any extended type to a valid DB enum value
+    const typeToDbType: Record<string, string> = {
+      deposit: "deposit", withdraw: "withdraw", buy: "buy", sell: "sell", convert: "convert",
+      bank_withdrawal: "withdraw", crypto_withdrawal: "withdraw",
+      fee: "withdraw", bonus: "deposit",
+    };
+    const dbType = typeToDbType[type] ?? "withdraw";
+
+    // Build descriptive name including extra details
+    const detailsSuffix = type === "bank_withdrawal" && bankName
+      ? ` — ${bankName}${bankAccount ? " ··" + bankAccount.slice(-4) : ""}${bankSwift ? " SWIFT:" + bankSwift : ""}${bankIban ? " IBAN:" + bankIban : ""}${bankRef ? " Ref:" + bankRef : ""}`
+      : type === "crypto_withdrawal" && cryptoAddress
+      ? ` — ${cryptoNetwork || "ERC-20"}: ${cryptoAddress.slice(0, 8)}…${cryptoAddress.slice(-6)}`
+      : "";
+    const txName = (name || type) + detailsSuffix;
 
     await db.insert(transactionsTable).values({
       userId,
-      type: txType as any,
+      type: dbType as any,
       amount: parseFloat(amount).toFixed(2),
-      name: name ?? null,
+      name: txName,
       symbol: symbol ?? null,
       status: (status ?? "completed") as any,
     });
 
+    const logDesc = `Admin recorded ${type} of $${parseFloat(amount).toFixed(2)}${name ? ` (${name})` : ""}${notes ? `: ${notes}` : ""}${detailsSuffix}`;
     await db.insert(activityLogTable).values({
       userId,
       eventType: "transaction_added",
-      description: `Admin added ${txType} of $${parseFloat(amount).toFixed(2)}${name ? ` (${name})` : ""}`,
+      description: logDesc,
     });
 
-    res.json({ message: "Transaction added successfully" });
+    res.json({ message: "Activity record added successfully" });
   } catch (err) {
     req.log.error({ err }, "Add transaction error");
     res.status(500).json({ error: "server_error", message: "Failed to add transaction" });
