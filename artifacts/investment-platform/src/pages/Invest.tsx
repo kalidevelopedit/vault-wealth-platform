@@ -67,8 +67,8 @@ export default function Invest() {
       </div>
 
       <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" } as any}>
+          <table style={{ width: "100%", minWidth: 500, borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${BORD}` }}>
                 {["Instrument", "Type", "Last Price", "24h Change", "Action"].map((h, i) => (

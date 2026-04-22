@@ -323,10 +323,9 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ── Quick Actions (horizontal scroll) ── */}
-      <div className="hide-scrollbar" style={{
-        display: "flex", gap: 8, overflowX: "auto", marginBottom: 24,
-        paddingBottom: 2, scrollbarWidth: "none",
+      {/* ── Quick Actions ── */}
+      <div style={{
+        display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24,
       }}>
         {actions.map(a => (
           <Link key={a.label} href={a.href} style={{

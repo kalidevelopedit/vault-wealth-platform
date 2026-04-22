@@ -211,8 +211,8 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   if ((user as any).isFrozen) {
     const WHATSAPP_LINK = "https://wa.me/18886555555?text=My%20account%20has%20been%20frozen.%20Please%20help.";
     return (
-      <div style={{ minHeight: "100vh", background: "#080c18", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,system-ui,sans-serif" }}>
-        <div style={{ width: 420, background: "#0f1624", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, padding: "48px 40px", textAlign: "center", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
+      <div style={{ minHeight: "100vh", background: "#080c18", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,system-ui,sans-serif", padding: "20px 16px" }}>
+        <div style={{ width: "100%", maxWidth: 420, background: "#0f1624", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 20, padding: "40px 24px", textAlign: "center", boxShadow: "0 24px 80px rgba(0,0,0,0.6)" }}>
           <div style={{ width: 64, height: 64, borderRadius: "50%", border: "1px solid rgba(239,68,68,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>

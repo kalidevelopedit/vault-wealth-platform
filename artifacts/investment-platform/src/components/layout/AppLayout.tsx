@@ -85,7 +85,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const uid = user?.id ? `VW-${String(user.id).padStart(6, "0")}` : "VW-000000";
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", background: BG, display: "flex", flexDirection: "column", overflowX: "hidden", maxWidth: "100vw" }}>
       {/* ── News Ticker (desktop only) ── */}
       <div className="hidden md:block" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 101 }}>
         <NewsTicker bord={BORD} muted={MUTED} />
@@ -315,6 +315,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           background: BG,
           minHeight: "calc(100vh - 60px)",
           paddingBottom: 72, // space for mobile bottom nav
+          overflowX: "hidden",
+          maxWidth: "100%",
         }}>
           {children}
         </main>
