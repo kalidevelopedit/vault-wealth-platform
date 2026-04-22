@@ -176,7 +176,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 34, width: "auto", objectFit: "contain" }} />
+            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 50, width: "auto", objectFit: "contain" }} />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             {topNavLinks.map(link => {

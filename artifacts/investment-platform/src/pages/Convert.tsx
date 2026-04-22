@@ -95,6 +95,10 @@ export default function Convert() {
     if (!amt || amt <= 0) return toast.error("Enter a valid amount");
     if (!fromAsset || !toAsset) return toast.error("Select assets to convert");
     if (fromSym === toSym) return toast.error("Select different assets");
+    const availableCash = balance?.availableCash || 0;
+    if (usdValue > availableCash) {
+      return toast.error(`Insufficient funds — available: $${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}`);
+    }
     setSubmitting(true);
     try {
       await createTx.mutateAsync({
@@ -197,13 +201,30 @@ export default function Convert() {
               </div>
             )}
 
-            <button onClick={handleConvert} disabled={!fromAmt || submitting} style={{
-              width: "100%", height: 52, background: BLUE, border: "none", borderRadius: 12,
-              color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", marginTop: 16,
-              opacity: !fromAmt || submitting ? 0.5 : 1, transition: "opacity 0.15s",
-            }}>
-              {submitting ? "Processing..." : "Convert Now"}
-            </button>
+            {(() => {
+              const avail = balance?.availableCash || 0;
+              const insufficient = usdValue > avail && usdValue > 0;
+              return (
+                <>
+                  {insufficient && (
+                    <div style={{ fontSize: 12, color: "#f6465d", marginTop: 8, textAlign: "right" }}>
+                      Insufficient funds — available: ${avail.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </div>
+                  )}
+                  <button
+                    onClick={handleConvert}
+                    disabled={!fromAmt || submitting || insufficient}
+                    style={{
+                      width: "100%", height: 52, background: BLUE, border: "none", borderRadius: 12,
+                      color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", marginTop: 16,
+                      opacity: !fromAmt || submitting || insufficient ? 0.5 : 1, transition: "opacity 0.15s",
+                    }}
+                  >
+                    {submitting ? "Processing..." : "Convert Now"}
+                  </button>
+                </>
+              );
+            })()}
           </div>
         </div>
 
