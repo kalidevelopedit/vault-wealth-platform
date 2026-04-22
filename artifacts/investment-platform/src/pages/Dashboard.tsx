@@ -278,9 +278,7 @@ export default function Dashboard() {
 
   const labelForPrefs = preferences.map(p => CATEGORIES.find(c => c.id === p)?.title?.split(" ")[0]).filter(Boolean).join(", ");
 
-  if (!hasSetPreferences) {
-    return <MarketOnboarding onComplete={setPreferences} />;
-  }
+  // Market preferences are set during onboarding — no blocking overlay on dashboard
 
   return (
     <div style={{ padding: "20px 16px 0", maxWidth: 1440, margin: "0 auto", background: BG, minHeight: "100%" }}>
