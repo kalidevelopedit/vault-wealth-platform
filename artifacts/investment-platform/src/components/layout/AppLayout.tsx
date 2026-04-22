@@ -14,7 +14,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const topNavLinks = [
-    { label: "Markets", href: "/assets/crypto" },
+    { label: "Markets", href: "/markets" },
     { label: "Portfolio", href: "/dashboard" },
     { label: "Wallet", href: "/wallet" },
     { label: "Trade", href: "/invest" },
@@ -23,15 +23,15 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const sideNavLinks = [
     { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-    { icon: BarChart2, label: "Markets", href: "/assets/crypto" },
+    { icon: BarChart2, label: "Markets", href: "/markets" },
     { icon: Wallet, label: "Wallet", href: "/wallet" },
     { icon: User, label: "Profile", href: "/profile" },
-    { icon: Shield, label: "Security", href: "/security" },
+    { icon: Shield, label: "Security", href: "/account/security" },
     { icon: Settings, label: "Settings", href: "/profile" }, // maps to profile for now
   ];
 
   const isActive = (href: string) => {
-    if (href === "/assets/crypto") return location.startsWith("/assets");
+    if (href === "/markets") return location.startsWith("/markets") || location.startsWith("/assets");
     if (href === "/dashboard") return location === "/dashboard";
     return location.startsWith(href);
   };

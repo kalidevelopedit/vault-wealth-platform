@@ -340,11 +340,12 @@ function Router() {
       
       <Route path="/dashboard"><ProtectedRoute component={Dashboard} /></Route>
       <Route path="/invest"><ProtectedRoute component={Invest} /></Route>
+      <Route path="/markets"><ProtectedRoute component={AssetList} /></Route>
       <Route path="/assets/:type(crypto|stocks|commodities)"><ProtectedRoute component={AssetList} /></Route>
       <Route path="/assets/:symbol"><ProtectedRoute component={AssetDetail} /></Route>
       <Route path="/wallet"><ProtectedRoute component={Wallet} /></Route>
       <Route path="/profile"><ProtectedRoute component={Profile} /></Route>
-      <Route path="/security"><ProtectedRoute component={UserSecurity} /></Route>
+      <Route path="/account/security"><ProtectedRoute component={UserSecurity} /></Route>
 
       <Route component={NotFound} />
     </Switch>
