@@ -458,6 +458,18 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   );
 }
 
+// ── Progress persistence ────────────────────────────────────────────────────
+const PROG_KEY = (email: string) => `onboarding_prog_v2_${email}`;
+function saveProgress(email: string, data: object) {
+  try { localStorage.setItem(PROG_KEY(email), JSON.stringify({ ...data, savedAt: Date.now() })); } catch {}
+}
+function loadProgress(email: string) {
+  try { const r = localStorage.getItem(PROG_KEY(email)); return r ? JSON.parse(r) : null; } catch { return null; }
+}
+function clearProgress(email: string) {
+  try { localStorage.removeItem(PROG_KEY(email)); } catch {}
+}
+
 // ── Main Onboarding ─────────────────────────────────────────────────────────
 export default function Onboarding() {
   const { user } = useAuth();
@@ -467,6 +479,8 @@ export default function Onboarding() {
   const [slideKey, setSlideKey] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [biometricDone, setBiometricDone] = useState(false);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [idSkipped, setIdSkipped] = useState(false);
 
   const savePrefs = useSaveInvestmentPreferences();
   const saveProfile = useSaveUserProfile();
@@ -478,7 +492,7 @@ export default function Onboarding() {
   // Step 2
   const [purpose, setPurpose] = useState("");
   const [amount, setAmount] = useState("");
-  // Step 3 — only DOB, address details (name/phone/country pre-filled from user)
+  // Step 3 — DOB (3-part), address
   const defaultCountry = COUNTRIES.find(c => c.code === (user as any)?.country) || COUNTRIES[0];
   const [profile, setProfile] = useState({
     dateOfBirth: "",
@@ -487,6 +501,10 @@ export default function Onboarding() {
     postalCode: "",
     country: defaultCountry.code,
   });
+  // DOB 3-part selectors
+  const [dobDay, setDobDay] = useState("");
+  const [dobMonth, setDobMonth] = useState("");
+  const [dobYear, setDobYear] = useState("");
   // Address autocomplete
   const [addressQuery, setAddressQuery] = useState("");
   const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
@@ -496,11 +514,55 @@ export default function Onboarding() {
   // Step 4
   const [idType, setIdType] = useState("passport");
   // Step 5
-  const [idFile, setIdFile] = useState<File | null>(null);          // passport / national_id
-  const [idFileFront, setIdFileFront] = useState<File | null>(null); // driver's license front
-  const [idFileBack, setIdFileBack] = useState<File | null>(null);   // driver's license back
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [idFileFront, setIdFileFront] = useState<File | null>(null);
+  const [idFileBack, setIdFileBack] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [redirectCount, setRedirectCount] = useState(5);
+
+  // Sync 3-part DOB into profile
+  useEffect(() => {
+    if (dobDay && dobMonth && dobYear) {
+      const dob = `${dobYear}-${dobMonth}-${dobDay}`;
+      setProfile(p => ({ ...p, dateOfBirth: dob }));
+      if (user?.email) {
+        saveProgress(user.email, { step, preferences, purpose, amount, profile: { ...profile, dateOfBirth: dob }, dobDay, dobMonth, dobYear, idType });
+      }
+    }
+  }, [dobDay, dobMonth, dobYear]);
+
+  // Auto-save progress on step change
+  const saveCurrentProgress = (nextStep: number) => {
+    if (user?.email) {
+      saveProgress(user.email, { step: nextStep, preferences, purpose, amount, profile, dobDay, dobMonth, dobYear, idType });
+    }
+  };
+
+  // Check for saved progress on mount
+  useEffect(() => {
+    if (!user?.email) return;
+    const saved = loadProgress(user.email);
+    if (saved && saved.step > 1) {
+      setShowResumePrompt(true);
+    }
+  }, [user?.email]);
+
+  const resumeFromSaved = () => {
+    if (!user?.email) return;
+    const saved = loadProgress(user.email);
+    if (!saved) return;
+    if (saved.preferences) setPreferences(saved.preferences);
+    if (saved.purpose) setPurpose(saved.purpose);
+    if (saved.amount) setAmount(saved.amount);
+    if (saved.profile) setProfile(saved.profile);
+    if (saved.dobDay) setDobDay(saved.dobDay);
+    if (saved.dobMonth) setDobMonth(saved.dobMonth);
+    if (saved.dobYear) setDobYear(saved.dobYear);
+    if (saved.idType) setIdType(saved.idType);
+    setStep(saved.step || 1);
+    setSlideKey(k => k + 1);
+    setShowResumePrompt(false);
+  };
 
   // Computed: are all required docs uploaded?
   const idReady = idType === "drivers_license" ? (!!idFileFront && !!idFileBack) : !!idFile;
@@ -509,6 +571,7 @@ export default function Onboarding() {
     setDir(next > step ? "right" : "left");
     setStep(next);
     setSlideKey(k => k + 1);
+    saveCurrentProgress(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -538,14 +601,17 @@ export default function Onboarding() {
   }, []);
 
   const selectSuggestion = (s: any) => {
-    const addr = s.address;
+    const addr = s.address || {};
     const road = addr.road || addr.street || addr.pedestrian || "";
     const house = addr.house_number || "";
     const streetLine = house ? `${house} ${road}` : road;
     const city = addr.city || addr.town || addr.village || addr.county || "";
     const postal = addr.postcode || "";
-    setProfile(p => ({ ...p, address: streetLine || s.display_name.split(",")[0], city, postalCode: postal }));
-    setAddressQuery(streetLine || s.display_name.split(",")[0]);
+    const resolvedAddr = streetLine || s.display_name.split(",")[0];
+    setProfile(p => ({ ...p, address: resolvedAddr, city, postalCode: postal }));
+    setAddressQuery(resolvedAddr);
+    // Clear immediately so suggestions never re-appear on focus
+    setAddressSuggestions([]);
     setShowSuggestions(false);
   };
 
@@ -611,6 +677,7 @@ export default function Onboarding() {
     setLoading(true);
     try {
       await submitKyc.mutateAsync();
+      if (user?.email) clearProgress(user.email);
       setSubmitted(true);
       // Auto-redirect to login after 5 seconds
       let count = 5;
@@ -714,6 +781,34 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#F5F6F7" }}>
+
+      {/* ── Resume Prompt Modal ── */}
+      {showResumePrompt && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ background: "white", borderRadius: 18, padding: 32, maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.16)" }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: "#F5F6F7", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
+              <FileText size={22} color="#0F172A" />
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0F172A", marginBottom: 8, letterSpacing: "-0.01em" }}>Resume your application?</h3>
+            <p style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.65, marginBottom: 24 }}>
+              We found a saved application for <strong style={{ color: "#0F172A" }}>{user?.email}</strong>. You can pick up where you left off or start a fresh application.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => { if (user?.email) clearProgress(user.email); setShowResumePrompt(false); }}
+                style={{ flex: 1, padding: "12px 0", fontSize: 13, fontWeight: 600, color: "#6B7280", background: "white", border: "1px solid #E6E8EB", borderRadius: 10, cursor: "pointer" }}>
+                Start Over
+              </button>
+              <button
+                onClick={resumeFromSaved}
+                style={{ flex: 1.5, padding: "12px 0", fontSize: 13, fontWeight: 700, color: "white", background: "#0d1520", border: "none", borderRadius: 10, cursor: "pointer" }}>
+                Resume Application →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top bar */}
       <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
@@ -749,9 +844,14 @@ export default function Onboarding() {
                     );
                   })}
                 </div>
-                <PrimaryBtn onClick={handleStep1Next} disabled={preferences.length === 0 || loading}>
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Continue</span><ChevronRight size={16} /></>}
-                </PrimaryBtn>
+                <div className="flex gap-3">
+                  <SecondaryBtn onClick={() => { window.location.href = "/register"; }}>
+                    <ChevronLeft size={15} />
+                  </SecondaryBtn>
+                  <PrimaryBtn onClick={handleStep1Next} disabled={preferences.length === 0 || loading}>
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Continue</span><ChevronRight size={16} /></>}
+                  </PrimaryBtn>
+                </div>
               </div>
             )}
 
@@ -819,12 +919,40 @@ export default function Onboarding() {
                 </div>
 
                 <div className="space-y-4 mb-7">
-                  {/* Date of Birth */}
+                  {/* Date of Birth — 3 separate selects for reliable mobile support */}
                   <div>
                     <label className={LABEL}>Date of Birth</label>
-                    <input type="date" value={profile.dateOfBirth}
-                      onChange={e => setProfile({ ...profile, dateOfBirth: e.target.value })}
-                      className={INPUT} style={{ colorScheme: "light" }} />
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {/* Day */}
+                      <select value={dobDay} onChange={e => setDobDay(e.target.value)}
+                        className="flex-1 bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-2 py-2.5 rounded-xl focus:outline-none focus:border-[#0d1520] appearance-none">
+                        <option value="">Day</option>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                          <option key={d} value={String(d).padStart(2, "0")}>{d}</option>
+                        ))}
+                      </select>
+                      {/* Month */}
+                      <select value={dobMonth} onChange={e => setDobMonth(e.target.value)}
+                        className="flex-[2] bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-2 py-2.5 rounded-xl focus:outline-none focus:border-[#0d1520] appearance-none">
+                        <option value="">Month</option>
+                        {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => (
+                          <option key={i} value={String(i + 1).padStart(2, "0")}>{m}</option>
+                        ))}
+                      </select>
+                      {/* Year */}
+                      <select value={dobYear} onChange={e => setDobYear(e.target.value)}
+                        className="flex-[1.5] bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-2 py-2.5 rounded-xl focus:outline-none focus:border-[#0d1520] appearance-none">
+                        <option value="">Year</option>
+                        {Array.from({ length: 90 }, (_, i) => new Date().getFullYear() - 18 - i).map(y => (
+                          <option key={y} value={String(y)}>{y}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {dobDay && dobMonth && dobYear && (
+                      <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 5 }}>
+                        {new Date(`${dobYear}-${dobMonth}-${dobDay}`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                    )}
                   </div>
 
                   {/* Country */}
@@ -846,8 +974,7 @@ export default function Onboarding() {
                         type="text"
                         value={addressQuery || profile.address}
                         placeholder={`Start typing your address in ${selectedCountryObj.name}…`}
-                        onChange={e => { setAddressQuery(e.target.value); setProfile({ ...profile, address: e.target.value }); setShowSuggestions(true); }}
-                        onFocus={() => addressSuggestions.length > 0 && setShowSuggestions(true)}
+                        onChange={e => { setAddressQuery(e.target.value); setProfile({ ...profile, address: e.target.value }); if (e.target.value.length >= 4) setShowSuggestions(true); }}
                         className={INPUT}
                         style={{ paddingLeft: 34 }}
                       />
@@ -855,7 +982,8 @@ export default function Onboarding() {
                     {showSuggestions && addressSuggestions.length > 0 && (
                       <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50, background: "white", border: "1px solid #E6E8EB", borderRadius: 12, boxShadow: "0 8px 32px rgba(0,0,0,0.12)", maxHeight: 240, overflowY: "auto", marginTop: 4 }}>
                         {addressSuggestions.map((s, i) => (
-                          <button key={i} onClick={() => selectSuggestion(s)}
+                          <button key={i}
+                            onMouseDown={e => { e.preventDefault(); selectSuggestion(s); }}
                             style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "11px 14px", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: i < addressSuggestions.length - 1 ? "1px solid #F5F6F7" : "none", cursor: "pointer" }}
                             onMouseEnter={e => (e.currentTarget.style.background = "#F5F6F7")}
                             onMouseLeave={e => (e.currentTarget.style.background = "none")}>
@@ -882,7 +1010,7 @@ export default function Onboarding() {
 
                 <div className="flex gap-3">
                   <SecondaryBtn onClick={() => goTo(2)}><ChevronLeft size={15} /></SecondaryBtn>
-                  <PrimaryBtn onClick={handleStep3Next} disabled={!profile.dateOfBirth || !profile.address || loading}>
+                  <PrimaryBtn onClick={handleStep3Next} disabled={!dobDay || !dobMonth || !dobYear || !profile.address || loading}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Continue</span><ChevronRight size={16} /></>}
                   </PrimaryBtn>
                 </div>
@@ -1060,6 +1188,13 @@ export default function Onboarding() {
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><span>Upload & Continue</span><ChevronRight size={16} /></>}
                   </PrimaryBtn>
                 </div>
+
+                {/* Skip for now — testing / can complete later */}
+                <button
+                  onClick={() => { setIdSkipped(true); goTo(6); }}
+                  style={{ width: "100%", marginTop: 12, padding: "11px 0", fontSize: 12, fontWeight: 600, color: "#9ca3af", background: "none", border: "1px dashed #E6E8EB", borderRadius: 10, cursor: "pointer", letterSpacing: "0.03em" }}>
+                  Skip for now — I'll upload my documents later
+                </button>
               </div>
             )}
 
