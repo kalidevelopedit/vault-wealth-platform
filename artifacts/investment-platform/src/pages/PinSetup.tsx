@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import PinPad from "./PinPad";
+import { saveAuthToken } from "@/hooks/use-auth";
 
 interface PinSetupProps {
   onComplete: () => void;
@@ -33,10 +34,11 @@ export default function PinSetup({ onComplete }: PinSetupProps) {
         credentials: "include",
         body: JSON.stringify({ pin }),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.message || "Failed to set passcode");
       }
+      if (data.token) saveAuthToken(data.token);
       toast.success("Passcode set successfully");
       onComplete();
     } catch (err: any) {

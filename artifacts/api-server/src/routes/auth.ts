@@ -1,11 +1,41 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
 import { usersTable, activityLogTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import { sendWelcomeEmail, sendForgotPinEmail } from "../lib/email.js";
 
 const router: IRouter = Router();
+
+const JWT_SECRET = process.env.SESSION_SECRET ?? "investment-platform-secret-key";
+const JWT_EXPIRY = "30d";
+
+function signToken(userId: number, pinVerified: boolean): string {
+  return jwt.sign({ userId, pinVerified }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+}
+
+function verifyToken(token: string): { userId: number; pinVerified: boolean } | null {
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as any;
+    return { userId: payload.userId, pinVerified: !!payload.pinVerified };
+  } catch {
+    return null;
+  }
+}
+
+function getAuthContext(req: Request): { userId: number | null; pinVerified: boolean } {
+  const sessionUserId = (req.session as any).userId ?? null;
+  if (sessionUserId) {
+    return { userId: sessionUserId, pinVerified: !!(req.session as any).pinVerified };
+  }
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const payload = verifyToken(authHeader.slice(7));
+    if (payload) return payload;
+  }
+  return { userId: null, pinVerified: false };
+}
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password + "salt_investment_platform").digest("hex");
@@ -50,7 +80,9 @@ router.post("/register", async (req, res) => {
     sendWelcomeEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
 
     (req.session as any).userId = user.id;
+    const token = signToken(user.id, false);
     res.status(201).json({
+      token,
       user: {
         id: user.id,
         fullName: user.fullName,
@@ -99,7 +131,9 @@ router.post("/login", async (req, res) => {
       description: "User logged in",
     });
     (req.session as any).userId = user.id;
+    const token = signToken(user.id, false);
     res.json({
+      token,
       user: {
         id: user.id,
         fullName: user.fullName,
@@ -166,9 +200,11 @@ router.post("/demo-login", async (req, res) => {
     await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, user.id));
 
     (req.session as any).userId     = user.id;
-    (req.session as any).pinVerified = true; // bypass PIN gate for demo
+    (req.session as any).pinVerified = true;
+    const token = signToken(user.id, true);
 
     res.json({
+      token,
       user: {
         id: user.id,
         fullName: user.fullName,
@@ -202,7 +238,7 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", async (req, res) => {
-  const userId = (req.session as any).userId;
+  const { userId, pinVerified } = getAuthContext(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
     return;
@@ -227,7 +263,7 @@ router.get("/me", async (req, res) => {
       createdAt: user.createdAt.toISOString(),
       mustSetPin: user.mustSetPin ?? false,
       hasPin: !!user.pinHash,
-      pinVerified: (req.session as any).pinVerified ?? false,
+      pinVerified,
       isFrozen: (user as any).isFrozen ?? false,
       frozenReason: (user as any).frozenReason ?? null,
     });
@@ -238,7 +274,7 @@ router.get("/me", async (req, res) => {
 });
 
 router.post("/set-pin", async (req, res) => {
-  const userId = (req.session as any).userId;
+  const { userId } = getAuthContext(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
     return;
@@ -261,7 +297,8 @@ router.post("/set-pin", async (req, res) => {
       eventType: "pin_set",
       description: "Account passcode set",
     });
-    res.json({ message: "Passcode set successfully" });
+    const token = signToken(userId, true);
+    res.json({ token, message: "Passcode set successfully" });
   } catch (err) {
     req.log.error({ err }, "Set PIN error");
     res.status(500).json({ error: "server_error", message: "Failed to set passcode" });
@@ -269,7 +306,7 @@ router.post("/set-pin", async (req, res) => {
 });
 
 router.post("/verify-pin", async (req, res) => {
-  const userId = (req.session as any).userId;
+  const { userId } = getAuthContext(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
     return;
@@ -291,7 +328,8 @@ router.post("/verify-pin", async (req, res) => {
     }
     (req.session as any).pinVerified = true;
     await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, userId));
-    res.json({ message: "Passcode verified" });
+    const token = signToken(userId, true);
+    res.json({ token, message: "Passcode verified" });
   } catch (err) {
     req.log.error({ err }, "Verify PIN error");
     res.status(500).json({ error: "server_error", message: "Failed to verify passcode" });
@@ -299,7 +337,7 @@ router.post("/verify-pin", async (req, res) => {
 });
 
 router.post("/forgot-pin", async (req, res) => {
-  const userId = (req.session as any).userId;
+  const { userId } = getAuthContext(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
     return;

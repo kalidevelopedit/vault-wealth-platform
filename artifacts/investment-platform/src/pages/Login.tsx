@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, saveAuthToken } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, Zap } from "lucide-react";
 
@@ -17,7 +17,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
-  const { login, user, refreshUser } = useAuth();
+  const { login, user, refreshUser, setUserFromData } = useAuth();
   const [, setLocation] = useLocation();
   const [frozenPopup, setFrozenPopup] = useState(false);
   const [pendingPopup, setPendingPopup] = useState(false);
@@ -61,7 +61,9 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) throw new Error("Demo login failed");
-      await refreshUser();
+      const data = await res.json();
+      if (data.token) saveAuthToken(data.token);
+      if (data.user) setUserFromData(data.user);
       toast.success("Welcome to the demo!");
       setLocation("/dashboard");
     } catch (err: any) {

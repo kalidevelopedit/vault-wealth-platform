@@ -19,6 +19,17 @@ interface AuthContextType {
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  setUserFromData: (user: ExtendedUser) => void;
+}
+
+const AUTH_TOKEN_KEY = "vault_auth_token";
+
+export function saveAuthToken(token: string): void {
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+}
+
+export function clearAuthToken(): void {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,18 +49,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerMutation = useRegisterUser();
   const logoutMutation = useLogoutUser();
 
+  const setUserFromData = (userData: ExtendedUser) => {
+    queryClient.setQueryData(getGetCurrentUserQueryKey(), userData);
+  };
+
   const login = async (data: LoginRequest) => {
-    await loginMutation.mutateAsync({ data });
-    await refetch();
+    const result = await loginMutation.mutateAsync({ data }) as any;
+    if (result?.token) saveAuthToken(result.token);
+    if (result?.user) {
+      queryClient.setQueryData(getGetCurrentUserQueryKey(), result.user);
+    } else {
+      await refetch();
+    }
   };
 
   const register = async (data: RegisterRequest) => {
-    await registerMutation.mutateAsync({ data });
-    await refetch();
+    const result = await registerMutation.mutateAsync({ data }) as any;
+    if (result?.token) saveAuthToken(result.token);
+    if (result?.user) {
+      queryClient.setQueryData(getGetCurrentUserQueryKey(), result.user);
+    } else {
+      await refetch();
+    }
   };
 
   const logout = async () => {
     await logoutMutation.mutateAsync();
+    clearAuthToken();
     queryClient.setQueryData(getGetCurrentUserQueryKey(), null);
     setLocation("/login");
   };
@@ -59,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user: user as ExtendedUser | undefined, isLoading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user: user as ExtendedUser | undefined, isLoading, login, register, logout, refreshUser, setUserFromData }}>
       {children}
     </AuthContext.Provider>
   );

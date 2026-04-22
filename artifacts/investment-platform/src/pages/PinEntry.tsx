@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import PinPad from "./PinPad";
+import { saveAuthToken } from "@/hooks/use-auth";
 
 interface PinEntryProps {
   userEmail: string;
@@ -23,11 +24,12 @@ export default function PinEntry({ userEmail, onSuccess, onLogout }: PinEntryPro
         credentials: "include",
         body: JSON.stringify({ pin }),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
         setError(data.message || "Incorrect passcode");
         return;
       }
+      if (data.token) saveAuthToken(data.token);
       onSuccess();
     } catch {
       setError("Something went wrong. Please try again.");
