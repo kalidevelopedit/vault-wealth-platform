@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useGetUserBalance, useGetTransactions } from "@workspace/api-client-react";
-import { Loader2, RefreshCw, ChevronDown, ChevronRight, Check, Building2, ArrowLeft, Bitcoin, Landmark } from "lucide-react";
+import { Loader2, RefreshCw, ChevronDown, ChevronRight, Check, Building2, ArrowLeft, Bitcoin, Landmark, TrendingUp, Wallet as WalletIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
+import { AssetIcon } from "@/components/AssetIcon";
 
 const fmt = (n: number) =>
   n?.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00";
@@ -322,6 +323,7 @@ function WireDepositFlow({ onBack, colors }: { onBack: () => void; colors: any }
 function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number; onBack: () => void; colors: any }) {
   const [method, setMethod] = useState<"bank" | "crypto" | null>(null);
   const [cryptoNetwork, setCryptoNetwork] = useState("");
+  const [cryptoDropOpen, setCryptoDropOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNum, setAccountNum] = useState("");
@@ -329,6 +331,8 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+
+  const selectedCrypto = CRYPTO_NETWORKS.find(c => c.symbol === cryptoNetwork);
 
   const num = parseFloat(amount) || 0;
   const insufficient = num > availableCash && num > 0;
@@ -440,18 +444,60 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
 
       {method === "crypto" && (
         <>
-          <div style={{ marginBottom: 14 }}>
+          <div style={{ marginBottom: 14, position: "relative" }}>
             <label style={labelStyle}>CRYPTOCURRENCY / NETWORK</label>
-            <select
-              value={cryptoNetwork}
-              onChange={e => setCryptoNetwork(e.target.value)}
-              style={{ ...fieldStyle, appearance: "none" }}
+            <button
+              type="button"
+              onClick={() => setCryptoDropOpen(o => !o)}
+              style={{
+                width: "100%", height: 48, background: colors.inputBg, border: `1px solid ${cryptoDropOpen ? colors.blue : colors.bord}`,
+                borderRadius: 10, padding: "0 14px", display: "flex", alignItems: "center",
+                justifyContent: "space-between", cursor: "pointer", gap: 10,
+                transition: "border-color 0.15s",
+              }}
             >
-              <option value="">Select network</option>
-              {CRYPTO_NETWORKS.map(c => (
-                <option key={c.symbol} value={c.symbol}>{c.name} — {c.network}</option>
-              ))}
-            </select>
+              {selectedCrypto ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <AssetIcon symbol={selectedCrypto.symbol} size={24} borderRadius="50%" />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{selectedCrypto.name}</span>
+                  <span style={{ fontSize: 12, color: colors.muted }}>— {selectedCrypto.network}</span>
+                </div>
+              ) : (
+                <span style={{ fontSize: 14, color: colors.muted }}>Select cryptocurrency</span>
+              )}
+              <ChevronDown style={{ width: 16, height: 16, color: colors.muted, transform: cryptoDropOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s", flexShrink: 0 }} strokeWidth={1.5} />
+            </button>
+            {cryptoDropOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 60,
+                background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 12,
+                boxShadow: "0 12px 40px rgba(0,0,0,0.5)", overflow: "hidden",
+              }}>
+                {CRYPTO_NETWORKS.map(c => (
+                  <button
+                    key={c.symbol}
+                    type="button"
+                    onClick={() => { setCryptoNetwork(c.symbol); setCryptoDropOpen(false); }}
+                    style={{
+                      width: "100%", padding: "12px 16px", background: c.symbol === cryptoNetwork ? `rgba(37,99,255,0.08)` : "transparent",
+                      border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+                      borderBottom: `1px solid ${colors.bord}`,
+                      transition: "background 0.1s",
+                    }}
+                    onMouseEnter={e => { if (c.symbol !== cryptoNetwork) e.currentTarget.style.background = colors.hover || "rgba(255,255,255,0.04)"; }}
+                    onMouseLeave={e => { if (c.symbol !== cryptoNetwork) e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <AssetIcon symbol={c.symbol} size={30} borderRadius="50%" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{c.name}</div>
+                      <div style={{ fontSize: 11, color: colors.muted, marginTop: 1 }}>{c.network}</div>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: colors.muted, fontFamily: "monospace" }}>{c.symbol}</span>
+                    {c.symbol === cryptoNetwork && <Check style={{ width: 14, height: 14, color: colors.blue }} strokeWidth={2.5} />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>WALLET ADDRESS</label>
@@ -459,7 +505,7 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
               type="text"
               value={walletAddress}
               onChange={e => setWalletAddress(e.target.value)}
-              placeholder="Your wallet address"
+              placeholder={selectedCrypto ? `Your ${selectedCrypto.name} wallet address` : "Your wallet address"}
               style={fieldStyle}
             />
           </div>
@@ -559,16 +605,45 @@ export default function Wallet() {
 
       {/* Total Portfolio Card */}
       <div style={{ marginBottom: 32 }}>
-        <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 14, padding: "24px 28px", maxWidth: 320 }}>
-          <div style={{ fontSize: 12, color: colors.muted, marginBottom: 8, fontWeight: 500 }}>TOTAL PORTFOLIO</div>
-          {bl ? <Loader2 style={{ width: 20, height: 20, color: colors.muted, animation: "spin 1s linear infinite" }} /> : (
-            <>
-              <div style={{ fontSize: 32, fontWeight: 700, color: colors.text, fontFamily: "monospace", letterSpacing: "-0.5px", lineHeight: 1.1 }}>
-                ${fmt(balance?.totalPortfolioValue || 0)}
-              </div>
-              <div style={{ fontSize: 12, color: colors.muted, marginTop: 4 }}>All assets combined</div>
-            </>
-          )}
+        <div style={{
+          background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 20,
+          padding: "28px 32px", overflow: "hidden", position: "relative",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+        }}>
+          {/* Background accent */}
+          <div style={{
+            position: "absolute", top: -60, right: -60, width: 200, height: 200,
+            borderRadius: "50%", background: `rgba(37,99,255,0.06)`, pointerEvents: "none",
+          }} />
+          <div style={{ position: "relative" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: colors.muted, textTransform: "uppercase", marginBottom: 10 }}>
+              Total Portfolio Value
+            </div>
+            {bl ? (
+              <Loader2 style={{ width: 24, height: 24, color: colors.muted, animation: "spin 1s linear infinite" }} />
+            ) : (
+              <>
+                <div style={{ fontSize: 38, fontWeight: 800, color: colors.text, fontFamily: "monospace", letterSpacing: "-1.5px", lineHeight: 1, marginBottom: 20 }}>
+                  ${fmt(balance?.totalPortfolioValue || 0)}
+                </div>
+                <div style={{ display: "flex", gap: 0, borderTop: `1px solid ${colors.bord}`, paddingTop: 18 }}>
+                  <div style={{ flex: 1, paddingRight: 20 }}>
+                    <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>CASH AVAILABLE</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: colors.green, fontFamily: "monospace" }}>
+                      ${fmt(balance?.availableCash || 0)}
+                    </div>
+                  </div>
+                  <div style={{ width: 1, background: colors.bord, flexShrink: 0 }} />
+                  <div style={{ flex: 1, paddingLeft: 20 }}>
+                    <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>INVESTED</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: colors.blue, fontFamily: "monospace" }}>
+                      ${fmt(Math.max(0, (balance?.totalPortfolioValue || 0) - (balance?.availableCash || 0)))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

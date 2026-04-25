@@ -105,7 +105,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <img
               src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
               alt="INT Brokers"
-              style={{ height: 40, width: "auto", objectFit: "contain" }}
+              style={{ height: 52, width: "auto", objectFit: "contain" }}
               onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
             />
           </Link>
@@ -188,7 +188,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <img
             src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
             alt="INT Brokers"
-            style={{ height: 44, width: "auto", objectFit: "contain" }}
+            style={{ height: 52, width: "auto", objectFit: "contain" }}
             onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
           />
         </Link>

@@ -3,18 +3,10 @@ import { useRoute, Link } from "wouter";
 import {
   useGetAssetDetail, useCreateTransaction, useGetUserBalance,
 } from "@workspace/api-client-react";
-import { Loader2, ArrowLeft, RefreshCw, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { AssetIcon } from "@/components/AssetIcon";
+import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
-
-const BG    = "#050505";
-const CARD  = "#0C0F14";
-const BORD  = "rgba(255,255,255,0.07)";
-const TEXT  = "rgba(255,255,255,0.96)";
-const MUTED = "rgba(255,255,255,0.42)";
-const BLUE  = "#2563FF";
-const GREEN = "#0ecb81";
-const RED   = "#f6465d";
 
 const fmtPrice = (p: number) =>
   p >= 1
@@ -29,7 +21,7 @@ function getTvSymbol(symbol: string, type: string): string {
     const map: Record<string, string> = {
       GOLD: "COMEX:GC1!", SILVER: "COMEX:SI1!", PLATINUM: "COMEX:PL1!",
       OIL: "NYMEX:CL1!", GAS: "NYMEX:NG1!", WHEAT: "CBOT:ZW1!",
-      CORN: "CBOT:ZC1!", COPPER: "COMEX:HG1!",
+      CORN: "CBOT:ZC1!", COPPER: "COMEX:HG1!", NATGAS: "NYMEX:NG1!",
     };
     return map[symbol] || symbol;
   }
@@ -37,7 +29,7 @@ function getTvSymbol(symbol: string, type: string): string {
   return `BINANCE:${symbol}USDT`;
 }
 
-function TradingViewChart({ tvSymbol }: { tvSymbol: string }) {
+function TradingViewChart({ tvSymbol, theme }: { tvSymbol: string; theme: "dark" | "light" }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(`tv_${tvSymbol.replace(/[^a-zA-Z0-9]/g, "_")}_${Date.now()}`);
 
@@ -57,10 +49,10 @@ function TradingViewChart({ tvSymbol }: { tvSymbol: string }) {
           symbol: tvSymbol,
           interval: "D",
           timezone: "Etc/UTC",
-          theme: "dark",
+          theme: theme,
           style: "1",
           locale: "en",
-          toolbar_bg: "#0C0F14",
+          toolbar_bg: theme === "dark" ? "#0C0F14" : "#ffffff",
           enable_publishing: false,
           allow_symbol_change: false,
           withdateranges: true,
@@ -90,7 +82,7 @@ function TradingViewChart({ tvSymbol }: { tvSymbol: string }) {
     }
 
     return () => { cancelled = true; };
-  }, [tvSymbol]);
+  }, [tvSymbol, theme]);
 
   return (
     <div
@@ -101,7 +93,7 @@ function TradingViewChart({ tvSymbol }: { tvSymbol: string }) {
   );
 }
 
-function OrderBook({ price, symbol }: { price: number; symbol: string }) {
+function OrderBook({ price, symbol, colors }: { price: number; symbol: string; colors: any }) {
   const [book, setBook] = useState<{ asks: any[]; bids: any[] }>({ asks: [], bids: [] });
 
   useEffect(() => {
@@ -129,13 +121,12 @@ function OrderBook({ price, symbol }: { price: number; symbol: string }) {
     <div style={{ fontSize: 12, fontFamily: "monospace" }}>
       <div style={{
         display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
-        padding: "0 0 6px", color: MUTED, fontSize: 11, borderBottom: `1px solid ${BORD}`,
+        padding: "0 0 6px", color: colors.muted, fontSize: 11, borderBottom: `1px solid ${colors.bord}`,
       }}>
         <span>Price (USD)</span>
         <span style={{ textAlign: "right" }}>Qty ({symbol})</span>
         <span style={{ textAlign: "right" }}>Total</span>
       </div>
-      {/* Asks (sells — red) */}
       {book.asks.map((row, i) => (
         <div key={i} style={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 0" }}>
           <div style={{
@@ -143,19 +134,17 @@ function OrderBook({ price, symbol }: { price: number; symbol: string }) {
             width: `${(row.total / maxTotal) * 100}%`,
             background: "rgba(246,70,93,0.07)", pointerEvents: "none",
           }} />
-          <span style={{ color: RED, position: "relative" }}>{fmtPrice(row.price)}</span>
-          <span style={{ textAlign: "right", color: TEXT, position: "relative" }}>{fmtQty(row.qty)}</span>
-          <span style={{ textAlign: "right", color: MUTED, position: "relative" }}>{fmtPrice(row.total)}</span>
+          <span style={{ color: colors.red, position: "relative" }}>{fmtPrice(row.price)}</span>
+          <span style={{ textAlign: "right", color: colors.text, position: "relative" }}>{fmtQty(row.qty)}</span>
+          <span style={{ textAlign: "right", color: colors.muted, position: "relative" }}>{fmtPrice(row.total)}</span>
         </div>
       ))}
-      {/* Spread */}
-      <div style={{ borderTop: `1px solid ${BORD}`, borderBottom: `1px solid ${BORD}`, padding: "6px 0", textAlign: "center", margin: "4px 0" }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: GREEN, fontFamily: "monospace" }}>
+      <div style={{ borderTop: `1px solid ${colors.bord}`, borderBottom: `1px solid ${colors.bord}`, padding: "6px 0", textAlign: "center", margin: "4px 0" }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: colors.green, fontFamily: "monospace" }}>
           {fmtPrice(price)}
         </span>
-        <span style={{ fontSize: 10, color: MUTED, marginLeft: 8 }}>Mark</span>
+        <span style={{ fontSize: 10, color: colors.muted, marginLeft: 8 }}>Mark</span>
       </div>
-      {/* Bids (buys — green) */}
       {book.bids.map((row, i) => (
         <div key={i} style={{ position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "3px 0" }}>
           <div style={{
@@ -163,9 +152,9 @@ function OrderBook({ price, symbol }: { price: number; symbol: string }) {
             width: `${(row.total / maxTotal) * 100}%`,
             background: "rgba(14,203,129,0.07)", pointerEvents: "none",
           }} />
-          <span style={{ color: GREEN, position: "relative" }}>{fmtPrice(row.price)}</span>
-          <span style={{ textAlign: "right", color: TEXT, position: "relative" }}>{fmtQty(row.qty)}</span>
-          <span style={{ textAlign: "right", color: MUTED, position: "relative" }}>{fmtPrice(row.total)}</span>
+          <span style={{ color: colors.green, position: "relative" }}>{fmtPrice(row.price)}</span>
+          <span style={{ textAlign: "right", color: colors.text, position: "relative" }}>{fmtQty(row.qty)}</span>
+          <span style={{ textAlign: "right", color: colors.muted, position: "relative" }}>{fmtPrice(row.total)}</span>
         </div>
       ))}
     </div>
@@ -175,6 +164,8 @@ function OrderBook({ price, symbol }: { price: number; symbol: string }) {
 export default function AssetDetail() {
   const [_, params] = useRoute("/assets/:symbol");
   const symbol = params?.symbol?.toUpperCase() || "";
+  const { colors, mode } = useTheme();
+  const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED, inputBg } = colors;
 
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
@@ -228,7 +219,9 @@ export default function AssetDetail() {
 
   return (
     <div style={{ background: BG, minHeight: "100vh" }}>
-      {/* ── Breadcrumb ── */}
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
+
+      {/* Breadcrumb */}
       <div style={{ borderBottom: `1px solid ${BORD}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
         <Link href="/markets" style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED, textDecoration: "none", fontSize: 13 }}>
           <ArrowLeft style={{ width: 14, height: 14 }} strokeWidth={1.5} /> Markets
@@ -238,7 +231,7 @@ export default function AssetDetail() {
         <span style={{ color: MUTED, fontSize: 13 }}>/ USD</span>
       </div>
 
-      {/* ── Coin Header ── */}
+      {/* Coin Header */}
       <div style={{
         borderBottom: `1px solid ${BORD}`, padding: "16px 24px",
         display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap",
@@ -264,7 +257,7 @@ export default function AssetDetail() {
         <div style={{ display: "flex", gap: 32, marginLeft: "auto", flexWrap: "wrap" }}>
           {[
             { label: "24h High", value: `$${fmtPrice(asset.high24h)}`, color: GREEN },
-            { label: "24h Low", value: `$${fmtPrice(asset.low24h)}`, color: RED },
+            { label: "24h Low",  value: `$${fmtPrice(asset.low24h)}`,  color: RED },
             { label: "24h Volume", value: asset.volume24h ? `$${(asset.volume24h / 1e6).toFixed(2)}M` : "—", color: TEXT },
             { label: "Market Cap", value: asset.marketCap ? `$${(asset.marketCap / 1e9).toFixed(2)}B` : "—", color: TEXT },
           ].map(stat => (
@@ -276,13 +269,13 @@ export default function AssetDetail() {
         </div>
       </div>
 
-      {/* ── Main Content ── */}
+      {/* Main Content */}
       <div style={{ display: "flex", height: "calc(100vh - 220px)", minHeight: 560 }}>
         {/* Chart Area */}
         <div style={{ flex: 1, minWidth: 0, borderRight: `1px solid ${BORD}`, display: "flex", flexDirection: "column" }}>
           <div style={{ flex: 1, minHeight: 0 }}>
             {tvSymbol ? (
-              <TradingViewChart key={tvSymbol} tvSymbol={tvSymbol} />
+              <TradingViewChart key={`${tvSymbol}-${mode}`} tvSymbol={tvSymbol} theme={mode} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite" }} />
@@ -309,13 +302,13 @@ export default function AssetDetail() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "12px 32px" }}>
                   {[
                     { label: "Current Price", value: `$${fmtPrice(asset.currentPrice)}` },
-                    { label: "24h Change", value: `${pos ? "+" : ""}${asset.changePercent24h.toFixed(2)}%`, color: pos ? GREEN : RED },
-                    { label: "24h High", value: `$${fmtPrice(asset.high24h)}` },
-                    { label: "24h Low", value: `$${fmtPrice(asset.low24h)}` },
-                    { label: "Market Cap", value: asset.marketCap ? `$${(asset.marketCap / 1e9).toFixed(2)}B` : "—" },
-                    { label: "24h Volume", value: asset.volume24h ? `$${(asset.volume24h / 1e6).toFixed(1)}M` : "—" },
-                    { label: "Symbol", value: asset.symbol },
-                    { label: "Type", value: asset.type || "Crypto" },
+                    { label: "24h Change",    value: `${pos ? "+" : ""}${asset.changePercent24h.toFixed(2)}%`, color: pos ? GREEN : RED },
+                    { label: "24h High",      value: `$${fmtPrice(asset.high24h)}` },
+                    { label: "24h Low",       value: `$${fmtPrice(asset.low24h)}` },
+                    { label: "Market Cap",    value: asset.marketCap ? `$${(asset.marketCap / 1e9).toFixed(2)}B` : "—" },
+                    { label: "24h Volume",    value: asset.volume24h ? `$${(asset.volume24h / 1e6).toFixed(1)}M` : "—" },
+                    { label: "Symbol",        value: asset.symbol },
+                    { label: "Type",          value: asset.type || "Crypto" },
                   ].map(s => (
                     <div key={s.label}>
                       <div style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>{s.label}</div>
@@ -334,30 +327,29 @@ export default function AssetDetail() {
         </div>
 
         {/* Right Panel: Trade + Order Book */}
-        <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", overflowY: "auto" }}>
+        <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", overflowY: "auto", background: CARD }}>
           {/* Buy / Sell Form */}
           <div style={{ padding: 16, borderBottom: `1px solid ${BORD}` }}>
-            <div style={{ display: "flex", marginBottom: 16, background: "#0A0D11", borderRadius: 8, padding: 3, gap: 3 }}>
+            {/* Buy / Sell Toggle */}
+            <div style={{ display: "flex", marginBottom: 16, background: inputBg, borderRadius: 10, padding: 3, gap: 3, border: `1px solid ${BORD}` }}>
               <button onClick={() => setSide("buy")} style={{
-                flex: 1, height: 34, borderRadius: 6, fontSize: 13, fontWeight: 600,
-                cursor: "pointer", border: "none",
+                flex: 1, height: 36, borderRadius: 8, fontSize: 13, fontWeight: 700,
+                cursor: "pointer", border: "none", transition: "all 0.15s",
                 background: side === "buy" ? GREEN : "transparent",
-                color: side === "buy" ? "#051008" : MUTED,
-                transition: "all 0.12s",
+                color: side === "buy" ? "#fff" : MUTED,
+                boxShadow: side === "buy" ? "0 2px 8px rgba(14,203,129,0.3)" : "none",
               }}>Buy</button>
               <button onClick={() => setSide("sell")} style={{
-                flex: 1, height: 34, borderRadius: 6, fontSize: 13, fontWeight: 600,
-                cursor: "pointer", border: "none",
+                flex: 1, height: 36, borderRadius: 8, fontSize: 13, fontWeight: 700,
+                cursor: "pointer", border: "none", transition: "all 0.15s",
                 background: side === "sell" ? RED : "transparent",
                 color: side === "sell" ? "#fff" : MUTED,
-                transition: "all 0.12s",
+                boxShadow: side === "sell" ? "0 2px 8px rgba(246,70,93,0.3)" : "none",
               }}>Sell</button>
             </div>
 
-            <div style={{ fontSize: 11, color: MUTED, marginBottom: 6, display: "flex", justifyContent: "space-between" }}>
-              <span>Order Type</span>
-            </div>
-            <div style={{ height: 38, background: "#0A0D11", border: `1px solid ${BORD}`, borderRadius: 8, display: "flex", alignItems: "center", padding: "0 12px", color: TEXT, fontSize: 13, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: MUTED, marginBottom: 6 }}>Order Type</div>
+            <div style={{ height: 38, background: inputBg, border: `1px solid ${BORD}`, borderRadius: 8, display: "flex", alignItems: "center", padding: "0 12px", color: TEXT, fontSize: 13, marginBottom: 14 }}>
               Market
             </div>
 
@@ -370,11 +362,11 @@ export default function AssetDetail() {
                   </span>
                 </div>
                 <div style={{
-                  height: 42, background: "#0A0D11",
+                  height: 44, background: inputBg,
                   border: `1px solid ${isInsufficientFunds ? RED : BORD}`,
                   borderRadius: 8, display: "flex", alignItems: "center", padding: "0 12px",
                 }}>
-                  <span style={{ color: MUTED, marginRight: 6, fontSize: 12 }}>$</span>
+                  <span style={{ color: MUTED, marginRight: 6, fontSize: 13 }}>$</span>
                   <input
                     type="number"
                     value={amount}
@@ -403,12 +395,12 @@ export default function AssetDetail() {
                   <button key={pct} type="button"
                     onClick={() => setAmount(((availableCash * pct) / 100).toFixed(2))}
                     style={{
-                      flex: 1, height: 26, fontSize: 11, borderRadius: 5,
-                      background: "#0A0D11", border: `1px solid ${BORD}`,
-                      color: MUTED, cursor: "pointer",
+                      flex: 1, height: 28, fontSize: 11, borderRadius: 6,
+                      background: inputBg, border: `1px solid ${BORD}`,
+                      color: MUTED, cursor: "pointer", transition: "all 0.1s",
                     }}
-                    onMouseEnter={e => e.currentTarget.style.color = TEXT}
-                    onMouseLeave={e => e.currentTarget.style.color = MUTED}
+                    onMouseEnter={e => { e.currentTarget.style.color = TEXT; e.currentTarget.style.borderColor = BLUE; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.borderColor = BORD; }}
                   >
                     {pct}%
                   </button>
@@ -419,13 +411,14 @@ export default function AssetDetail() {
                 type="submit"
                 disabled={submitting || isInsufficientFunds || !amtNum}
                 style={{
-                  width: "100%", height: 42, borderRadius: 8, border: "none",
+                  width: "100%", height: 44, borderRadius: 10, border: "none",
                   cursor: submitting || isInsufficientFunds || !amtNum ? "not-allowed" : "pointer",
                   background: side === "buy" ? GREEN : RED,
-                  color: side === "buy" ? "#051008" : "#fff",
+                  color: "#fff",
                   fontSize: 14, fontWeight: 700,
                   opacity: submitting || !amtNum ? 0.7 : 1,
-                  transition: "opacity 0.15s",
+                  transition: "all 0.15s",
+                  boxShadow: !submitting && amtNum ? `0 4px 14px ${side === "buy" ? "rgba(14,203,129,0.35)" : "rgba(246,70,93,0.35)"}` : "none",
                 }}
               >
                 {submitting ? "Processing..." : `${side === "buy" ? "Buy" : "Sell"} ${asset.symbol}`}
@@ -436,7 +429,7 @@ export default function AssetDetail() {
           {/* Order Book */}
           <div style={{ flex: 1, padding: "12px 16px", minHeight: 0, overflow: "hidden" }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 10 }}>Order Book</div>
-            <OrderBook price={asset.currentPrice} symbol={asset.symbol} />
+            <OrderBook price={asset.currentPrice} symbol={asset.symbol} colors={colors} />
           </div>
         </div>
       </div>

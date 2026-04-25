@@ -437,6 +437,92 @@ const ALL_MARKET_TILES = [
 type FilterTab = "all" | MarketCategory;
 
 // ── Main Dashboard ─────────────────────────────────────────────────────────────
+function PromoModal({ colors, mode, onClose }: { colors: any; mode: string; onClose: () => void }) {
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9000,
+      background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+    }} onClick={onClose}>
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: "100%", maxWidth: 460, borderRadius: 24,
+          background: mode === "dark" ? "#0C0F14" : "#fff",
+          border: `1px solid ${colors.bord}`,
+          boxShadow: "0 24px 80px rgba(0,0,0,0.7)",
+          overflow: "hidden",
+        }}
+      >
+        {/* Banner image */}
+        <div style={{ position: "relative" }}>
+          <img src="/promo-banner.png" alt="Promo" style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.65))" }} />
+          <button onClick={onClose} style={{
+            position: "absolute", top: 12, right: 12,
+            width: 32, height: 32, borderRadius: "50%",
+            background: "rgba(0,0,0,0.5)", border: "none", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", color: "#fff",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+          <div style={{ position: "absolute", bottom: 16, left: 20, right: 20 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.7)", textTransform: "uppercase", marginBottom: 4 }}>
+              Limited Time Offer
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1.2, letterSpacing: "-0.02em" }}>
+              Deposit $2,000+ &amp; Get $500 Free
+            </div>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div style={{ padding: "24px 24px 28px" }}>
+          <p style={{ fontSize: 13, color: colors.muted, lineHeight: 1.7, marginBottom: 20 }}>
+            Fund your INT Brokers account with a minimum of <strong style={{ color: colors.text }}>$2,000</strong> and receive a <strong style={{ color: "#f59e0b" }}>$500 welcome bonus</strong> credited instantly — no withdrawal restrictions, no lock-in period.
+          </p>
+
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            {[
+              { label: "No withdrawal limit", icon: "✓" },
+              { label: "Instant credit",       icon: "✓" },
+              { label: "All assets eligible",  icon: "✓" },
+            ].map(f => (
+              <div key={f.label} style={{
+                flex: 1, textAlign: "center", padding: "10px 6px",
+                background: `rgba(37,99,255,0.06)`, border: `1px solid rgba(37,99,255,0.12)`,
+                borderRadius: 10,
+              }}>
+                <div style={{ fontSize: 14, color: "#2563FF", fontWeight: 700, marginBottom: 2 }}>{f.icon}</div>
+                <div style={{ fontSize: 10, color: colors.muted, fontWeight: 500 }}>{f.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <a href="/wallet" onClick={onClose} style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            width: "100%", height: 48, borderRadius: 12,
+            background: "linear-gradient(135deg, #1d4ed8, #2563FF)",
+            color: "#fff", fontSize: 15, fontWeight: 700, textDecoration: "none",
+            boxShadow: "0 4px 16px rgba(37,99,255,0.4)",
+          }}>
+            Claim My $500 Bonus
+          </a>
+          <button onClick={onClose} style={{
+            display: "block", width: "100%", marginTop: 10,
+            background: "none", border: "none", color: colors.muted,
+            fontSize: 13, cursor: "pointer", padding: "8px 0",
+          }}>
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const { colors, mode } = useTheme();
@@ -449,6 +535,15 @@ export default function Dashboard() {
 
   const totalValue = summary?.totalAssets || 0;
   const firstName = user?.fullName?.split(" ")[0] || "there";
+
+  // Promo popup — show once per session
+  const [showPromo, setShowPromo] = useState(() => {
+    try { return !sessionStorage.getItem("promo_seen"); } catch { return false; }
+  });
+  const closePromo = () => {
+    try { sessionStorage.setItem("promo_seen", "1"); } catch {}
+    setShowPromo(false);
+  };
 
   // Market filter tab state
   const [marketFilter, setMarketFilter] = useState<FilterTab>("all");
@@ -488,6 +583,9 @@ export default function Dashboard() {
         .hide-scrollbar::-webkit-scrollbar{display:none}
         .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
       `}</style>
+
+      {/* Promo popup — once per session */}
+      {showPromo && hasSetPreferences && <PromoModal colors={colors} mode={mode} onClose={closePromo} />}
 
       {/* ── Welcome ── */}
       <div style={{ marginBottom: 20 }}>
