@@ -1,10 +1,59 @@
 import { Router, type IRouter, type Request } from "express";
 import { db } from "@workspace/db";
-import { usersTable, activityLogTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { usersTable, activityLogTable, loginSessionsTable } from "@workspace/db/schema";
+import { eq, desc } from "drizzle-orm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { sendWelcomeEmail, sendForgotPinEmail } from "../lib/email.js";
+
+function parseUserAgent(ua: string): { browser: string; os: string; deviceInfo: string } {
+  let browser = "Unknown Browser";
+  let os = "Unknown OS";
+
+  if (ua.includes("Chrome") && !ua.includes("Chromium") && !ua.includes("Edg")) browser = "Chrome";
+  else if (ua.includes("Firefox")) browser = "Firefox";
+  else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+  else if (ua.includes("Edg")) browser = "Edge";
+  else if (ua.includes("OPR") || ua.includes("Opera")) browser = "Opera";
+
+  if (ua.includes("iPhone") || ua.includes("iPad")) os = ua.includes("iPhone") ? "iOS (iPhone)" : "iOS (iPad)";
+  else if (ua.includes("Android")) os = "Android";
+  else if (ua.includes("Windows NT")) os = "Windows";
+  else if (ua.includes("Mac OS X")) os = "macOS";
+  else if (ua.includes("Linux")) os = "Linux";
+
+  return { browser, os, deviceInfo: `${browser} on ${os}` };
+}
+
+async function recordLoginSession(userId: number, req: Request): Promise<void> {
+  try {
+    const ua = req.headers["user-agent"] || "";
+    const { browser, os, deviceInfo } = parseUserAgent(ua);
+    const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim()
+      || req.headers["x-real-ip"] as string
+      || req.socket.remoteAddress
+      || "Unknown";
+
+    // Mark all previous sessions as not current
+    await db.update(loginSessionsTable)
+      .set({ isCurrent: false })
+      .where(eq(loginSessionsTable.userId, userId));
+
+    // Insert new session
+    await db.insert(loginSessionsTable).values({
+      userId,
+      deviceInfo,
+      browser,
+      os,
+      ipAddress: ip,
+      location: "Unknown",
+      isCurrent: true,
+    });
+  } catch (e) {
+    // Non-fatal: log but don't break login
+    console.error("Failed to record login session:", e);
+  }
+}
 
 const router: IRouter = Router();
 
@@ -130,6 +179,7 @@ router.post("/login", async (req, res) => {
       eventType: "login",
       description: "User logged in",
     });
+    recordLoginSession(user.id, req);
     (req.session as any).userId = user.id;
     const token = signToken(user.id, false);
     res.json({
@@ -402,6 +452,37 @@ router.post("/change-password", async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Change password error");
     res.status(500).json({ error: "server_error", message: "Failed to change password" });
+  }
+});
+
+// ── Login sessions ─────────────────────────────────────────────────────────
+router.get("/login-sessions", async (req, res) => {
+  const { userId } = getAuthContext(req);
+  if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
+  try {
+    const sessions = await db
+      .select()
+      .from(loginSessionsTable)
+      .where(eq(loginSessionsTable.userId, userId))
+      .orderBy(desc(loginSessionsTable.createdAt))
+      .limit(10);
+    res.json({ sessions });
+  } catch (err) {
+    res.status(500).json({ error: "server_error", message: "Failed to fetch sessions" });
+  }
+});
+
+router.delete("/login-sessions/:id", async (req, res) => {
+  const { userId } = getAuthContext(req);
+  if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
+  try {
+    const sessionId = parseInt(req.params.id);
+    await db
+      .delete(loginSessionsTable)
+      .where(eq(loginSessionsTable.id, sessionId));
+    res.json({ message: "Session removed" });
+  } catch (err) {
+    res.status(500).json({ error: "server_error", message: "Failed to remove session" });
   }
 });
 

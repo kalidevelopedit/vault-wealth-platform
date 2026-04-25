@@ -1,61 +1,50 @@
 import { useState } from "react";
 
-/* ─── Crypto: CoinGecko CDN ─── */
-const CRYPTO_LOGOS: Record<string, string> = {
-  BTC:   "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-  ETH:   "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-  BNB:   "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png",
-  SOL:   "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-  XRP:   "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png",
-  USDT:  "https://assets.coingecko.com/coins/images/325/small/Tether.png",
-  USDC:  "https://assets.coingecko.com/coins/images/6319/small/usdc.png",
-  ADA:   "https://assets.coingecko.com/coins/images/975/small/cardano.png",
-  AVAX:  "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png",
-  DOGE:  "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",
-  DOT:   "https://assets.coingecko.com/coins/images/12171/small/polkadot.png",
-  LINK:  "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
-  MATIC: "https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png",
-  UNI:   "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png",
-  LTC:   "https://assets.coingecko.com/coins/images/2/small/litecoin.png",
-  ATOM:  "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png",
-  XLM:   "https://assets.coingecko.com/coins/images/100/small/Stellar_symbol_black_RGB.png",
-  TRX:   "https://assets.coingecko.com/coins/images/1094/small/tron-logo.png",
-  SHIB:  "https://assets.coingecko.com/coins/images/11939/small/shiba.png",
-  APT:   "https://assets.coingecko.com/coins/images/26455/small/aptos_round.png",
+/* ─── Crypto: jsDelivr CDN (spothq/cryptocurrency-icons) — no rate limits ─── */
+const CRYPTO_SYMBOLS_CDN = new Set([
+  "BTC","ETH","BNB","SOL","XRP","USDT","USDC","ADA","AVAX","DOGE",
+  "DOT","LINK","MATIC","UNI","LTC","ATOM","XLM","TRX","SHIB","APT",
+  "NEAR","FTM","ALGO","VET","MANA","SAND","AXS","CRV","AAVE","MKR",
+  "COMP","SNX","ENJ","BAT","ZRX","1INCH","GRT","LRC","THETA","FIL",
+  "ETC","BCH","DASH","XMR","ZEC","DCR","ICX","IOTA","NEO","WAVES",
+  "RUNE","LUNA","UST","BUSD","DAI","FRAX","TUSD","PAX","GUSD",
+]);
+
+/* Coin name overrides for the jsDelivr filename */
+const CRYPTO_NAME_MAP: Record<string, string> = {
+  BTC: "bitcoin",  ETH: "ethereum",  BNB: "bnb",     SOL: "solana",
+  XRP: "xrp",      USDT: "usdt",     USDC: "usd-coin", ADA: "cardano",
+  AVAX: "avalanche-2", DOGE: "dogecoin", DOT: "polkadot", LINK: "chainlink",
+  MATIC: "matic-network", UNI: "uniswap", LTC: "litecoin", ATOM: "cosmos",
+  XLM: "stellar",  TRX: "tron",      SHIB: "shiba-inu", APT: "aptos",
+  NEAR: "near",    FTM: "fantom",    ALGO: "algorand", VET: "vechain",
+  MANA: "decentraland", SAND: "the-sandbox", AXS: "axie-infinity",
 };
 
-/* ─── Stocks: Clearbit → parqet fallback ─── */
+function getCryptoIconUrl(symbol: string): string {
+  const sym = symbol.toLowerCase();
+  // Primary: coingecko (most accurate)
+  const name = CRYPTO_NAME_MAP[symbol.toUpperCase()] || sym;
+  return `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/${sym}.png`;
+}
+
+/* ─── Stocks: Parqet logo API (replaces deprecated Clearbit) ─── */
 const STOCK_DOMAINS: Record<string, string> = {
-  AAPL:  "apple.com",
-  MSFT:  "microsoft.com",
-  GOOGL: "google.com",
-  GOOG:  "google.com",
-  AMZN:  "amazon.com",
-  TSLA:  "tesla.com",
-  META:  "meta.com",
-  NVDA:  "nvidia.com",
-  JPM:   "jpmorganchase.com",
-  V:     "visa.com",
-  BAC:   "bankofamerica.com",
-  NFLX:  "netflix.com",
-  DIS:   "disney.com",
-  WMT:   "walmart.com",
-  PYPL:  "paypal.com",
-  INTC:  "intel.com",
-  AMD:   "amd.com",
-  CRM:   "salesforce.com",
-  ORCL:  "oracle.com",
-  CSCO:  "cisco.com",
-  ADBE:  "adobe.com",
-  UBER:  "uber.com",
-  ABNB:  "airbnb.com",
-  COIN:  "coinbase.com",
-  SPOT:  "spotify.com",
-  TWTR:  "twitter.com",
-  MA:    "mastercard.com",
-  GS:    "goldmansachs.com",
-  MS:    "morganstanley.com",
-  C:     "citigroup.com",
+  AAPL:  "apple.com",   MSFT:  "microsoft.com",  GOOGL: "google.com",
+  GOOG:  "google.com",  AMZN:  "amazon.com",      TSLA:  "tesla.com",
+  META:  "meta.com",    NVDA:  "nvidia.com",       JPM:   "jpmorgan.com",
+  V:     "visa.com",    BAC:   "bankofamerica.com",NFLX:  "netflix.com",
+  DIS:   "disney.com",  WMT:   "walmart.com",      PYPL:  "paypal.com",
+  INTC:  "intel.com",   AMD:   "amd.com",           CRM:   "salesforce.com",
+  ORCL:  "oracle.com",  CSCO:  "cisco.com",         ADBE:  "adobe.com",
+  UBER:  "uber.com",    ABNB:  "airbnb.com",        COIN:  "coinbase.com",
+  SPOT:  "spotify.com", MA:    "mastercard.com",     GS:    "goldmansachs.com",
+  MS:    "morganstanley.com", C: "citi.com",         WFC:   "wellsfargo.com",
+  HOOD:  "robinhood.com", SQ:  "block.xyz",          SHOP:  "shopify.com",
+  RBLX:  "roblox.com",  SNOW:  "snowflake.com",      PLTR:  "palantir.com",
+  ZM:    "zoom.us",     DOCU:  "docusign.com",        TWLO:  "twilio.com",
+  NET:   "cloudflare.com", DDOG: "datadoghq.com",    CRWD:  "crowdstrike.com",
+  OKTA:  "okta.com",    ZS:    "zscaler.com",         PANW:  "paloaltonetworks.com",
 };
 
 /* ─── Commodity SVG icons ─── */
@@ -121,7 +110,6 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
           </radialGradient>
         </defs>
         <rect width="36" height="36" rx={typeof borderRadius === 'number' ? borderRadius : 18} fill="url(#g-oil)"/>
-        {/* oil drop */}
         <path d="M18 8 C18 8, 10 18, 10 23 A8 8 0 0 0 26 23 C26 18 18 8 18 8Z" fill="#F59E0B" opacity="0.9"/>
         <path d="M18 14 C18 14, 13 21, 13 24 A5 5 0 0 0 18 28 A5 5 0 0 0 23 24 C23 21 18 14 18 14Z" fill="#FCD34D" opacity="0.6"/>
       </svg>
@@ -132,7 +120,6 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
     return (
       <svg width={size} height={size} viewBox="0 0 36 36" style={{ borderRadius, flexShrink: 0 }}>
         <rect width="36" height="36" rx={typeof borderRadius === 'number' ? borderRadius : 18} fill="#0C1A2E"/>
-        {/* flame */}
         <path d="M18 27 C12 27 9 22 11 16 C12.5 19 14 18 14 14 C15 17 17 16 16 10 C19 13 22 11 21 16 C22.5 14 24 15 23 18 C25 16 26 19 24 22 C23 25 21 27 18 27Z"
           fill="url(#flame-grad)"/>
         <defs>
@@ -172,7 +159,6 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
           </linearGradient>
         </defs>
         <rect width="36" height="36" rx={typeof borderRadius === 'number' ? borderRadius : 18} fill="url(#g-wheat)"/>
-        {/* wheat stalk */}
         <line x1="18" y1="28" x2="18" y2="8" stroke="rgba(120,53,15,0.7)" strokeWidth="2"/>
         <ellipse cx="15" cy="15" rx="4" ry="2.5" fill="#92400E" opacity="0.8" transform="rotate(-30,15,15)"/>
         <ellipse cx="21" cy="18" rx="4" ry="2.5" fill="#92400E" opacity="0.8" transform="rotate(30,21,18)"/>
@@ -197,6 +183,22 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
     );
   }
 
+  if (s === "USD" || s === "USDFIAT") {
+    return (
+      <svg width={size} height={size} viewBox="0 0 36 36" style={{ borderRadius, flexShrink: 0 }}>
+        <defs>
+          <radialGradient id="g-usd" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stopColor="#86efac"/>
+            <stop offset="50%" stopColor="#22c55e"/>
+            <stop offset="100%" stopColor="#15803d"/>
+          </radialGradient>
+        </defs>
+        <rect width="36" height="36" rx={typeof borderRadius === 'number' ? borderRadius : 18} fill="url(#g-usd)"/>
+        <text x="18" y="24" textAnchor="middle" fill="rgba(255,255,255,0.95)" fontSize="16" fontWeight="800" fontFamily="serif">$</text>
+      </svg>
+    );
+  }
+
   // Generic commodity fallback
   const firstTwo = s.substring(0, 2);
   return (
@@ -207,29 +209,76 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
   );
 };
 
-/* ─── Stock logo with Clearbit primary + letter fallback ─── */
-function StockLogo({ symbol, size, borderRadius, className }: { symbol: string; size: number; borderRadius: string | number; className?: string }) {
-  const [failed, setFailed] = useState(false);
-  const domain = STOCK_DOMAINS[symbol.toUpperCase()];
+/* ─── Crypto icon with multiple fallback sources ─── */
+function CryptoIcon({ symbol, size, borderRadius, className }: { symbol: string; size: number; borderRadius: string | number; className?: string }) {
+  const sym = symbol.toLowerCase();
+  const [srcIdx, setSrcIdx] = useState(0);
 
-  if (domain && !failed) {
+  const sources = [
+    `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/${sym}.png`,
+    `https://assets.coingecko.com/coins/images/1/small/bitcoin.png`.replace("bitcoin", CRYPTO_NAME_MAP[symbol.toUpperCase()] || sym),
+    null, // fallback to letter
+  ];
+
+  if (srcIdx < sources.length - 1 && sources[srcIdx]) {
     return (
       <img
-        src={`https://logo.clearbit.com/${domain}`}
+        src={sources[srcIdx]!}
+        alt={symbol}
+        className={className}
+        style={{ width: size, height: size, borderRadius, objectFit: "cover", flexShrink: 0 }}
+        onError={() => setSrcIdx(i => i + 1)}
+      />
+    );
+  }
+
+  // Letter fallback with brand colors
+  const letter = symbol.substring(0, 1).toUpperCase();
+  const hue = [...symbol].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+  return (
+    <div className={className} style={{
+      width: size, height: size, borderRadius, flexShrink: 0,
+      background: `hsl(${hue}, 60%, 25%)`,
+      border: `1px solid hsl(${hue}, 60%, 40%)`,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      color: `hsl(${hue}, 80%, 75%)`,
+      fontSize: size * 0.42, fontWeight: 700, fontFamily: "system-ui,sans-serif",
+    }}>
+      {letter}
+    </div>
+  );
+}
+
+/* ─── Stock logo: Parqet → company favicon → letter fallback ─── */
+function StockLogo({ symbol, size, borderRadius, className }: { symbol: string; size: number; borderRadius: string | number; className?: string }) {
+  const [srcIdx, setSrcIdx] = useState(0);
+  const sym = symbol.toUpperCase();
+  const domain = STOCK_DOMAINS[sym];
+
+  const sources = [
+    `https://assets.parqet.com/logos/symbol/${sym}?format=png`,
+    domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : null,
+    null,
+  ].filter(s => s !== undefined) as (string | null)[];
+
+  if (srcIdx < sources.length - 1 && sources[srcIdx]) {
+    return (
+      <img
+        src={sources[srcIdx]!}
         alt={symbol}
         className={className}
         style={{
           width: size, height: size, borderRadius, background: "#fff",
           padding: Math.max(2, size * 0.07), objectFit: "contain", flexShrink: 0,
         }}
-        onError={() => setFailed(true)}
+        onError={() => setSrcIdx(i => i + 1)}
       />
     );
   }
 
   // Letter fallback
-  const letter = symbol.substring(0, 1).toUpperCase();
-  const hue = [...symbol].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+  const letter = sym.substring(0, 1).toUpperCase();
+  const hue = [...sym].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
   return (
     <div className={className} style={{
       width: size, height: size, borderRadius, flexShrink: 0,
@@ -255,30 +304,20 @@ const COMMODITY_SYMBOLS = new Set([
   "GOLD","XAU","SILVER","XAG","OIL","WTI","CRUDE","BRENT","GAS","NATGAS","NG",
   "COPPER","CU","HG","WHEAT","ZW","W","CORN","ZC","PLAT","XPT","PLATINUM",
   "PALLADIUM","XPD","SUGAR","COFFEE","COCOA","COTTON","LUMBER","NICKEL","ZINC","ALUMINUM",
+  "USD","USDFIAT",
 ]);
 
-const CRYPTO_SYMBOLS = new Set(Object.keys(CRYPTO_LOGOS));
-
 export function AssetIcon({ symbol, size = 32, borderRadius = "50%", className }: AssetIconProps) {
-  const [imgError, setImgError] = useState(false);
   const sym = symbol?.toUpperCase() || "";
-
-  if (CRYPTO_SYMBOLS.has(sym) && !imgError) {
-    return (
-      <img
-        src={CRYPTO_LOGOS[sym]}
-        alt={symbol}
-        className={className}
-        style={{ width: size, height: size, borderRadius, objectFit: "cover", flexShrink: 0 }}
-        onError={() => setImgError(true)}
-      />
-    );
-  }
 
   if (COMMODITY_SYMBOLS.has(sym)) {
     return <CommodityIcon symbol={sym} size={size} borderRadius={borderRadius} />;
   }
 
-  // Treat everything else (stock-like) via Clearbit
+  if (CRYPTO_SYMBOLS_CDN.has(sym)) {
+    return <CryptoIcon symbol={sym} size={size} borderRadius={borderRadius} className={className} />;
+  }
+
+  // Default: stock logo
   return <StockLogo symbol={sym} size={size} borderRadius={borderRadius} className={className} />;
 }

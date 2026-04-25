@@ -10,6 +10,7 @@ import marketRouter from "./market";
 import usersRouter from "./users";
 import adminRouter from "./admin";
 import storageRouter from "./storage";
+import supportRouter from "./support";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use("/market", marketRouter);
 router.use("/users", usersRouter);
 router.use("/admin", adminRouter);
 router.use(storageRouter);
+router.use("/support", supportRouter);
 
 export default router;

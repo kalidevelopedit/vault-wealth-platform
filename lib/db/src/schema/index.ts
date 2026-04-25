@@ -7,3 +7,5 @@ export * from "./watchlist";
 export * from "./news";
 export * from "./price_history";
 export * from "./activity_log";
+export * from "./login_sessions";
+export * from "./support_messages";
