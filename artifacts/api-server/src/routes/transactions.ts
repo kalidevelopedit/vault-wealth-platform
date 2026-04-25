@@ -281,4 +281,58 @@ router.post("/", requireAuth, async (req, res) => {
   }
 });
 
+// ── Pending deposit / withdraw request (submitted by user, fulfilled by admin) ─
+router.post("/request", requireAuth, async (req, res) => {
+  const userId = (req.session as any).userId;
+  try {
+    const { type, amount, name, details } = req.body;
+
+    if (!type || !amount || !["deposit", "withdraw"].includes(type)) {
+      res.status(400).json({ error: "validation_error", message: "type (deposit|withdraw) and amount required" });
+      return;
+    }
+
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      res.status(400).json({ error: "validation_error", message: "Amount must be a positive number" });
+      return;
+    }
+
+    // For withdrawals, check they have enough balance
+    if (type === "withdraw") {
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+      if (!user || parseFloat(user.availableCash) < parsedAmount) {
+        res.status(400).json({ error: "insufficient_funds", message: "Insufficient available balance" });
+        return;
+      }
+    }
+
+    const [tx] = await db.insert(transactionsTable).values({
+      userId,
+      type: type as any,
+      amount: parsedAmount.toFixed(2),
+      name: name ?? (type === "deposit" ? "Deposit Request" : "Withdrawal Request"),
+      status: "pending",
+    }).returning();
+
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: type === "deposit" ? "deposit_requested" : "withdrawal_requested",
+      description: `User submitted ${type} request for $${parsedAmount.toFixed(2)}${details ? ` — ${details}` : ""}`,
+    });
+
+    res.status(201).json({
+      id: tx.id,
+      type: tx.type,
+      amount: parseFloat(tx.amount),
+      status: tx.status,
+      createdAt: tx.createdAt.toISOString(),
+      message: "Your request has been submitted. We will process it shortly.",
+    });
+  } catch (err) {
+    req.log.error({ err }, "Submit request error");
+    res.status(500).json({ error: "server_error", message: "Failed to submit request" });
+  }
+});
+
 export default router;

@@ -87,7 +87,29 @@ function WireDepositFlow({ onBack, colors }: { onBack: () => void; colors: any }
   const handleSubmit = async () => {
     if (!form.amount || parseFloat(form.amount) <= 0) return toast.error("Enter a valid amount");
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1400));
+    try {
+      const details = bank
+        ? `Bank: ${bank.name}, Account: ${form.account}, Routing: ${form.routing || bank.routing}`
+        : `${form.name}, Account: ${form.account}`;
+      const res = await fetch("/api/transactions/request", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "deposit",
+          amount: parseFloat(form.amount),
+          name: "Wire Deposit Request",
+          details,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Submission failed");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Failed to submit request");
+      setSubmitting(false);
+      return;
+    }
     setSubmitting(false);
     setStep(99);
   };
@@ -317,7 +339,29 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
     if (method === "crypto" && (!cryptoNetwork || !walletAddress)) return toast.error("Enter wallet details");
     if (method === "bank" && (!bankName || !accountNum)) return toast.error("Enter bank details");
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1200));
+    try {
+      const details = method === "bank"
+        ? `Bank: ${bankName}, Account: ****${accountNum.slice(-4)}, Routing: ${routing || "N/A"}`
+        : `Crypto: ${cryptoNetwork}, Wallet: ${walletAddress}`;
+      const res = await fetch("/api/transactions/request", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "withdraw",
+          amount: num,
+          name: method === "bank" ? "Bank Withdrawal Request" : "Crypto Withdrawal Request",
+          details,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Submission failed");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Failed to submit withdrawal request");
+      setSubmitting(false);
+      return;
+    }
     setSubmitting(false);
     setDone(true);
   };
@@ -570,11 +614,23 @@ export default function Wallet() {
                         </td>
                         <td style={{ padding: "14px 20px", textAlign: "right" }}>
                           <span style={{
-                            fontSize: 11, padding: "3px 10px", borderRadius: 999, fontWeight: 500,
-                            background: tx.status === "completed" ? "rgba(14,203,129,0.1)" : tx.status === "pending" ? "rgba(251,191,36,0.1)" : "rgba(255,255,255,0.06)",
-                            color: tx.status === "completed" ? colors.green : tx.status === "pending" ? "#fbbf24" : colors.muted,
+                            fontSize: 11, padding: "3px 10px", borderRadius: 999, fontWeight: 600,
+                            background: tx.status === "completed"
+                              ? "rgba(14,203,129,0.1)"
+                              : tx.status === "pending"
+                              ? "rgba(251,191,36,0.1)"
+                              : tx.status === "processing"
+                              ? "rgba(59,130,246,0.1)"
+                              : "rgba(255,255,255,0.06)",
+                            color: tx.status === "completed"
+                              ? colors.green
+                              : tx.status === "pending"
+                              ? "#fbbf24"
+                              : tx.status === "processing"
+                              ? "#60a5fa"
+                              : colors.muted,
                           }}>
-                            {tx.status}
+                            {tx.status === "processing" ? "Processing" : tx.status}
                           </span>
                         </td>
                       </tr>

@@ -423,14 +423,152 @@ router.patch("/users/:userId/cash", requireAdminSession, async (req, res) => {
   }
 });
 
+// ── Asset fuzzy search (smart lookup for admin) ──────────────────────────────
+router.get("/assets/search", requireAdminSession, async (req, res) => {
+  try {
+    const q = (req.query.q as string || "").toLowerCase().trim();
+    if (!q) {
+      const all = await db.select().from(assetsTable).orderBy(assetsTable.symbol).limit(20);
+      res.json(all.map(a => ({
+        id: a.id, symbol: a.symbol, name: a.name, assetType: a.assetType,
+        currentPrice: parseFloat(a.currentPrice),
+        change24h: parseFloat(a.changePercent24h),
+      })));
+      return;
+    }
+
+    // Common aliases / nicknames
+    const ALIASES: Record<string, string> = {
+      "bitcoin": "BTC", "btc": "BTC",
+      "ethereum": "ETH", "eth": "ETH",
+      "solana": "SOL", "sol": "SOL",
+      "binance": "BNB", "bnb": "BNB",
+      "cardano": "ADA", "ada": "ADA",
+      "ripple": "XRP", "xrp": "XRP",
+      "dogecoin": "DOGE", "doge": "DOGE",
+      "apple": "AAPL", "aapl": "AAPL",
+      "microsoft": "MSFT", "msft": "MSFT",
+      "nvidia": "NVDA", "nvda": "NVDA",
+      "tesla": "TSLA", "tsla": "TSLA",
+      "google": "GOOGL", "alphabet": "GOOGL", "googl": "GOOGL",
+      "amazon": "AMZN", "amzn": "AMZN",
+      "meta": "META", "facebook": "META",
+      "gold": "XAU", "xau": "XAU",
+      "silver": "XAG", "xag": "XAG",
+      "oil": "WTI", "crude": "WTI", "wti": "WTI",
+      "s&p": "SPY", "spy": "SPY", "sp500": "SPY",
+    };
+
+    const aliasSymbol = ALIASES[q];
+    const all = await db.select().from(assetsTable);
+
+    const scored = all.map(a => {
+      const sym = a.symbol.toLowerCase();
+      const name = a.name.toLowerCase();
+      let score = 0;
+      if (sym === q || (aliasSymbol && sym === aliasSymbol.toLowerCase())) score = 100;
+      else if (sym.startsWith(q)) score = 80;
+      else if (name.startsWith(q)) score = 75;
+      else if (sym.includes(q)) score = 50;
+      else if (name.includes(q)) score = 40;
+      else if (aliasSymbol && sym.includes(aliasSymbol.toLowerCase())) score = 60;
+      return { asset: a, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .map(({ asset: a }) => ({
+      id: a.id, symbol: a.symbol, name: a.name, assetType: a.assetType,
+      currentPrice: parseFloat(a.currentPrice),
+      change24h: parseFloat(a.changePercent24h),
+    }));
+
+    res.json(scored);
+  } catch (err) {
+    req.log.error({ err }, "Asset search error");
+    res.status(500).json({ error: "server_error", message: "Failed to search assets" });
+  }
+});
+
+// ── Get all pending/processing requests ──────────────────────────────────────
+router.get("/pending-requests", requireAdminSession, async (req, res) => {
+  try {
+    const pending = await db
+      .select({ t: transactionsTable, u: usersTable })
+      .from(transactionsTable)
+      .innerJoin(usersTable, eq(transactionsTable.userId, usersTable.id))
+      .where(sql`${transactionsTable.status} IN ('pending', 'processing')`)
+      .orderBy(desc(transactionsTable.createdAt));
+
+    res.json(pending.map(({ t, u }) => ({
+      id: t.id,
+      userId: t.userId,
+      userFullName: u.fullName,
+      userEmail: u.email,
+      type: t.type,
+      symbol: t.symbol ?? null,
+      name: t.name ?? null,
+      amount: parseFloat(t.amount),
+      status: t.status,
+      createdAt: t.createdAt.toISOString(),
+      notes: (t as any).notes ?? null,
+    })));
+  } catch (err) {
+    req.log.error({ err }, "Pending requests error");
+    res.status(500).json({ error: "server_error", message: "Failed to get pending requests" });
+  }
+});
+
+// ── Update transaction status (approve / reject) ──────────────────────────────
+router.patch("/transactions/:txId/status", requireAdminSession, async (req, res) => {
+  try {
+    const txId = parseInt(req.params.txId);
+    const { status, notes } = req.body;
+
+    if (!["completed", "pending", "processing", "failed"].includes(status)) {
+      res.status(400).json({ error: "validation_error", message: "Invalid status" });
+      return;
+    }
+
+    const [tx] = await db.select().from(transactionsTable).where(eq(transactionsTable.id, txId)).limit(1);
+    if (!tx) {
+      res.status(404).json({ error: "not_found", message: "Transaction not found" });
+      return;
+    }
+
+    await db.update(transactionsTable).set({ status: status as any }).where(eq(transactionsTable.id, txId));
+
+    // If approving a deposit, increase user cash balance
+    if (status === "completed" && tx.type === "deposit") {
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, tx.userId)).limit(1);
+      if (user) {
+        const newCash = parseFloat(user.availableCash) + parseFloat(tx.amount);
+        await db.update(usersTable).set({ availableCash: newCash.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, tx.userId));
+      }
+    }
+
+    // Log it
+    await db.insert(activityLogTable).values({
+      userId: tx.userId,
+      eventType: "transaction_status_updated",
+      description: `Admin updated transaction #${txId} to ${status}${notes ? `: ${notes}` : ""}`,
+    });
+
+    res.json({ message: `Transaction status updated to ${status}` });
+  } catch (err) {
+    req.log.error({ err }, "Update transaction status error");
+    res.status(500).json({ error: "server_error", message: "Failed to update transaction status" });
+  }
+});
+
 // Add or update a user holding (asset position)
 router.post("/users/:userId/assets", requireAdminSession, async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    const { symbol, quantity, averageCost } = req.body;
+    const { symbol, quantity, usdAmount, averageCost } = req.body;
 
-    if (!symbol || quantity === undefined) {
-      res.status(400).json({ error: "validation_error", message: "symbol and quantity required" });
+    if (!symbol || (quantity === undefined && usdAmount === undefined)) {
+      res.status(400).json({ error: "validation_error", message: "symbol and quantity (or usdAmount) required" });
       return;
     }
 
@@ -440,8 +578,12 @@ router.post("/users/:userId/assets", requireAdminSession, async (req, res) => {
       return;
     }
 
-    const qty = parseFloat(quantity);
+    const currentPrice = parseFloat(asset.currentPrice);
     const cost = parseFloat(averageCost ?? asset.currentPrice);
+    // If usdAmount provided, compute quantity from current price
+    const qty = usdAmount !== undefined
+      ? parseFloat(usdAmount) / currentPrice
+      : parseFloat(quantity);
 
     const [existing] = await db.select().from(holdingsTable)
       .where(and(eq(holdingsTable.userId, userId), eq(holdingsTable.assetId, asset.id)))

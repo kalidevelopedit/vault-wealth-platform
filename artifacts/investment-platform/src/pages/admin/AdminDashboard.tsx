@@ -4,6 +4,7 @@ import { Link, useLocation } from "wouter";
 import {
   Loader2, Search, Users, CheckCircle2, Clock, XCircle,
   TrendingUp, Snowflake, ChevronRight, CheckCircle, Mail,
+  Bell, ArrowDownToLine, ArrowUpFromLine, RefreshCw, Check, X,
 } from "lucide-react";
 
 const CARD  = "#111827";
@@ -31,6 +32,30 @@ const FILTERS = [
   { id: "frozen",   label: "Frozen" },
 ];
 
+async function adminFetch(path: string, opts: RequestInit = {}) {
+  const res = await fetch(`/api${path}`, {
+    ...opts, credentials: "include",
+    headers: { "Content-Type": "application/json", ...(opts.headers ?? {}) },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Request failed");
+  return data;
+}
+
+type PendingRequest = {
+  id: number;
+  userId: number;
+  userFullName: string;
+  userEmail: string;
+  type: "deposit" | "withdraw";
+  symbol: string | null;
+  name: string | null;
+  amount: number;
+  status: string;
+  createdAt: string;
+  notes: string | null;
+};
+
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { data: stats, isLoading: sl, isError: se } = useGetAdminStats();
@@ -38,16 +63,45 @@ export default function AdminDashboard() {
   const updateKyc = useUpdateUserKycStatus();
   const [search, setSearch]     = useState("");
   const [filter, setFilter]     = useState("all");
-  const [tab, setTab]           = useState<"users" | "applications">("users");
+  const [tab, setTab]           = useState<"users" | "applications" | "requests">("users");
   const [actioning, setActioning] = useState<number | null>(null);
 
-  // Detect admin session expiry (server restart clears session → API returns 401)
+  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
+  const [pendingLoading, setPendingLoading]   = useState(false);
+  const [processingTx, setProcessingTx]       = useState<number | null>(null);
+
+  const fetchPending = async () => {
+    setPendingLoading(true);
+    try {
+      const data = await adminFetch("/admin/pending-requests");
+      setPendingRequests(Array.isArray(data) ? data : []);
+    } catch {}
+    finally { setPendingLoading(false); }
+  };
+
+  useEffect(() => {
+    if (tab === "requests") fetchPending();
+  }, [tab]);
+
+  // Detect admin session expiry
   useEffect(() => {
     if (se || ue) {
       localStorage.removeItem("adminAuthenticated");
       setLocation("/admin");
     }
   }, [se, ue]);
+
+  const updateTxStatus = async (txId: number, status: "completed" | "failed" | "processing") => {
+    setProcessingTx(txId);
+    try {
+      await adminFetch(`/admin/transactions/${txId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      });
+      setPendingRequests(prev => prev.filter(r => r.id !== txId));
+    } catch (e: any) { alert(e.message); }
+    finally { setProcessingTx(null); }
+  };
 
   const allUsers = users?.users ?? [];
 
@@ -78,6 +132,14 @@ export default function AdminDashboard() {
     { icon: Clock,        label: "Pending Review",  value: stats?.pendingKyc,      accent: AMB,   bg: "rgba(245,158,11,0.1)" },
     { icon: Snowflake,    label: "Frozen",          value: (stats as any)?.frozenUsers ?? 0, accent: "#a78bfa", bg: "rgba(167,139,250,0.1)" },
   ];
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
+    if (diff < 2) return "just now";
+    if (diff < 60) return `${diff}m ago`;
+    if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
+    return `${Math.floor(diff / 1440)}d ago`;
+  };
 
   return (
     <div style={{ maxWidth: 1280, margin: "0 auto", fontFamily: "Inter,system-ui,sans-serif" }}>
@@ -132,6 +194,7 @@ export default function AdminDashboard() {
         {[
           { id: "users",        label: "User Directory" },
           { id: "applications", label: "Applications", badge: pending.length },
+          { id: "requests",     label: "Pending Requests", badge: pendingRequests.length || undefined },
         ].map(({ id, label, badge }) => (
           <button key={id} onClick={() => setTab(id as any)} style={{
             padding: "9px 22px", borderRadius: 11, border: "none", cursor: "pointer",
@@ -200,7 +263,8 @@ export default function AdminDashboard() {
                     {["Member", "Email", "Country", "Portfolio", "KYC Status", "Onboarding", ""].map((h, i) => (
                       <th key={i} style={{
                         padding: "13px 16px", fontSize: 10, fontWeight: 700, textTransform: "uppercase",
-                        letterSpacing: "0.12em", color: MUTED, textAlign: "left",
+                        letterSpacing: "0.12em", color: MUTED,
+                        textAlign: i >= 3 && i <= 5 ? "right" : "left",
                         paddingLeft: i === 0 ? 24 : 16,
                         paddingRight: i === 6 ? 24 : 16,
                       }}>{h}</th>
@@ -244,11 +308,11 @@ export default function AdminDashboard() {
                         {/* Country */}
                         <td style={{ padding: "16px", color: MUTED }}>{u.country || "—"}</td>
                         {/* Portfolio */}
-                        <td style={{ padding: "16px", fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums" }}>
-                          ${((u as any).totalAssets || 0).toLocaleString("en-US", { maximumFractionDigits: 0 })}
+                        <td style={{ padding: "16px", fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums", textAlign: "right" }}>
+                          ${((u as any).totalAssets || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         {/* KYC */}
-                        <td style={{ padding: "16px" }}>
+                        <td style={{ padding: "16px", textAlign: "right" }}>
                           <span style={{
                             display: "inline-flex", alignItems: "center", gap: 5,
                             fontSize: 11, fontWeight: 600, padding: "4px 11px", borderRadius: 99,
@@ -259,7 +323,7 @@ export default function AdminDashboard() {
                           </span>
                         </td>
                         {/* Onboarding */}
-                        <td style={{ padding: "16px" }}>
+                        <td style={{ padding: "16px", textAlign: "right" }}>
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, color: MUTED }}>
                             <span style={{ width: 6, height: 6, borderRadius: "50%", flexShrink: 0, background: u.onboardingComplete ? GAIN : AMB }} />
                             {u.onboardingComplete ? "Complete" : `Step ${u.onboardingStep || 0}/8`}
@@ -359,6 +423,145 @@ export default function AdminDashboard() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ─── PENDING REQUESTS ─── */}
+      {tab === "requests" && (
+        <div>
+          <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 20, overflow: "hidden" }}>
+            <div style={{ padding: "18px 24px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>Pending Requests</div>
+                <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>
+                  Deposit and withdrawal requests awaiting review
+                </div>
+              </div>
+              <button onClick={fetchPending} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: MUTED, background: "none", border: "none", cursor: "pointer" }}>
+                <RefreshCw size={13} strokeWidth={2} style={pendingLoading ? { animation: "spin 1s linear infinite" } : undefined} />
+                Refresh
+              </button>
+            </div>
+
+            {pendingLoading ? (
+              <div style={{ padding: 60, display: "flex", justifyContent: "center" }}>
+                <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
+              </div>
+            ) : pendingRequests.length === 0 ? (
+              <div style={{ padding: 80, textAlign: "center" }}>
+                <Bell size={40} color="rgba(255,255,255,0.08)" style={{ margin: "0 auto 14px" }} />
+                <div style={{ fontSize: 15, color: MUTED, fontWeight: 600 }}>No pending requests</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", marginTop: 6 }}>
+                  All deposit and withdrawal requests have been processed.
+                </div>
+              </div>
+            ) : (
+              <div>
+                {pendingRequests.map((req, i) => {
+                  const isDeposit = req.type === "deposit";
+                  const isProcessing = processingTx === req.id;
+                  return (
+                    <div key={req.id} style={{
+                      padding: "18px 24px",
+                      borderBottom: i < pendingRequests.length - 1 ? `1px solid rgba(255,255,255,0.05)` : "none",
+                      display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+                    }}>
+                      {/* Icon */}
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                        background: isDeposit ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                        border: `1px solid ${isDeposit ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {isDeposit
+                          ? <ArrowDownToLine size={18} color={GAIN} strokeWidth={1.8} />
+                          : <ArrowUpFromLine size={18} color={LOSS} strokeWidth={1.8} />
+                        }
+                      </div>
+
+                      {/* User info */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>{req.userFullName}</span>
+                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
+                            background: isDeposit ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
+                            color: isDeposit ? GAIN : LOSS,
+                          }}>
+                            {isDeposit ? "DEPOSIT" : "WITHDRAW"}
+                          </span>
+                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
+                            background: "rgba(245,158,11,0.12)", color: AMB,
+                          }}>
+                            {req.status.toUpperCase()}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: 12, color: MUTED, marginTop: 3 }}>
+                          {req.userEmail} · <span style={{ fontFamily: "monospace" }}>#{req.id}</span> · {timeAgo(req.createdAt)}
+                        </div>
+                        {req.name && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{req.name}</div>}
+                      </div>
+
+                      {/* Amount */}
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: isDeposit ? GAIN : LOSS, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+                          {isDeposit ? "+" : "-"}${req.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        </div>
+                        <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>USD</div>
+                      </div>
+
+                      {/* Actions */}
+                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <Link href={`/admin/users/${req.userId}`} style={{
+                          padding: "8px 14px", borderRadius: 10, border: `1px solid ${BORD}`, color: MUTED,
+                          fontSize: 11, fontWeight: 600, textDecoration: "none",
+                          display: "flex", alignItems: "center", gap: 4,
+                        }}>
+                          User <ChevronRight size={12} />
+                        </Link>
+                        <button
+                          onClick={() => updateTxStatus(req.id, "processing")}
+                          disabled={isProcessing || req.status === "processing"}
+                          style={{
+                            padding: "8px 14px", borderRadius: 10, border: "1px solid rgba(245,158,11,0.25)",
+                            background: "rgba(245,158,11,0.1)", color: AMB, fontSize: 11, fontWeight: 600,
+                            cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                          }}
+                        >
+                          Processing
+                        </button>
+                        {req.type === "deposit" && (
+                          <button
+                            onClick={() => updateTxStatus(req.id, "completed")}
+                            disabled={isProcessing}
+                            style={{
+                              padding: "8px 16px", borderRadius: 10, border: "none",
+                              background: GAIN, color: "#fff", fontSize: 11, fontWeight: 600,
+                              cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                              display: "flex", alignItems: "center", gap: 5,
+                            }}
+                          >
+                            {isProcessing ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={12} strokeWidth={3} />}
+                            Approve
+                          </button>
+                        )}
+                        <button
+                          onClick={() => updateTxStatus(req.id, "failed")}
+                          disabled={isProcessing}
+                          style={{
+                            padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.25)",
+                            background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 11, fontWeight: 600,
+                            cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                          }}
+                        >
+                          <X size={13} strokeWidth={2.5} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

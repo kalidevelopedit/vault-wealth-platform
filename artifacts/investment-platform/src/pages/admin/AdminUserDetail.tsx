@@ -1,10 +1,11 @@
 import { useRoute, Link } from "wouter";
 import { useGetAdminUserDetail, useUpdateUserKycStatus } from "@workspace/api-client-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Loader2, ArrowLeft, CheckCircle2, XCircle, AlertTriangle,
   Snowflake, Flame, Trash2, Plus, DollarSign, TrendingUp, Clock, Eye, EyeOff, KeyRound,
+  Search, Hash,
 } from "lucide-react";
 
 const CARD  = "#111827";
@@ -98,10 +99,18 @@ export default function AdminUserDetail() {
   const [processing, setProcessing] = useState(false);
   const [tab,        setTab]        = useState<string>("overview");
 
-  const [assetSymbol, setAssetSymbol] = useState("");
-  const [assetQty,    setAssetQty]    = useState("");
-  const [assetCost,   setAssetCost]   = useState("");
-  const [assetLoading, setAssetLoading] = useState(false);
+  // Smart asset search state
+  const [assetQuery,    setAssetQuery]    = useState("");
+  const [assetResults,  setAssetResults]  = useState<any[]>([]);
+  const [assetSearching, setAssetSearching] = useState(false);
+  const [showAssetDrop, setShowAssetDrop] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
+  const [assetUsdMode,  setAssetUsdMode]  = useState(true);
+  const [assetUsdAmt,   setAssetUsdAmt]   = useState("");
+  const [assetQty,      setAssetQty]      = useState("");
+  const [assetCost,     setAssetCost]     = useState("");
+  const [assetLoading,  setAssetLoading]  = useState(false);
+  const assetSearchTimer = useRef<any>(null);
 
   const [cashAmount,  setCashAmount]  = useState("");
   const [cashLoading, setCashLoading] = useState(false);
@@ -184,13 +193,47 @@ export default function AdminUserDetail() {
     finally { setProcessing(false); }
   };
 
+  const searchAssets = useCallback(async (q: string) => {
+    if (!q.trim()) { setAssetResults([]); setShowAssetDrop(false); return; }
+    setAssetSearching(true);
+    try {
+      const res = await adminFetch(`/admin/assets/search?q=${encodeURIComponent(q)}`);
+      setAssetResults(Array.isArray(res) ? res : []);
+      setShowAssetDrop(true);
+    } catch {}
+    finally { setAssetSearching(false); }
+  }, []);
+
+  const onAssetQueryChange = (v: string) => {
+    setAssetQuery(v);
+    setSelectedAsset(null);
+    clearTimeout(assetSearchTimer.current);
+    assetSearchTimer.current = setTimeout(() => searchAssets(v), 320);
+  };
+
+  const selectAsset = (a: any) => {
+    setSelectedAsset(a);
+    setAssetQuery(`${a.symbol} — ${a.name}`);
+    setShowAssetDrop(false);
+  };
+
   const doAsset = async () => {
-    if (!assetSymbol || !assetQty) { toast.error("Symbol and quantity required"); return; }
+    if (!selectedAsset) { toast.error("Select an asset from the search results"); return; }
+    const hasAmt = assetUsdMode ? !!assetUsdAmt && parseFloat(assetUsdAmt) > 0 : !!assetQty;
+    if (!hasAmt) { toast.error(assetUsdMode ? "Enter a USD amount" : "Enter a quantity (0 to remove)"); return; }
     setAssetLoading(true);
     try {
-      await adminFetch(`/admin/users/${userId}/assets`, { method: "POST", body: JSON.stringify({ symbol: assetSymbol, quantity: assetQty, averageCost: assetCost || undefined }) });
-      toast.success(`${assetSymbol} position updated`);
-      setAssetSymbol(""); setAssetQty(""); setAssetCost(""); refetch();
+      const body: any = { symbol: selectedAsset.symbol };
+      if (assetUsdMode) {
+        body.usdAmount = parseFloat(assetUsdAmt);
+        body.averageCost = selectedAsset.currentPrice;
+      } else {
+        body.quantity = parseFloat(assetQty);
+        body.averageCost = assetCost || undefined;
+      }
+      await adminFetch(`/admin/users/${userId}/assets`, { method: "POST", body: JSON.stringify(body) });
+      toast.success(`${selectedAsset.symbol} position updated`);
+      setAssetQuery(""); setSelectedAsset(null); setAssetUsdAmt(""); setAssetQty(""); setAssetCost(""); refetch();
     } catch (e: any) { toast.error(e.message); }
     finally { setAssetLoading(false); }
   };
@@ -527,21 +570,136 @@ export default function AdminUserDetail() {
           {/* Controls */}
           <div>
             <Card title="Set Asset Position" sub="Asset Control">
-              <div style={{ padding: "18px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
-                {[
-                  { label: "Symbol (e.g. BTC, AAPL)", placeholder: "BTC", value: assetSymbol, onChange: (v: string) => setAssetSymbol(v.toUpperCase()) },
-                  { label: "Quantity (0 to remove)",  placeholder: "0.00", value: assetQty,    onChange: setAssetQty, type: "number" },
-                  { label: "Avg Cost (optional)",     placeholder: "Current price", value: assetCost, onChange: setAssetCost, type: "number" },
-                ].map(({ label, placeholder, value, onChange, type }) => (
-                  <div key={label}>
-                    <label style={labelSx}>{label}</label>
-                    <input style={inputSx} type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} />
+              <div style={{ padding: "18px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+                {/* Smart search */}
+                <div>
+                  <label style={labelSx}>Search Asset (name, symbol, or alias)</label>
+                  <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }}>
+                      <Search size={13} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: MUTED, pointerEvents: "none" }} />
+                      {assetSearching && <Loader2 size={12} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", color: MUTED, animation: "spin 1s linear infinite" }} />}
+                      <input
+                        style={{ ...inputSx, paddingLeft: 36 }}
+                        value={assetQuery}
+                        onChange={e => onAssetQueryChange(e.target.value)}
+                        placeholder='e.g. "bitcoin", "AAPL", "gold", "nvidia"'
+                        onFocus={() => assetResults.length > 0 && setShowAssetDrop(true)}
+                        onBlur={() => setTimeout(() => setShowAssetDrop(false), 180)}
+                      />
+                    </div>
+                    {showAssetDrop && assetResults.length > 0 && (
+                      <div style={{
+                        position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0, zIndex: 60,
+                        background: CARD, border: `1px solid ${BORD}`, borderRadius: 12,
+                        boxShadow: "0 12px 40px rgba(0,0,0,0.8)", maxHeight: 220, overflowY: "auto",
+                      }}>
+                        {assetResults.map(a => (
+                          <button key={a.id} onMouseDown={() => selectAsset(a)} style={{
+                            width: "100%", padding: "10px 14px", background: "transparent",
+                            border: "none", display: "flex", alignItems: "center", gap: 12,
+                            cursor: "pointer", textAlign: "left",
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "rgba(59,130,246,0.08)")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                          >
+                            <div style={{
+                              width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                              background: "rgba(59,130,246,0.12)", display: "flex", alignItems: "center",
+                              justifyContent: "center", fontSize: 10, fontWeight: 800, color: BLUE,
+                            }}>{a.symbol.slice(0, 3)}</div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>{a.symbol}</div>
+                              <div style={{ fontSize: 11, color: MUTED, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</div>
+                            </div>
+                            <div style={{ textAlign: "right", flexShrink: 0 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: TEXT, fontVariantNumeric: "tabular-nums" }}>
+                                ${a.currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                              </div>
+                              <div style={{ fontSize: 9, fontWeight: 600, color: MUTED, textTransform: "uppercase", letterSpacing: "0.07em" }}>{a.assetType}</div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))}
-                <button onClick={doAsset} disabled={assetLoading} style={{
+                </div>
+
+                {/* Selected asset preview */}
+                {selectedAsset && (
+                  <div style={{
+                    background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.2)",
+                    borderRadius: 10, padding: "10px 14px",
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: TEXT }}>{selectedAsset.symbol} <span style={{ fontWeight: 400, color: MUTED }}>— {selectedAsset.name}</span></div>
+                      <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>
+                        Current price: <span style={{ color: TEXT, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>${selectedAsset.currentPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                        {assetUsdMode && assetUsdAmt && parseFloat(assetUsdAmt) > 0 && (
+                          <span style={{ color: BLUE, marginLeft: 8 }}>
+                            = {(parseFloat(assetUsdAmt) / selectedAsset.currentPrice).toLocaleString("en-US", { maximumFractionDigits: 6 })} units
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button onClick={() => { setSelectedAsset(null); setAssetQuery(""); }} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 16, padding: 0 }}>✕</button>
+                  </div>
+                )}
+
+                {/* Input mode toggle */}
+                <div>
+                  <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.04)", padding: 3, borderRadius: 8, width: "fit-content", marginBottom: 10 }}>
+                    {[
+                      { id: true,  label: "USD Amount" },
+                      { id: false, label: "Quantity"   },
+                    ].map(({ id, label }) => (
+                      <button key={String(id)} onClick={() => setAssetUsdMode(id)} style={{
+                        padding: "5px 14px", borderRadius: 6, border: "none", cursor: "pointer",
+                        fontSize: 11, fontWeight: 600,
+                        background: assetUsdMode === id ? BLUE : "transparent",
+                        color: assetUsdMode === id ? "#fff" : MUTED,
+                      }}>{label}</button>
+                    ))}
+                  </div>
+
+                  {assetUsdMode ? (
+                    <div>
+                      <label style={labelSx}>USD Amount to Allocate</label>
+                      <div style={{ display: "flex", alignItems: "center", height: 42, background: CARD2, border: `1px solid ${BORD}`, borderRadius: 11, padding: "0 14px", gap: 6 }}>
+                        <span style={{ color: MUTED, fontSize: 14 }}>$</span>
+                        <input type="number" placeholder="0.00" value={assetUsdAmt} onChange={e => setAssetUsdAmt(e.target.value)}
+                          style={{ flex: 1, background: "transparent", border: "none", outline: "none", color: TEXT, fontSize: 14, fontVariantNumeric: "tabular-nums" }} />
+                      </div>
+                      <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                        {[1000, 5000, 10000, 25000, 50000].map(n => (
+                          <button key={n} onClick={() => setAssetUsdAmt(String(n))} style={{
+                            flex: 1, height: 26, fontSize: 10, borderRadius: 6, border: `1px solid ${BORD}`,
+                            background: assetUsdAmt === String(n) ? "rgba(59,130,246,0.12)" : CARD2,
+                            color: assetUsdAmt === String(n) ? BLUE : MUTED, cursor: "pointer",
+                          }}>${(n / 1000).toFixed(0)}K</button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <div>
+                        <label style={labelSx}>Quantity (0 = remove holding)</label>
+                        <input style={inputSx} type="number" placeholder="0.00000000" value={assetQty} onChange={e => setAssetQty(e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={labelSx}>Avg Cost Override (optional)</label>
+                        <input style={inputSx} type="number" placeholder="Defaults to current price" value={assetCost} onChange={e => setAssetCost(e.target.value)} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <button onClick={doAsset} disabled={assetLoading || !selectedAsset} style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                  padding: "11px 0", borderRadius: 11, border: "none", cursor: "pointer",
-                  background: BLUE, color: "#fff", fontSize: 12, fontWeight: 700,
+                  padding: "11px 0", borderRadius: 11, border: "none", cursor: selectedAsset ? "pointer" : "not-allowed",
+                  background: selectedAsset ? BLUE : "rgba(255,255,255,0.06)",
+                  color: selectedAsset ? "#fff" : MUTED, fontSize: 12, fontWeight: 700,
                   opacity: assetLoading ? 0.6 : 1, marginTop: 4,
                 }}>
                   {assetLoading ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <TrendingUp size={13} />}
