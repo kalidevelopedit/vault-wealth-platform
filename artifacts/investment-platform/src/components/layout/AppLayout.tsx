@@ -172,37 +172,34 @@ export function AppLayout({ children }: AppLayoutProps) {
         padding: "0 16px",
         position: "fixed", left: 0, right: 0, zIndex: 100,
       }}>
-        {/* Logo + greeting */}
-        <Link href="/dashboard" style={{ display: "flex", flexDirection: "column", gap: 1, textDecoration: "none" }}>
+        {/* Left: theme toggle */}
+        <button onClick={toggle} style={{
+          width: 34, height: 34, borderRadius: 999, background: INPUTBG,
+          border: `1px solid ${BORD}`, cursor: "pointer", display: "flex",
+          alignItems: "center", justifyContent: "center", flexShrink: 0,
+        }}>
+          {mode === "dark"
+            ? <Sun style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+            : <Moon style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />}
+        </button>
+
+        {/* Center: Logo */}
+        <Link href="/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", flex: 1 }}>
           <img
             src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
             alt="INT Brokers"
-            style={{ height: 30, width: "auto", objectFit: "contain" }}
+            style={{ height: 44, width: "auto", objectFit: "contain" }}
             onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
           />
-          <div style={{ fontSize: 11, color: MUTED, fontWeight: 400, letterSpacing: "0.01em" }}>
-            Welcome back, <span style={{ color: TEXT, fontWeight: 600 }}>{user?.fullName?.split(" ")[0] || "there"}</span>
-          </div>
         </Link>
 
-        {/* Right: theme + avatar */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={toggle} style={{
-            width: 34, height: 34, borderRadius: 999, background: INPUTBG,
-            border: `1px solid ${BORD}`, cursor: "pointer", display: "flex",
-            alignItems: "center", justifyContent: "center",
-          }}>
-            {mode === "dark"
-              ? <Sun style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
-              : <Moon style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />}
-          </button>
-          <Link href="/profile" style={{
-            width: 34, height: 34, borderRadius: "50%",
-            background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", textDecoration: "none", fontSize: 12, fontWeight: 700, flexShrink: 0,
-          }}>{initials}</Link>
-        </div>
+        {/* Right: avatar */}
+        <Link href="/profile" style={{
+          width: 34, height: 34, borderRadius: "50%",
+          background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", textDecoration: "none", fontSize: 12, fontWeight: 700, flexShrink: 0,
+        }}>{initials}</Link>
       </header>
 
       {/* ── Main Layout ── */}
