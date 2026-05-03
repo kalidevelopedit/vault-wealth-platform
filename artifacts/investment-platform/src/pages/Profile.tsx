@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useGetUserProfile } from "@workspace/api-client-react";
-import { Loader2, Copy, CheckCircle, Clock, AlertCircle, Upload, ChevronRight, Camera, Phone, Mail, MessageCircle, Headphones } from "lucide-react";
+import { Loader2, Copy, CheckCircle, Clock, AlertCircle, Upload, ChevronRight, Camera, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -28,33 +28,57 @@ const KYC_STEPS = [
   { step: 4, title: "Selfie Verification", desc: "Photo with your ID document", done: false, docType: "selfie" },
 ];
 
+// Real brand SVG icons for contact channels
+function WhatsAppIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.975-1.412A9.956 9.956 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" fill="#25D366"/>
+      <path d="M8.93 7.5c-.2 0-.52.074-.8.375-.276.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.1 3.225 5.1 4.5.712.3 1.265.48 1.7.612.712.225 1.362.194 1.875.118.575-.088 1.762-.72 2.012-1.413.25-.694.25-1.287.175-1.412-.075-.125-.275-.2-.575-.35-.3-.15-1.775-.875-2.05-.975-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.262-.464-2.4-1.475-.888-.788-1.488-1.76-1.663-2.06-.175-.3-.018-.462.131-.612.134-.134.3-.35.45-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.588-.49-.506-.675-.516-.175-.01-.375-.013-.575-.013z" fill="white"/>
+    </svg>
+  );
+}
+
+function MailIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </svg>
+  );
+}
+
+function PhoneIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.37h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 15.42z"/>
+    </svg>
+  );
+}
+
 const CONTACT_INFO = [
   {
-    icon: MessageCircle,
+    id: "whatsapp",
     label: "WhatsApp",
     value: "+1 (888) 655-5555",
     href: "https://wa.me/18886555555",
-    color: "#25D366",
-    bg: "rgba(37,211,102,0.08)",
-    border: "rgba(37,211,102,0.2)",
+    iconColor: "#25D366",
+    textColor: "#25D366",
   },
   {
-    icon: Mail,
+    id: "email",
     label: "Business Email",
     value: "support@intbrokers.app",
     href: "mailto:support@intbrokers.app",
-    color: "#2563FF",
-    bg: "rgba(37,99,255,0.08)",
-    border: "rgba(37,99,255,0.2)",
+    iconColor: "#6b7280",
+    textColor: "#2563FF",
   },
   {
-    icon: Phone,
-    label: "Phone",
+    id: "phone",
+    label: "Phone Support",
     value: "+1 (888) 655-5555",
     href: "tel:+18886555555",
-    color: "#a78bfa",
-    bg: "rgba(167,139,250,0.08)",
-    border: "rgba(167,139,250,0.2)",
+    iconColor: "#6b7280",
+    textColor: undefined,
   },
 ];
 
@@ -318,59 +342,84 @@ export default function Profile() {
               <div style={{ fontSize: 13, color: colors.muted }}>Reach our team through any of these channels.</div>
             </div>
 
-            <div style={{ padding: "20px 32px", display: "flex", flexDirection: "column", gap: 12 }}>
-              {CONTACT_INFO.map(c => (
-                <a
-                  key={c.label}
-                  href={c.href}
-                  target={c.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
-                    background: c.bg, border: `1px solid ${c.border}`, borderRadius: 12,
-                    textDecoration: "none", transition: "opacity 0.12s",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
-                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-                >
-                  <div style={{
-                    width: 38, height: 38, borderRadius: 10, background: c.bg,
-                    border: `1px solid ${c.border}`, display: "flex", alignItems: "center",
-                    justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <c.icon style={{ width: 18, height: 18, color: c.color }} strokeWidth={1.8} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{c.label}</div>
-                    <div style={{ fontSize: 12, color: colors.muted }}>{c.value}</div>
-                  </div>
-                </a>
-              ))}
-
-              {/* Live support chat button */}
-              <button
-                onClick={() => setShowChat(true)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 14, padding: "14px 18px",
-                  background: "rgba(37,99,255,0.06)", border: `1px solid rgba(37,99,255,0.2)`, borderRadius: 12,
-                  cursor: "pointer", transition: "opacity 0.12s", textAlign: "left", width: "100%",
-                }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+            <div style={{ padding: "8px 0" }}>
+              {/* WhatsApp */}
+              <a href={CONTACT_INFO[0].href} target="_blank" rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", borderBottom: `1px solid ${colors.bord}` }}
+                onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
-                <div style={{
-                  width: 38, height: 38, borderRadius: 10, background: "rgba(37,99,255,0.1)",
-                  border: "1px solid rgba(37,99,255,0.25)", display: "flex", alignItems: "center",
-                  justifyContent: "center", flexShrink: 0,
-                }}>
-                  <Headphones style={{ width: 18, height: 18, color: "#2563FF" }} strokeWidth={1.8} />
-                </div>
+                <WhatsAppIcon size={22} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>Live Support Chat</div>
-                  <div style={{ fontSize: 12, color: colors.muted }}>Chat with our team · Avg. 15 min response</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>WhatsApp</div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>{CONTACT_INFO[0].value}</div>
                 </div>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", flexShrink: 0 }} />
+                <span style={{ fontSize: 11, fontWeight: 600, color: "#25D366", background: "rgba(37,211,102,0.1)", padding: "3px 8px", borderRadius: 999, border: "1px solid rgba(37,211,102,0.2)" }}>Online</span>
+              </a>
+
+              {/* Email */}
+              <a href={CONTACT_INFO[1].href}
+                style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", borderBottom: `1px solid ${colors.bord}`, color: colors.muted }}
+                onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <MailIcon size={22} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>Business Email</div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>{CONTACT_INFO[1].value}</div>
+                </div>
+                <span style={{ fontSize: 11, color: colors.muted }}>support@intbrokers.app</span>
+              </a>
+
+              {/* Phone */}
+              <a href={CONTACT_INFO[2].href}
+                style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", borderBottom: `1px solid ${colors.bord}`, color: colors.muted }}
+                onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <PhoneIcon size={22} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>Phone Support</div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>{CONTACT_INFO[2].value}</div>
+                </div>
+                <span style={{ fontSize: 11, color: colors.muted }}>Mon–Fri 9am–6pm</span>
+              </a>
+
+              {/* Live Support Chat */}
+              <button onClick={() => setShowChat(true)} style={{
+                display: "flex", alignItems: "center", gap: 16, padding: "14px 32px",
+                background: "transparent", border: "none", cursor: "pointer", width: "100%", textAlign: "left",
+                borderBottom: `1px solid ${colors.bord}`,
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <Headphones style={{ width: 22, height: 22, color: colors.muted }} strokeWidth={1.6} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>Live Support Chat</div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>Avg. 15 min response time</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#4ade80" }} />
+                  <span style={{ fontSize: 11, color: colors.muted }}>Live</span>
+                </div>
               </button>
+
+              {/* FAQ */}
+              <a href="#" style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", color: colors.muted }}
+                onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>Help Center & FAQ</div>
+                  <div style={{ fontSize: 12, color: colors.muted }}>Browse answers to common questions</div>
+                </div>
+              </a>
             </div>
           </div>
 

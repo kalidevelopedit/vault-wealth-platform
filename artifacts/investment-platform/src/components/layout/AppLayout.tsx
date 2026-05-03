@@ -93,10 +93,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* ── Header — Desktop ── */}
       <header className="app-header hidden md:flex" style={{
-        height: 60, background: HEADER,
+        height: 80, background: HEADER,
         borderBottom: `1px solid ${BORD}`,
         alignItems: "center", justifyContent: "space-between",
-        padding: "0 20px",
+        padding: "0 24px",
         position: "fixed", left: 0, right: 0, zIndex: 100,
         boxShadow: mode === "light" ? "0 1px 8px rgba(0,0,0,0.06)" : "none",
       }}>
@@ -105,7 +105,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <img
               src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
               alt="INT Brokers"
-              style={{ height: 52, width: "auto", objectFit: "contain" }}
+              style={{ height: 68, width: "auto", objectFit: "contain" }}
               onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
             />
           </Link>
@@ -166,7 +166,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* ── Header — Mobile ── */}
       <header className="app-header md:hidden" style={{
-        height: 64, background: HEADER,
+        height: 76, background: HEADER,
         borderBottom: `1px solid ${BORD}`,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 16px",
@@ -188,7 +188,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <img
             src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
             alt="INT Brokers"
-            style={{ height: 52, width: "auto", objectFit: "contain" }}
+            style={{ height: 64, width: "auto", objectFit: "contain" }}
             onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
           />
         </Link>
@@ -347,15 +347,15 @@ export function AppLayout({ children }: AppLayoutProps) {
       <style>{`
         @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        /* Mobile: 64px header */
-        .app-main-layout { margin-top: 64px; }
+        /* Mobile: 76px header */
+        .app-main-layout { margin-top: 76px; }
         .app-header { top: 0 !important; }
-        .app-sidebar { top: 64px !important; height: calc(100vh - 64px) !important; }
-        /* Desktop: 32px ticker + 60px header = 92px */
+        .app-sidebar { top: 76px !important; height: calc(100vh - 76px) !important; }
+        /* Desktop: 32px ticker + 80px header = 112px */
         @media (min-width: 768px) {
-          .app-main-layout { margin-top: 92px; }
+          .app-main-layout { margin-top: 112px; }
           .app-header { top: 32px !important; }
-          .app-sidebar { top: 92px !important; height: calc(100vh - 92px) !important; }
+          .app-sidebar { top: 112px !important; height: calc(100vh - 112px) !important; }
         }
       `}</style>
     </div>

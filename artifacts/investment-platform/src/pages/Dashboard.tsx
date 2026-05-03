@@ -59,37 +59,53 @@ const CATEGORIES: { id: MarketCategory; title: string; subtitle: string; icon: R
   },
 ];
 
-function MarketOnboarding({ onComplete }: { onComplete: (prefs: MarketCategory[]) => void }) {
-  const [selected, setSelected] = useState<Set<MarketCategory>>(new Set());
+function MarketOnboarding({ onComplete, onCancel, initialSelected = [], isEdit = false }: {
+  onComplete: (prefs: MarketCategory[]) => void;
+  onCancel?: () => void;
+  initialSelected?: MarketCategory[];
+  isEdit?: boolean;
+}) {
+  const [selected, setSelected] = useState<Set<MarketCategory>>(new Set(initialSelected));
   const { colors, mode } = useTheme();
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE } = colors;
   const toggle = (id: MarketCategory) => {
     setSelected(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
   };
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 500, background: BG, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 16px 32px", overflowY: "auto" }}>
-      <div style={{ width: "100%", maxWidth: 560, paddingTop: 48 }}>
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: MUTED, textTransform: "uppercase", marginBottom: 14 }}>PERSONALISE YOUR EXPERIENCE</div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: TEXT, letterSpacing: "-0.02em", marginBottom: 10, lineHeight: 1.2 }}>What would you like to trade?</h1>
-          <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>Select all markets that interest you. You can always change this later.</p>
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, background: isEdit ? "rgba(0,0,0,0.7)" : BG, backdropFilter: isEdit ? "blur(6px)" : "none", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 16px 32px", overflowY: "auto" }}>
+      <div style={{ width: "100%", maxWidth: 560, paddingTop: isEdit ? 40 : 48, background: isEdit ? CARD : "transparent", borderRadius: isEdit ? 24 : 0, border: isEdit ? `1px solid ${BORD}` : "none", padding: isEdit ? "32px 28px" : "48px 0 32px", marginTop: isEdit ? 40 : 0 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          {isEdit && onCancel && (
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+              <button onClick={onCancel} style={{ background: "none", border: "none", cursor: "pointer", color: MUTED, fontSize: 22, lineHeight: 1, padding: "0 4px" }}>×</button>
+            </div>
+          )}
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: MUTED, textTransform: "uppercase", marginBottom: 14 }}>
+            {isEdit ? "UPDATE YOUR MARKETS" : "PERSONALISE YOUR EXPERIENCE"}
+          </div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: TEXT, letterSpacing: "-0.02em", marginBottom: 10, lineHeight: 1.2 }}>
+            {isEdit ? "Which markets do you trade?" : "What would you like to trade?"}
+          </h1>
+          <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>
+            {isEdit ? "Update your selection — your dashboard will reflect the change immediately." : "Select all markets that interest you. You can always change this later."}
+          </p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
           {CATEGORIES.map(cat => {
             const active = selected.has(cat.id);
             return (
               <button key={cat.id} onClick={() => toggle(cat.id)} style={{
-                display: "flex", alignItems: "center", gap: 18, padding: "18px 20px", borderRadius: 14, cursor: "pointer",
-                background: active ? (mode === "dark" ? "rgba(37,99,255,0.1)" : "rgba(37,99,255,0.06)") : CARD,
+                display: "flex", alignItems: "center", gap: 16, padding: "16px 18px", borderRadius: 14, cursor: "pointer",
+                background: active ? (mode === "dark" ? "rgba(37,99,255,0.1)" : "rgba(37,99,255,0.06)") : (isEdit ? "transparent" : CARD),
                 border: `1px solid ${active ? BLUE : BORD}`, textAlign: "left", width: "100%", transition: "all 0.15s",
               }}>
-                <div style={{ width: 52, height: 52, borderRadius: 12, flexShrink: 0, background: active ? (mode === "dark" ? "rgba(37,99,255,0.18)" : "rgba(37,99,255,0.1)") : (mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"), display: "flex", alignItems: "center", justifyContent: "center", color: active ? BLUE : MUTED }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, flexShrink: 0, background: active ? (mode === "dark" ? "rgba(37,99,255,0.18)" : "rgba(37,99,255,0.1)") : (mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"), display: "flex", alignItems: "center", justifyContent: "center", color: active ? BLUE : MUTED }}>
                   {cat.icon}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: TEXT, marginBottom: 3 }}>{cat.title}</div>
-                  <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.4 }}>{cat.subtitle}</div>
-                  <div style={{ fontSize: 11, color: active ? BLUE : MUTED, fontFamily: "monospace", marginTop: 4 }}>{cat.assets}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 2 }}>{cat.title}</div>
+                  <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.4 }}>{cat.subtitle}</div>
+                  <div style={{ fontSize: 10, color: active ? BLUE : MUTED, fontFamily: "monospace", marginTop: 3 }}>{cat.assets}</div>
                 </div>
                 <div style={{ width: 22, height: 22, borderRadius: "50%", flexShrink: 0, border: `1.5px solid ${active ? BLUE : BORD}`, background: active ? BLUE : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {active && <Check style={{ width: 12, height: 12, color: "#fff" }} strokeWidth={3} />}
@@ -99,14 +115,20 @@ function MarketOnboarding({ onComplete }: { onComplete: (prefs: MarketCategory[]
           })}
         </div>
         <button disabled={selected.size === 0} onClick={() => onComplete(Array.from(selected))} style={{
-          width: "100%", height: 52, borderRadius: 12,
+          width: "100%", height: 50, borderRadius: 12,
           background: selected.size > 0 ? BLUE : (mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"),
           color: selected.size > 0 ? "#fff" : MUTED, fontSize: 15, fontWeight: 700, border: "none",
           cursor: selected.size > 0 ? "pointer" : "not-allowed",
         }}>
-          Continue{selected.size > 0 ? ` with ${selected.size} market${selected.size > 1 ? "s" : ""}` : ""}
+          {isEdit
+            ? (selected.size > 0 ? `Save ${selected.size} Market${selected.size > 1 ? "s" : ""}` : "Select at least one")
+            : (selected.size > 0 ? `Continue with ${selected.size} market${selected.size > 1 ? "s" : ""}` : "Select at least one market")}
         </button>
-        {selected.size === 0 && <p style={{ textAlign: "center", fontSize: 12, color: MUTED, marginTop: 12 }}>Select at least one market to continue</p>}
+        {isEdit && onCancel && (
+          <button onClick={onCancel} style={{ display: "block", width: "100%", marginTop: 10, background: "none", border: "none", color: MUTED, fontSize: 13, cursor: "pointer", padding: "8px 0" }}>
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   );
@@ -545,6 +567,9 @@ export default function Dashboard() {
     setShowPromo(false);
   };
 
+  // Edit preferences overlay
+  const [showEditPrefs, setShowEditPrefs] = useState(false);
+
   // Market filter tab state
   const [marketFilter, setMarketFilter] = useState<FilterTab>("all");
 
@@ -583,6 +608,16 @@ export default function Dashboard() {
         .hide-scrollbar::-webkit-scrollbar{display:none}
         .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
       `}</style>
+
+      {/* Edit preferences overlay */}
+      {showEditPrefs && (
+        <MarketOnboarding
+          isEdit
+          initialSelected={preferences}
+          onComplete={prefs => { setPreferences(prefs); setShowEditPrefs(false); }}
+          onCancel={() => setShowEditPrefs(false)}
+        />
+      )}
 
       {/* Promo popup — once per session */}
       {showPromo && hasSetPreferences && <PromoModal colors={colors} mode={mode} onClose={closePromo} />}
@@ -868,12 +903,14 @@ export default function Dashboard() {
                 ) : null;
               })}
             </div>
-            <button onClick={resetPreferences} style={{
-              marginTop: 12, background: "none", border: "none",
-              cursor: "pointer", color: MUTED, fontSize: 12,
-              display: "flex", alignItems: "center", gap: 4, padding: 0,
+            <button onClick={() => setShowEditPrefs(true)} style={{
+              marginTop: 12, height: 34, padding: "0 14px",
+              background: mode === "dark" ? "rgba(37,99,255,0.1)" : "rgba(37,99,255,0.08)",
+              border: `1px solid rgba(37,99,255,0.25)`, borderRadius: 8,
+              cursor: "pointer", color: BLUE, fontSize: 12, fontWeight: 600,
+              display: "flex", alignItems: "center", gap: 6,
             }}>
-              <Zap style={{ width: 11, height: 11 }} strokeWidth={2} />
+              <Settings2 style={{ width: 12, height: 12 }} strokeWidth={2} />
               Change market preferences
             </button>
           </div>

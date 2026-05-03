@@ -52,17 +52,42 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
   const s = symbol.toUpperCase();
 
   if (s === "GOLD" || s === "XAU") {
+    const rx = typeof borderRadius === 'number' ? borderRadius : 18;
     return (
       <svg width={size} height={size} viewBox="0 0 36 36" style={{ borderRadius, flexShrink: 0 }}>
         <defs>
-          <radialGradient id={`g-${s}`} cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stopColor="#FDE68A"/>
-            <stop offset="45%" stopColor="#F59E0B"/>
-            <stop offset="100%" stopColor="#92400E"/>
-          </radialGradient>
+          <linearGradient id="xau-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1a1200"/>
+            <stop offset="100%" stopColor="#2d1f00"/>
+          </linearGradient>
+          <linearGradient id="xau-bar-top" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFE87C"/>
+            <stop offset="100%" stopColor="#D4A017"/>
+          </linearGradient>
+          <linearGradient id="xau-bar-face" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#F5C518"/>
+            <stop offset="40%" stopColor="#E8A800"/>
+            <stop offset="100%" stopColor="#B8860B"/>
+          </linearGradient>
+          <linearGradient id="xau-bar-side" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#B8860B"/>
+            <stop offset="100%" stopColor="#8B6508"/>
+          </linearGradient>
         </defs>
-        <rect width="36" height="36" rx={typeof borderRadius === 'number' ? borderRadius : 18} fill={`url(#g-${s})`}/>
-        <text x="18" y="23" textAnchor="middle" fill="rgba(120,60,0,0.9)" fontSize="11" fontWeight="800" fontFamily="serif">Au</text>
+        <rect width="36" height="36" rx={rx} fill="url(#xau-bg)"/>
+        {/* Gold bar 3D perspective */}
+        {/* Top face */}
+        <polygon points="8,13 28,13 25,10 11,10" fill="url(#xau-bar-top)"/>
+        {/* Front face */}
+        <rect x="8" y="13" width="20" height="12" rx="1" fill="url(#xau-bar-face)"/>
+        {/* Right side */}
+        <polygon points="28,13 28,25 25,22 25,10" fill="url(#xau-bar-side)"/>
+        {/* XAU text on front */}
+        <text x="18" y="22" textAnchor="middle" fill="rgba(120,70,0,0.85)" fontSize="6.5" fontWeight="900" fontFamily="monospace" letterSpacing="1">XAU</text>
+        {/* Shine line */}
+        <line x1="11" y1="16" x2="25" y2="16" stroke="rgba(255,240,130,0.55)" strokeWidth="1.2" strokeLinecap="round"/>
+        {/* Bottom shine */}
+        <rect x="8" y="25" width="20" height="2" rx="1" fill="rgba(0,0,0,0.25)"/>
       </svg>
     );
   }

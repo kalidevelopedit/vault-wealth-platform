@@ -1,21 +1,15 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { Globe, Bell, Moon, Eye, DollarSign, ChevronRight, ToggleLeft, ToggleRight, Check } from "lucide-react";
+import { Globe, Bell, Eye, DollarSign, ChevronRight, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/contexts/ThemeContext";
 
-const BG    = "#050505";
-const CARD   = "#0C0F14";
-const BORD   = "rgba(255,255,255,0.08)";
-const TEXT   = "rgba(255,255,255,0.96)";
-const MUTED  = "rgba(255,255,255,0.45)";
-const BLUE   = "#2563FF";
-
-function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+function Toggle({ on, onToggle, blue }: { on: boolean; onToggle: () => void; blue: string }) {
   return (
     <button onClick={onToggle} style={{
       width: 44, height: 24, borderRadius: 12,
-      background: on ? BLUE : "rgba(255,255,255,0.1)",
+      background: on ? blue : "rgba(128,128,128,0.2)",
       border: "none", cursor: "pointer", position: "relative", transition: "background 0.2s",
       flexShrink: 0,
     }}>
@@ -32,6 +26,8 @@ const LANGUAGES  = ["English", "Spanish", "French", "German", "Chinese", "Japane
 
 export default function Settings() {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, inputBg: INPUTBG } = colors;
 
   const [currency, setCurrency] = useState("USD");
   const [language, setLanguage] = useState("English");
@@ -57,7 +53,7 @@ export default function Settings() {
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)" }} onClick={onClose} />
       <div style={{
-        position: "relative", width: 360, background: "#0C0F14",
+        position: "relative", width: 360, background: CARD,
         border: `1px solid ${BORD}`, borderRadius: 20, overflow: "hidden", zIndex: 1, margin: "0 16px",
       }}>
         <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORD}`, fontSize: 15, fontWeight: 600, color: TEXT }}>{title}</div>
@@ -69,7 +65,7 @@ export default function Settings() {
               color: selected === opt ? TEXT : MUTED, fontSize: 14, fontWeight: selected === opt ? 600 : 400,
               borderBottom: `1px solid ${BORD}`, transition: "background 0.1s",
             }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+              onMouseEnter={e => e.currentTarget.style.background = INPUTBG}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}
             >
               {opt}
@@ -118,8 +114,8 @@ export default function Settings() {
             {/* Currency */}
             <div style={{ padding: "18px 28px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#11141A", border: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <DollarSign style={{ width: 16, height: 16, color: TEXT }} strokeWidth={1.5} />
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: INPUTBG, border: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <DollarSign style={{ width: 16, height: 16, color: MUTED }} strokeWidth={1.5} />
                 </div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500, color: TEXT, marginBottom: 2 }}>Display Currency</div>
@@ -127,7 +123,7 @@ export default function Settings() {
                 </div>
               </div>
               <button onClick={() => setShowCurrencyPicker(true)} style={{
-                height: 34, padding: "0 16px", background: "#11141A", border: `1px solid ${BORD}`,
+                height: 34, padding: "0 16px", background: INPUTBG, border: `1px solid ${BORD}`,
                 borderRadius: 8, color: TEXT, fontSize: 13, fontWeight: 600, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 6,
               }}>
@@ -137,8 +133,8 @@ export default function Settings() {
             {/* Language */}
             <div style={{ padding: "18px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#11141A", border: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Globe style={{ width: 16, height: 16, color: TEXT }} strokeWidth={1.5} />
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: INPUTBG, border: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Globe style={{ width: 16, height: 16, color: MUTED }} strokeWidth={1.5} />
                 </div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500, color: TEXT, marginBottom: 2 }}>Language</div>
@@ -146,7 +142,7 @@ export default function Settings() {
                 </div>
               </div>
               <button onClick={() => setShowLangPicker(true)} style={{
-                height: 34, padding: "0 16px", background: "#11141A", border: `1px solid ${BORD}`,
+                height: 34, padding: "0 16px", background: INPUTBG, border: `1px solid ${BORD}`,
                 borderRadius: 8, color: TEXT, fontSize: 13, fontWeight: 600, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 6,
               }}>
@@ -176,7 +172,7 @@ export default function Settings() {
                   <div style={{ fontSize: 14, fontWeight: 500, color: TEXT, marginBottom: 2 }}>{item.label}</div>
                   <div style={{ fontSize: 12, color: MUTED }}>{item.desc}</div>
                 </div>
-                <Toggle on={item.value} onToggle={() => item.set(v => !v)} />
+                <Toggle on={item.value} onToggle={() => item.set(v => !v)} blue={BLUE} />
               </div>
             ))}
           </div>
@@ -200,7 +196,7 @@ export default function Settings() {
                   <div style={{ fontSize: 14, fontWeight: 500, color: TEXT, marginBottom: 2 }}>{item.label}</div>
                   <div style={{ fontSize: 12, color: MUTED }}>{item.desc}</div>
                 </div>
-                <Toggle on={item.value} onToggle={() => item.set(v => !v)} />
+                <Toggle on={item.value} onToggle={() => item.set(v => !v)} blue={BLUE} />
               </div>
             ))}
           </div>
