@@ -49,6 +49,37 @@ const css = `
   .calc-output{transition:all 0.3s ease}
   @keyframes countUp{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)}}
   .val-animate{animation:countUp 0.3s ease both}
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .hero-float-chip { display: none !important; }
+    .hero-mockup { display: none !important; }
+    .hero-stats-row { display: grid !important; grid-template-columns: 1fr 1fr !important; padding: 4px 8px !important; gap: 0 !important; }
+    .hero-stats-row > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; padding: 12px 8px !important; }
+    .hero-stats-row > div:nth-child(1), .hero-stats-row > div:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+    .hero-stats-row > div:nth-child(3), .hero-stats-row > div:nth-child(4) { border-bottom: none !important; }
+    .hero-stats-row > div:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.08) !important; }
+    .hero-cta-row { flex-direction: column !important; gap: 10px !important; }
+    .hero-cta-row a, .hero-cta-row > a { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
+    .section-two-col { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .section-two-col-img { display: none !important; }
+    .rate-cards-grid { grid-template-columns: 1fr !important; }
+    .calc-grid { grid-template-columns: 1fr !important; }
+    .feat-grid { grid-template-columns: 1fr 1fr !important; }
+    .inv-tabs { overflow-x: auto; padding-bottom: 4px; }
+    .inv-tabs::-webkit-scrollbar { display: none; }
+    .awards-row { gap: 10px !important; }
+    .awards-row > div { min-width: 130px !important; padding: 20px 14px !important; }
+    .acct-types-row { gap: 10px !important; }
+    .acct-types-row > a { width: calc(50% - 5px) !important; padding: 18px 10px !important; }
+    .steps-grid { grid-template-columns: 1fr !important; }
+    .trust-badges { gap: 10px !important; }
+    .trust-badges > div { padding: 10px 14px !important; }
+    .stats-grid { grid-template-columns: 1fr 1fr !important; }
+    .testi-track { gap: 16px !important; }
+    .section-pad { padding: 56px 0 !important; }
+    .hero-badge { font-size: 11px !important; }
+  }
 `;
 
 const DOT  = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
@@ -275,7 +306,7 @@ function InvestmentCategories() {
         </div>
 
         {/* Panel */}
-        <div key={active} className="slide-r" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:0,borderRadius:24,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+        <div key={active} className="slide-r section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:0,borderRadius:24,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
           {/* Image */}
           <div style={{position:"relative",minHeight:380,overflow:"hidden"}}>
             <img src={cat.image} alt={cat.label} style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0}} />
@@ -323,7 +354,7 @@ function RetirementSection() {
   return (
     <section style={{background:"#fff",padding:"96px 0",borderTop:"1px solid #E6E8EB"}}>
       <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
           <div>
             <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:12}}>For Retirees & Seniors</p>
             <h2 style={{fontSize:"clamp(28px,4vw,42px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>
@@ -400,9 +431,9 @@ function CryptoSection() {
       <div style={{position:"absolute",bottom:-80,left:-80,width:400,height:400,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
 
       <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
           {/* Image */}
-          <div style={{position:"relative"}}>
+          <div className="section-two-col-img" style={{position:"relative"}}>
             <div style={{borderRadius:24,overflow:"hidden",boxShadow:"0 24px 80px rgba(0,0,0,0.4)",border:"1px solid rgba(255,255,255,0.06)"}}>
               <img src="/crypto-investment.jpg" alt="Cryptocurrency investing" style={{width:"100%",height:"400px",objectFit:"cover",display:"block"}} />
               <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(8,10,15,0.6),transparent)"}} />
@@ -673,7 +704,7 @@ export default function Home() {
         <div style={{position:"absolute",top:100,right:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.01) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
 
         {/* Floating chips */}
-        <div className="hero-1 float-chip" style={{position:"absolute",top:120,left:"8%",zIndex:3}}>
+        <div className="hero-1 float-chip hero-float-chip" style={{position:"absolute",top:120,left:"8%",zIndex:3}}>
           <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
             <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(255,165,0,0.15),rgba(255,140,0,0.1))",border:"1px solid rgba(255,165,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:"#f59e0b"}}>₿</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>BTC/USD</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$107,842</div></div>
@@ -681,7 +712,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hero-2 float-chip2" style={{position:"absolute",top:210,right:"7%",zIndex:3}}>
+        <div className="hero-2 float-chip2 hero-float-chip" style={{position:"absolute",top:210,right:"7%",zIndex:3}}>
           <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
             <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(100,149,237,0.15),rgba(65,105,225,0.1))",border:"1px solid rgba(100,149,237,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#93c5fd",letterSpacing:"-0.02em"}}>AAPL</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Apple Inc.</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$211.84</div></div>
@@ -689,7 +720,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hero-3 float-chip3" style={{position:"absolute",top:360,left:"6%",zIndex:3}}>
+        <div className="hero-3 float-chip3 hero-float-chip" style={{position:"absolute",top:360,left:"6%",zIndex:3}}>
           <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
             <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(212,160,23,0.18),rgba(180,130,10,0.1))",border:"1px solid rgba(212,160,23,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fbbf24",letterSpacing:"-0.02em"}}>XAU</div>
             <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Gold Spot</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$3,324.5</div></div>
@@ -698,7 +729,7 @@ export default function Home() {
         </div>
 
         {/* Hero text */}
-        <div style={{position:"relative",zIndex:5,maxWidth:860,margin:"0 auto",padding:"80px 24px 40px",textAlign:"center"}}>
+        <div style={{position:"relative",zIndex:5,maxWidth:860,margin:"0 auto",padding:"clamp(40px,8vw,80px) 20px 40px",textAlign:"center"}}>
           <div className="hero-1" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:999,padding:"5px 14px 5px 8px",marginBottom:28}}>
             <span style={{background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.7)",fontSize:9,fontWeight:800,letterSpacing:"0.12em",textTransform:"uppercase",borderRadius:999,padding:"2px 8px"}}>New</span>
             <span style={{fontSize:12,color:"rgba(255,255,255,0.6)",fontWeight:500}}>24/7 US equity and ETF trading now live</span>
@@ -715,7 +746,7 @@ export default function Home() {
             <strong style={{color:"rgba(255,255,255,0.85)",fontWeight:700}}>passive monthly income</strong> — with institutional-grade tools once reserved for the ultra-wealthy.
           </p>
 
-          <div className="hero-3" style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:36,flexWrap:"wrap",gap:0,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:"16px 32px",backdropFilter:"blur(8px)"}}>
+          <div className="hero-3 hero-stats-row" style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:36,flexWrap:"wrap",gap:0,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:"16px 32px",backdropFilter:"blur(8px)"}}>
             {[{v:"$19.5B",l:"Equity Capital"},{v:"4.4M+",l:"Client Accounts"},{v:"170+",l:"Global Markets"},{v:"50+",l:"Years of Innovation"}].map((s,i,arr)=>(
               <div key={s.v} style={{textAlign:"center",padding:"0 28px",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none"}}>
                 <div style={{fontSize:20,fontWeight:800,color:"#fff",letterSpacing:"-0.025em"}}>{s.v}</div>
@@ -724,7 +755,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="hero-4" style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center",marginBottom:12}}>
+          <div className="hero-4 hero-cta-row" style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center",marginBottom:12}}>
             <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#fff",color:"#0d1520",fontWeight:700,fontSize:15,padding:"14px 42px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(0,0,0,0.2)",transition:"transform 0.15s,box-shadow 0.15s"}}
               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(0,0,0,0.28)"}}
               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(0,0,0,0.2)"}}>
@@ -777,7 +808,7 @@ export default function Home() {
             <h2 style={{fontSize:"clamp(28px,4vw,42px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,margin:0}}>Your Money Works Harder</h2>
             <p style={{color:"rgba(255,255,255,0.3)",fontSize:15,marginTop:10}}>Earn more on cash. Pay less to borrow.</p>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:20}}>
+          <div className="rate-cards-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:20}}>
             {[
               {head:"Earn up to",currency:"USD",rate:"3.14%",note:"on instantly available cash balances",cta:"View Interest Rates",accent:"#4ade80"},
               {head:"Borrow at margin rates as low as",currency:"USD",rate:"4.14%",note:"Among the lowest margin rates globally",cta:"View Margin Rates",accent:"#60a5fa"},
@@ -814,7 +845,7 @@ export default function Home() {
             <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Why Vault Wealth</p>
             <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",lineHeight:1.1}}>Built for Long-Term Wealth</h2>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
+          <div className="feat-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
             {[
               {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)"},
               {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)"},
@@ -858,7 +889,7 @@ export default function Home() {
           <TestimonialCarousel />
 
           {/* Trust badges row */}
-          <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginTop:60}}>
+          <div className="trust-badges" style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginTop:60}}>
             {[
               {icon:Shield,label:"SIPC Member",sub:"Up to $500K protected"},
               {icon:Lock,label:"Bank-Grade Security",sub:"256-bit AES encryption"},
@@ -883,8 +914,8 @@ export default function Home() {
       {/* ─── PROFESSIONAL PRICING SPLIT ────────────────────────────── */}
       <section style={{background:"#fff",padding:"96px 0",borderTop:"1px solid #E6E8EB"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
-            <div style={{borderRadius:20,overflow:"hidden",position:"relative",boxShadow:"0 20px 60px rgba(0,0,0,0.12)"}}>
+          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+            <div className="section-two-col-img" style={{borderRadius:20,overflow:"hidden",position:"relative",boxShadow:"0 20px 60px rgba(0,0,0,0.12)"}}>
               <img src="/platform-mockup.png" alt="Professional pricing dashboard" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} />
               <div style={{position:"absolute",bottom:20,left:20,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(12px)",borderRadius:14,padding:"12px 18px",boxShadow:"0 8px 24px rgba(0,0,0,0.1)",border:"1px solid rgba(0,0,0,0.06)"}}>
                 <div style={{fontSize:11,color:"#6B7280",fontWeight:500}}>Commission Saved (YTD)</div>
@@ -927,7 +958,7 @@ export default function Home() {
         <div style={{position:"absolute",top:-100,right:-100,width:600,height:600,background:"radial-gradient(ellipse,rgba(37,99,235,0.06) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"absolute",bottom:-100,left:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.015) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"start"}}>
+          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"start"}}>
             <div>
               <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:12}}>Strength &amp; Security</p>
               <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>A Broker You Can Trust</h2>
@@ -966,7 +997,7 @@ export default function Home() {
           <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Recognition</p>
           <h2 style={{fontSize:"clamp(22px,3.5vw,36px)",fontWeight:900,color:"#0F172A",marginBottom:8,letterSpacing:"-0.025em"}}>Award-Winning Platform</h2>
           <p style={{color:"#6B7280",fontSize:14,marginBottom:48}}>Recognized by the world's leading financial publications</p>
-          <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",alignItems:"stretch"}}>
+          <div className="awards-row" style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",alignItems:"stretch"}}>
             {[
               {rank:"#1",label:"Professional Trading",src:"StockBrokers.com 2026"},
               {rank:"#1",label:"International Trading",src:"StockBrokers.com 2026"},
@@ -991,7 +1022,7 @@ export default function Home() {
           <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:10}}>Account Types</p>
           <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.025em",marginBottom:8}}>Choose the Best Account for You</h2>
           <p style={{color:"#6B7280",fontSize:15,marginBottom:52}}>From individual to institutional — we have an account for every investor</p>
-          <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginBottom:60}}>
+          <div className="acct-types-row" style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginBottom:60}}>
             {[
               {Icon:User,label:"Individual Accounts",sub:"Personal investing accounts"},
               {Icon:Users,label:"Joint or Trust Accounts",sub:"Shared and fiduciary accounts"},
@@ -1008,7 +1039,7 @@ export default function Home() {
               </a>
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12,marginBottom:40}}>
+          <div className="steps-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12,marginBottom:40}}>
             {[
               {step:"01",title:"Complete the Application",desc:"It only takes a few minutes"},
               {step:"02",title:"Fund Your Account",desc:"Connect your bank or transfer an account"},
