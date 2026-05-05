@@ -450,26 +450,31 @@ export function HomeNavbar() {
 
         {/* ── Mobile: Single row ── */}
         <div className="home-mobile-only" style={{ borderBottom: "1px solid #efefef" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", height: "110px" }}>
-            <Link href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 100, width: "auto", display: "block" }} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", height: "80px" }}>
+            <Link href="/" style={{ textDecoration: "none", flex: 1, minWidth: 0 }}>
+              <div style={{ height: 52, width: 180, overflow: "hidden", position: "relative" }}>
+                <img
+                  src="/logo-dark.png"
+                  alt="INT Brokers"
+                  style={{
+                    height: 180,
+                    width: "auto",
+                    position: "absolute",
+                    top: "50%",
+                    left: 0,
+                    transform: "translateY(-50%)",
+                    display: "block",
+                  }}
+                />
+              </div>
             </Link>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Link href="/register" style={{
-                fontSize: "13px", fontWeight: 700, color: "#fff",
-                background: "#0d1520", textDecoration: "none", padding: "8px 18px",
-                borderRadius: 9, whiteSpace: "nowrap",
-              }}>
-                Open Account
-              </Link>
-              <button onClick={() => setMobileOpen(true)} style={{
-                background: "#f3f4f6", border: "none", cursor: "pointer",
-                width: 38, height: 38, borderRadius: 9,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Menu size={18} color="#374151" />
-              </button>
-            </div>
+            <button onClick={() => setMobileOpen(true)} style={{
+              background: "none", border: "1px solid #e5e7eb", cursor: "pointer",
+              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Menu size={20} color="#374151" />
+            </button>
           </div>
         </div>
       </header>
