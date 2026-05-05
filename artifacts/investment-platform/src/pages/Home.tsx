@@ -79,6 +79,7 @@ const css = `
     .testi-track { gap: 16px !important; }
     .section-pad { padding: 56px 0 !important; }
     .hero-badge { font-size: 11px !important; }
+    .hero-grid { grid-template-columns: 1fr !important; }
   }
 `;
 
@@ -86,6 +87,15 @@ const DOT  = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
+const HERO_ASSETS = [
+  { sym:"BTC",  name:"Bitcoin",  price:"$107,842", chg:"+2.41%", up:true,  col:"#f59e0b", data:[72,68,75,74,82,79,88,85,92,90,98,102,99,107,105] },
+  { sym:"ETH",  name:"Ethereum", price:"$3,880",   chg:"+1.87%", up:true,  col:"#818cf8", data:[58,61,57,65,63,70,68,76,74,79,77,83,81,87,85] },
+  { sym:"AAPL", name:"Apple",    price:"$213.40",  chg:"+0.94%", up:true,  col:"#60a5fa", data:[82,81,85,84,87,85,89,88,87,91,90,92,91,94,93] },
+  { sym:"NVDA", name:"Nvidia",   price:"$891.20",  chg:"+4.22%", up:true,  col:"#34d399", data:[48,54,51,60,58,66,64,72,70,78,76,84,81,90,88] },
+  { sym:"XAU",  name:"Gold",     price:"$3,324.5", chg:"+0.61%", up:true,  col:"#fbbf24", data:[74,76,75,78,77,80,79,82,81,83,82,85,84,86,85] },
+  { sym:"SOL",  name:"Solana",   price:"$184.30",  chg:"-0.62%", up:false, col:"#a78bfa", data:[88,83,87,81,85,79,83,77,81,76,79,74,77,72,75] },
+];
+
 const TICKERS = [
   {sym:"BTC/USD",price:"107,842",chg:"+2.41%",up:true},
   {sym:"AAPL",price:"211.84",chg:"+1.24%",up:true},
@@ -179,6 +189,96 @@ const INV_CATEGORIES = [
     bullets: ["Gold and silver spot & futures","Crude oil and natural gas","Agricultural futures — corn, wheat, soy","Low margin rates from 4.14%","Real-time commodity data & analysis"],
   },
 ];
+
+/* ─── Hero Sparkline ────────────────────────────────────────────────────── */
+function Sparkline({ data, up }: { data: number[]; up: boolean }) {
+  const W = 80, H = 36;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pad = H * 0.1;
+  const pts = data.map((v, i) => ({
+    x: (i / (data.length - 1)) * W,
+    y: H - pad - ((v - min) / range) * (H - pad * 2),
+  }));
+  const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+  const areaD = pathD + ` L ${W} ${H} L 0 ${H} Z`;
+  const color = up ? "#4ade80" : "#f87171";
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: "block", overflow: "visible" }}>
+      <defs>
+        <linearGradient id={`hsg-${up ? "u" : "d"}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.18} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={areaD} fill={`url(#hsg-${up ? "u" : "d"})`} />
+      <path d={pathD} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* ─── Hero Terminal Widget ───────────────────────────────────────────────── */
+function HeroTerminal() {
+  return (
+    <div className="hero-1" style={{
+      background: "rgba(255,255,255,0.025)",
+      border: "1px solid rgba(255,255,255,0.09)",
+      borderRadius: 24,
+      overflow: "hidden",
+      backdropFilter: "blur(24px)",
+      boxShadow: "0 40px 100px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+    }}>
+      {/* Header */}
+      <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.7)", letterSpacing: "-0.01em" }}>Market Overview</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block", boxShadow: "0 0 8px rgba(74,222,128,0.8)" }} />
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", fontWeight: 500 }}>Live</span>
+        </div>
+      </div>
+      {/* Asset rows */}
+      {HERO_ASSETS.map((asset, i) => (
+        <div key={asset.sym} style={{
+          display: "flex", alignItems: "center", gap: 14,
+          padding: "11px 20px",
+          borderBottom: i < HERO_ASSETS.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+        }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: 9,
+            background: `${asset.col}18`,
+            border: `1px solid ${asset.col}30`,
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <span style={{ fontSize: 8, fontWeight: 900, color: asset.col, letterSpacing: "0em" }}>{asset.sym}</span>
+          </div>
+          <div style={{ flex: "0 0 68px" }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.78)", lineHeight: 1 }}>{asset.name}</div>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.28)", marginTop: 2 }}>{asset.sym}/USD</div>
+          </div>
+          <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+            <Sparkline data={asset.data} up={asset.up} />
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.88)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}>{asset.price}</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: asset.up ? "#4ade80" : "#f87171", marginTop: 2 }}>{asset.chg}</div>
+          </div>
+        </div>
+      ))}
+      {/* Bottom bar */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        {[
+          { label: "Portfolio Value", val: "$64,243.80", color: "rgba(255,255,255,0.78)" },
+          { label: "Today's P&L", val: "+$1,842.40", color: "#4ade80" },
+        ].map((s, i) => (
+          <div key={s.label} style={{ padding: "13px 20px", borderRight: i === 0 ? "1px solid rgba(255,255,255,0.06)" : "none", background: "rgba(255,255,255,0.015)" }}>
+            <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>{s.label}</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: s.color, letterSpacing: "-0.02em" }}>{s.val}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* ─── StarRating ────────────────────────────────────────────────────────── */
 function StarRating({ n }: { n: number }) {
@@ -697,90 +797,75 @@ export default function Home() {
       <HomeNavbar />
 
       {/* ═══ HERO ═══════════════════════════════════════════════════════ */}
-      <section style={{background:"#080a0f",paddingTop:72,paddingBottom:0,position:"relative",overflow:"hidden"}}>
+      <section style={{background:"#080a0f",position:"relative",overflow:"hidden",minHeight:"calc(100vh - 200px)",display:"flex",alignItems:"center"}}>
         <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
-        <div style={{position:"absolute",top:-100,left:"50%",transform:"translateX(-50%)",width:900,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.03) 0%,transparent 65%)",zIndex:1,pointerEvents:"none"}} />
-        <div style={{position:"absolute",top:200,left:-200,width:600,height:600,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
-        <div style={{position:"absolute",top:100,right:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.01) 0%,transparent 70%)",zIndex:1,pointerEvents:"none"}} />
+        <div style={{position:"absolute",top:-300,left:"10%",width:1200,height:800,background:"radial-gradient(ellipse,rgba(37,99,235,0.09) 0%,transparent 60%)",zIndex:1,pointerEvents:"none"}} />
+        <div style={{position:"absolute",bottom:-100,right:"5%",width:700,height:700,background:"radial-gradient(ellipse,rgba(37,99,235,0.05) 0%,transparent 65%)",zIndex:1,pointerEvents:"none"}} />
 
-        {/* Floating chips */}
-        <div className="hero-1 float-chip hero-float-chip" style={{position:"absolute",top:120,left:"8%",zIndex:3}}>
-          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
-            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(255,165,0,0.15),rgba(255,140,0,0.1))",border:"1px solid rgba(255,165,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:"#f59e0b"}}>₿</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>BTC/USD</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$107,842</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+2.41%</div>
+        <div style={{position:"relative",zIndex:5,maxWidth:1280,margin:"0 auto",padding:"clamp(60px,7vw,100px) 32px",width:"100%",boxSizing:"border-box" as const}}>
+          <div className="hero-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:56,alignItems:"center"}}>
+
+            {/* ── LEFT: Headline + CTAs ── */}
+            <div>
+              {/* Live badge */}
+              <div className="hero-1" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(74,222,128,0.07)",border:"1px solid rgba(74,222,128,0.2)",borderRadius:999,padding:"5px 14px",marginBottom:28}}>
+                <span className="pulse-dot" style={{width:6,height:6,borderRadius:"50%",background:"#4ade80",display:"inline-block",boxShadow:"0 0 8px rgba(74,222,128,0.8)"}} />
+                <span style={{fontSize:12,color:"rgba(255,255,255,0.55)",fontWeight:500}}>Markets Live · 170+ Global Instruments</span>
+              </div>
+
+              <h1 className="hero-2" style={{fontSize:"clamp(52px,5.5vw,84px)",fontWeight:900,color:"#fff",letterSpacing:"-0.045em",lineHeight:0.95,margin:"0 0 20px"}}>
+                Trade<br/>
+                <span style={{color:"rgba(255,255,255,0.25)"}}>Everything.</span>
+              </h1>
+
+              <p className="hero-3" style={{fontSize:17,color:"rgba(255,255,255,0.42)",lineHeight:1.65,maxWidth:420,marginBottom:36}}>
+                Stocks · Crypto · Forex · Commodities<br/>
+                <span style={{color:"rgba(255,255,255,0.62)",fontWeight:500}}>One account. Zero minimums.</span>
+              </p>
+
+              <div className="hero-4 hero-cta-row" style={{display:"flex",gap:12,marginBottom:40,flexWrap:"wrap"}}>
+                <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#2563eb",color:"#fff",fontWeight:700,fontSize:15,padding:"14px 36px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(37,99,235,0.38)",whiteSpace:"nowrap" as const,transition:"transform 0.14s,box-shadow 0.14s"}}
+                  onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(37,99,235,0.5)"}}
+                  onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(37,99,235,0.38)"}}>
+                  Open Free Account
+                </Link>
+                <Link href="/login" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:15,padding:"14px 26px",border:"1px solid rgba(255,255,255,0.12)",borderRadius:12,textDecoration:"none",whiteSpace:"nowrap" as const,transition:"background 0.14s"}}
+                  onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.1)")}
+                  onMouseLeave={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}>
+                  <Zap size={14} color="#fbbf24" strokeWidth={2.5} />
+                  Try Demo
+                </Link>
+              </div>
+
+              {/* Trust pills */}
+              <div style={{display:"flex",gap:20,flexWrap:"wrap" as const}}>
+                {[
+                  {icon:ShieldCheck,label:"SIPC Protected"},
+                  {icon:Globe2,label:"170+ Markets"},
+                  {icon:DollarSign,label:"$0 Minimum"},
+                  {icon:Lock,label:"Bank-Grade Security"},
+                ].map(({icon:Icon,label})=>(
+                  <div key={label} style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:"rgba(255,255,255,0.3)",fontWeight:500}}>
+                    <Icon size={12} strokeWidth={1.5} color="rgba(255,255,255,0.25)" />{label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── RIGHT: Live Market Terminal ── */}
+            <div className="hero-mockup">
+              <HeroTerminal />
+            </div>
           </div>
-        </div>
 
-        <div className="hero-2 float-chip2 hero-float-chip" style={{position:"absolute",top:210,right:"7%",zIndex:3}}>
-          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
-            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(100,149,237,0.15),rgba(65,105,225,0.1))",border:"1px solid rgba(100,149,237,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#93c5fd",letterSpacing:"-0.02em"}}>AAPL</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Apple Inc.</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$211.84</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+1.24%</div>
-          </div>
-        </div>
-
-        <div className="hero-3 float-chip3 hero-float-chip" style={{position:"absolute",top:360,left:"6%",zIndex:3}}>
-          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
-            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(212,160,23,0.18),rgba(180,130,10,0.1))",border:"1px solid rgba(212,160,23,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fbbf24",letterSpacing:"-0.02em"}}>XAU</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Gold Spot</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$3,324.5</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+0.61%</div>
-          </div>
-        </div>
-
-        {/* Hero text */}
-        <div style={{position:"relative",zIndex:5,maxWidth:860,margin:"0 auto",padding:"clamp(40px,8vw,80px) 20px 40px",textAlign:"center"}}>
-          <div className="hero-1" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:999,padding:"5px 14px 5px 8px",marginBottom:28}}>
-            <span style={{background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.7)",fontSize:9,fontWeight:800,letterSpacing:"0.12em",textTransform:"uppercase",borderRadius:999,padding:"2px 8px"}}>New</span>
-            <span style={{fontSize:12,color:"rgba(255,255,255,0.6)",fontWeight:500}}>24/7 US equity and ETF trading now live</span>
-            <ArrowUpRight size={13} color="rgba(255,255,255,0.4)" />
-          </div>
-
-          <h1 className="hero-2" style={{fontSize:"clamp(40px,6.5vw,76px)",fontWeight:900,color:"#fff",letterSpacing:"-0.04em",lineHeight:1.04,marginBottom:28}}>
-            Structured Strategies<br />
-            <span style={{color:"rgba(255,255,255,0.55)"}}>for Long-Term Financial Security.</span>
-          </h1>
-
-          <p className="hero-3" style={{fontSize:"clamp(15px,2vw,18px)",color:"rgba(255,255,255,0.48)",lineHeight:1.8,maxWidth:600,margin:"0 auto 20px"}}>
-            Plan your retirement, build generational wealth, and generate{" "}
-            <strong style={{color:"rgba(255,255,255,0.85)",fontWeight:700}}>passive monthly income</strong> — with institutional-grade tools once reserved for the ultra-wealthy.
-          </p>
-
-          <div className="hero-3 hero-stats-row" style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:36,flexWrap:"wrap",gap:0,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:"16px 32px",backdropFilter:"blur(8px)"}}>
-            {[{v:"$19.5B",l:"Equity Capital"},{v:"4.4M+",l:"Client Accounts"},{v:"170+",l:"Global Markets"},{v:"50+",l:"Years of Innovation"}].map((s,i,arr)=>(
-              <div key={s.v} style={{textAlign:"center",padding:"0 28px",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none"}}>
-                <div style={{fontSize:20,fontWeight:800,color:"#fff",letterSpacing:"-0.025em"}}>{s.v}</div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase",marginTop:3}}>{s.l}</div>
+          {/* Mobile stats strip — hidden on desktop, shown on mobile via CSS */}
+          <div className="hero-stats-row" style={{display:"none",marginTop:36,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:"16px 8px"}}>
+            {[{v:"$19.5B",l:"Equity Capital"},{v:"4.4M+",l:"Clients"},{v:"170+",l:"Markets"},{v:"50+",l:"Years"}].map((s,i,arr)=>(
+              <div key={s.v} style={{textAlign:"center",padding:"0 12px",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none"}}>
+                <div style={{fontSize:18,fontWeight:800,color:"#fff",letterSpacing:"-0.025em"}}>{s.v}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase" as const,marginTop:2}}>{s.l}</div>
               </div>
             ))}
-          </div>
-
-          <div className="hero-4 hero-cta-row" style={{display:"flex",alignItems:"center",gap:12,justifyContent:"center",marginBottom:12}}>
-            <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#fff",color:"#0d1520",fontWeight:700,fontSize:15,padding:"14px 42px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(0,0,0,0.2)",transition:"transform 0.15s,box-shadow 0.15s"}}
-              onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(0,0,0,0.28)"}}
-              onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(0,0,0,0.2)"}}>
-              Start Planning Your Financial Future
-            </Link>
-            <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,color:"rgba(255,255,255,0.5)",fontSize:14,fontWeight:500,textDecoration:"none",padding:"14px 20px",border:"1px solid rgba(255,255,255,0.1)",borderRadius:12}}>
-              View Calculator <ChevronRight size={14} />
-            </a>
-          </div>
-
-          <div className="hero-4" style={{display:"flex",alignItems:"center",gap:5,justifyContent:"center",color:"rgba(255,255,255,0.2)",fontSize:11}}>
-            <Info size={11} />&nbsp;<a href="#" style={{color:"inherit",textDecoration:"underline"}}>Lower Cost Disclosure</a>
-          </div>
-        </div>
-
-        {/* Mockup */}
-        <div className="hero-mockup" style={{position:"relative",width:"100%",maxWidth:1100,margin:"0 auto"}}>
-          <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
-            <img src="/speed-lines.png" alt="" style={{width:"100%",height:"100%",objectFit:"cover",opacity:0.7}} />
-            <div style={{position:"absolute",top:0,left:0,right:0,height:"40%",background:"linear-gradient(to bottom,#080a0f,transparent)"}} />
-            <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(to top,#080a0f,transparent)"}} />
-          </div>
-          <div style={{position:"relative",zIndex:2,padding:"0 60px"}}>
-            <img src="/ibkr-platform-mockup.png" alt="Vault Wealth platform" style={{width:"100%",maxWidth:960,display:"block",margin:"0 auto",objectFit:"contain"}} />
-            <div style={{position:"absolute",bottom:0,left:0,right:0,height:"55%",background:"linear-gradient(to bottom,transparent,#080a0f)",pointerEvents:"none"}} />
           </div>
         </div>
       </section>
