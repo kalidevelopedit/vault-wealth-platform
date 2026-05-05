@@ -410,7 +410,7 @@ export function HomeNavbar() {
 
         {/* ── Desktop: Nav links ── */}
         <div className="home-desktop-only" style={{ borderBottom: "1px solid #e9eaec" }}>
-          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "stretch", height: "44px" }}>
+          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "stretch", justifyContent: "center", height: "44px", position: "relative" }}>
             {NAV.map(nav => (
               <div key={nav.label} style={{ position: "relative" }}>
                 <button
@@ -419,7 +419,7 @@ export function HomeNavbar() {
                   style={{
                     background: "none", border: "none", cursor: "pointer",
                     display: "flex", alignItems: "center", gap: "4px",
-                    padding: "0 14px", height: "44px",
+                    padding: "0 18px", height: "44px",
                     fontSize: "13px", fontWeight: 500,
                     color: openMenu === nav.label ? "#0d1520" : "#4b5563",
                     transition: "color 0.12s", whiteSpace: "nowrap",
@@ -434,17 +434,19 @@ export function HomeNavbar() {
                 )}
               </div>
             ))}
-            <div style={{ flex: 1 }} />
-            <button style={{
-              background: "none", border: "1px solid #e5e7eb", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              gap: 5, alignSelf: "center", padding: "5px 10px", borderRadius: 8,
-              fontSize: "11.5px", fontWeight: 600, color: "#6b7280", transition: "border-color 0.12s, background 0.12s",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "#d1d5db"; e.currentTarget.style.background = "#f9fafb"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "none"; }}>
-              <Globe size={13} color="#6b7280" /> EN
-            </button>
+            {/* Globe pinned to right */}
+            <div style={{ position: "absolute", right: 32, top: 0, bottom: 0, display: "flex", alignItems: "center" }}>
+              <button style={{
+                background: "none", border: "1px solid #e5e7eb", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: 5, padding: "5px 10px", borderRadius: 8,
+                fontSize: "11.5px", fontWeight: 600, color: "#6b7280", transition: "border-color 0.12s, background 0.12s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#d1d5db"; e.currentTarget.style.background = "#f9fafb"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "none"; }}>
+                <Globe size={13} color="#6b7280" /> EN
+              </button>
+            </div>
           </div>
         </div>
 

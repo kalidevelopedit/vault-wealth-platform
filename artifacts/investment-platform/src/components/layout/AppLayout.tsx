@@ -206,58 +206,88 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div style={{ display: "flex", flex: 1 }} className="app-main-layout">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex app-sidebar" style={{
-          width: 220, background: SIDE, borderRight: `1px solid ${BORD}`,
-          flexDirection: "column",
-          position: "fixed", left: 0, overflowY: "auto",
+          width: 232, background: SIDE, borderRight: `1px solid ${BORD}`,
+          flexDirection: "column", position: "fixed", left: 0, overflowY: "auto",
         }}>
-          <nav style={{ flex: 1, padding: "20px 10px", display: "flex", flexDirection: "column", gap: 2 }}>
-            {navLinks.map(item => {
+          {/* Nav groups */}
+          <nav style={{ flex: 1, padding: "16px 12px 12px", display: "flex", flexDirection: "column", gap: 1 }}>
+            {/* Main */}
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: MUTED, padding: "8px 10px 6px", textTransform: "uppercase" }}>Main</div>
+            {navLinks.slice(0, 4).map(item => {
               const active = isActive(item.href);
               return (
                 <Link key={item.label} href={item.href} style={{
                   display: "flex", alignItems: "center", gap: 11,
-                  padding: "0 12px", height: 44, borderRadius: 12, textDecoration: "none",
-                  fontSize: 13.5, fontWeight: 500,
+                  padding: "0 10px", height: 42, borderRadius: 10, textDecoration: "none",
+                  fontSize: 13.5, fontWeight: active ? 600 : 450,
                   color: active ? TEXT : MUTED,
                   background: active ? ACTIVE : "transparent",
-                  transition: "all 0.1s",
+                  position: "relative", transition: "all 0.12s",
                 }}
                   onMouseEnter={e => { if (!active) { e.currentTarget.style.color = TEXT; e.currentTarget.style.background = HOVER; } }}
                   onMouseLeave={e => { if (!active) { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; } }}
                 >
-                  <item.icon style={{ width: 17, height: 17, flexShrink: 0, color: active ? colors.blue : MUTED }} strokeWidth={1.5} />
+                  {active && <span style={{ position: "absolute", left: 0, top: "25%", bottom: "25%", width: 3, borderRadius: 2, background: colors.blue }} />}
+                  <item.icon style={{ width: 16, height: 16, flexShrink: 0, color: active ? colors.blue : MUTED }} strokeWidth={1.5} />
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {/* Account */}
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: MUTED, padding: "16px 10px 6px", textTransform: "uppercase" }}>Account</div>
+            {navLinks.slice(4).map(item => {
+              const active = isActive(item.href);
+              return (
+                <Link key={item.label} href={item.href} style={{
+                  display: "flex", alignItems: "center", gap: 11,
+                  padding: "0 10px", height: 42, borderRadius: 10, textDecoration: "none",
+                  fontSize: 13.5, fontWeight: active ? 600 : 450,
+                  color: active ? TEXT : MUTED,
+                  background: active ? ACTIVE : "transparent",
+                  position: "relative", transition: "all 0.12s",
+                }}
+                  onMouseEnter={e => { if (!active) { e.currentTarget.style.color = TEXT; e.currentTarget.style.background = HOVER; } }}
+                  onMouseLeave={e => { if (!active) { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; } }}
+                >
+                  {active && <span style={{ position: "absolute", left: 0, top: "25%", bottom: "25%", width: 3, borderRadius: 2, background: colors.blue }} />}
+                  <item.icon style={{ width: 16, height: 16, flexShrink: 0, color: active ? colors.blue : MUTED }} strokeWidth={1.5} />
                   {item.label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* User + logout */}
-          <div style={{ padding: "14px", borderTop: `1px solid ${BORD}` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "0 6px" }}>
+          {/* User card + logout */}
+          <div style={{ padding: "12px", borderTop: `1px solid ${BORD}` }}>
+            <div style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "10px 10px", borderRadius: 12,
+              background: HOVER, marginBottom: 6,
+            }}>
               <div style={{
-                width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
                 background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 700, color: "#fff",
+                fontSize: 12, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em",
               }}>{initials}</div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {user?.fullName || "User"}
                 </div>
-                <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+                <div style={{ fontSize: 10, color: MUTED, fontFamily: "monospace", letterSpacing: "0.04em" }}>{uid}</div>
               </div>
             </div>
             <button onClick={logout} style={{
-              width: "100%", display: "flex", alignItems: "center", gap: 10,
-              padding: "0 12px", height: 38, background: "none", border: "none",
+              width: "100%", display: "flex", alignItems: "center", gap: 9,
+              padding: "0 10px", height: 36, background: "none", border: "none",
               cursor: "pointer", color: MUTED, fontSize: 13, fontWeight: 500,
-              borderRadius: 10, transition: "all 0.1s",
+              borderRadius: 10, transition: "all 0.12s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.color = TEXT; e.currentTarget.style.background = HOVER; }}
+              onMouseEnter={e => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.06)"; }}
               onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; }}
             >
-              <LogOut style={{ width: 15, height: 15 }} strokeWidth={1.5} />
+              <LogOut style={{ width: 14, height: 14 }} strokeWidth={1.5} />
               Sign out
             </button>
           </div>
@@ -266,40 +296,85 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Mobile Drawer */}
         {sidebarOpen && (
           <div className="md:hidden" style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex" }}>
-            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)" }} onClick={() => setSidebarOpen(false)} />
+            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)" }} onClick={() => setSidebarOpen(false)} />
             <aside style={{
-              position: "relative", width: 260, background: HEADER, borderRight: `1px solid ${BORD}`,
+              position: "relative", width: 272, background: SIDE, borderRight: `1px solid ${BORD}`,
               display: "flex", flexDirection: "column", height: "100%", zIndex: 1,
+              boxShadow: "4px 0 24px rgba(0,0,0,0.12)",
             }}>
-              <div style={{ height: 60, borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", padding: "0 20px", justifyContent: "space-between" }}>
-                <img src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"} alt="INT Brokers"
-                  style={{ height: 38 }} onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }} />
-                <button onClick={() => setSidebarOpen(false)} style={{ background: "none", border: "none", color: MUTED, cursor: "pointer" }}>
-                  <X style={{ width: 20, height: 20 }} strokeWidth={1.5} />
+              {/* Drawer header */}
+              <div style={{ padding: "0 20px", height: 68, borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ height: 44, width: 150, overflow: "hidden", position: "relative" }}>
+                  <img src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"} alt="INT Brokers"
+                    style={{ height: 150, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)" }}
+                    onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }} />
+                </div>
+                <button onClick={() => setSidebarOpen(false)} style={{
+                  background: HOVER, border: `1px solid ${BORD}`, color: MUTED, cursor: "pointer",
+                  width: 32, height: 32, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <X style={{ width: 16, height: 16 }} strokeWidth={1.5} />
                 </button>
               </div>
-              <nav style={{ flex: 1, padding: "16px 10px", display: "flex", flexDirection: "column", gap: 2 }}>
-                {navLinks.map(item => {
+
+              {/* Nav */}
+              <nav style={{ flex: 1, padding: "14px 12px", display: "flex", flexDirection: "column", gap: 1, overflowY: "auto" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: MUTED, padding: "4px 10px 8px", textTransform: "uppercase" }}>Main</div>
+                {navLinks.slice(0, 4).map(item => {
                   const active = isActive(item.href);
                   return (
                     <Link key={item.label} href={item.href} onClick={() => setSidebarOpen(false)} style={{
                       display: "flex", alignItems: "center", gap: 12,
-                      padding: "0 14px", height: 48, borderRadius: 12, textDecoration: "none",
-                      fontSize: 14, fontWeight: 500,
-                      color: active ? TEXT : MUTED, background: active ? ACTIVE : "transparent",
+                      padding: "0 12px", height: 48, borderRadius: 12, textDecoration: "none",
+                      fontSize: 14, fontWeight: active ? 600 : 450,
+                      color: active ? TEXT : MUTED,
+                      background: active ? ACTIVE : "transparent",
+                      position: "relative",
                     }}>
+                      {active && <span style={{ position: "absolute", left: 0, top: "25%", bottom: "25%", width: 3, borderRadius: 2, background: colors.blue }} />}
+                      <item.icon style={{ width: 18, height: 18, color: active ? colors.blue : MUTED }} strokeWidth={1.5} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.16em", color: MUTED, padding: "14px 10px 8px", textTransform: "uppercase" }}>Account</div>
+                {navLinks.slice(4).map(item => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link key={item.label} href={item.href} onClick={() => setSidebarOpen(false)} style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "0 12px", height: 48, borderRadius: 12, textDecoration: "none",
+                      fontSize: 14, fontWeight: active ? 600 : 450,
+                      color: active ? TEXT : MUTED,
+                      background: active ? ACTIVE : "transparent",
+                      position: "relative",
+                    }}>
+                      {active && <span style={{ position: "absolute", left: 0, top: "25%", bottom: "25%", width: 3, borderRadius: 2, background: colors.blue }} />}
                       <item.icon style={{ width: 18, height: 18, color: active ? colors.blue : MUTED }} strokeWidth={1.5} />
                       {item.label}
                     </Link>
                   );
                 })}
               </nav>
-              <div style={{ padding: "14px", borderTop: `1px solid ${BORD}` }}>
+
+              {/* User card */}
+              <div style={{ padding: "12px 16px", borderTop: `1px solid ${BORD}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 12, background: HOVER, marginBottom: 8 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, background: "linear-gradient(135deg,#1d4ed8,#2563FF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{initials}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 600, color: TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.fullName || "User"}</div>
+                    <div style={{ fontSize: 10.5, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+                  </div>
+                </div>
                 <button onClick={() => { setSidebarOpen(false); logout(); }} style={{
                   width: "100%", display: "flex", alignItems: "center", gap: 10,
-                  padding: "0 14px", height: 44, background: "none", border: "none",
-                  cursor: "pointer", color: MUTED, fontSize: 14,
-                }}>
+                  padding: "0 12px", height: 42, background: "none", border: "none",
+                  cursor: "pointer", color: MUTED, fontSize: 14, borderRadius: 10, fontWeight: 500,
+                  transition: "all 0.12s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.06)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = MUTED; e.currentTarget.style.background = "transparent"; }}
+                >
                   <LogOut style={{ width: 16, height: 16 }} strokeWidth={1.5} /> Sign out
                 </button>
               </div>
@@ -308,7 +383,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         )}
 
         {/* Content Area */}
-        <main className="flex-1 md:ml-[220px]" style={{
+        <main className="flex-1 md:ml-[232px]" style={{
           background: BG,
           minHeight: "calc(100vh - 60px)",
           paddingBottom: 72, // space for mobile bottom nav
@@ -355,7 +430,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         @media (min-width: 768px) {
           .app-main-layout { margin-top: 142px; }
           .app-header { top: 32px !important; }
-          .app-sidebar { top: 142px !important; height: calc(100vh - 142px) !important; }
+          .app-sidebar { top: 142px !important; height: calc(100vh - 142px) !important; width: 232px !important; }
         }
       `}</style>
     </div>
