@@ -674,26 +674,26 @@ export default function Home() {
 
         {/* Floating chips */}
         <div className="hero-1 float-chip" style={{position:"absolute",top:120,left:"8%",zIndex:3}}>
-          <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.10)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>₿</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>BTC/USD</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$107,842</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+2.41%</div>
+          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
+            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(255,165,0,0.15),rgba(255,140,0,0.1))",border:"1px solid rgba(255,165,0,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800,color:"#f59e0b"}}>₿</div>
+            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>BTC/USD</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$107,842</div></div>
+            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+2.41%</div>
           </div>
         </div>
 
         <div className="hero-2 float-chip2" style={{position:"absolute",top:210,right:"7%",zIndex:3}}>
-          <div style={{background:"rgba(255,255,255,0.05)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.10)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>AAPL</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Apple Inc.</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$211.84</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+1.24%</div>
+          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
+            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(100,149,237,0.15),rgba(65,105,225,0.1))",border:"1px solid rgba(100,149,237,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#93c5fd",letterSpacing:"-0.02em"}}>AAPL</div>
+            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Apple Inc.</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$211.84</div></div>
+            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+1.24%</div>
           </div>
         </div>
 
-        <div className="hero-3 float-chip3" style={{position:"absolute",top:350,left:"6%",zIndex:3}}>
-          <div style={{background:"rgba(255,255,255,0.04)",backdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14,padding:"10px 16px",display:"flex",alignItems:"center",gap:10,boxShadow:"0 8px 32px rgba(0,0,0,0.3)"}}>
-            <div style={{width:30,height:30,borderRadius:9,background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"rgba(255,255,255,0.7)"}}>XAU</div>
-            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.4)"}}>Gold Spot</div><div style={{fontSize:14,color:"#fff",fontWeight:700}}>$3,324.5</div></div>
-            <div style={{fontSize:12,fontWeight:700,color:"#4ade80"}}>+0.61%</div>
+        <div className="hero-3 float-chip3" style={{position:"absolute",top:360,left:"6%",zIndex:3}}>
+          <div style={{background:"rgba(15,18,25,0.75)",backdropFilter:"blur(20px)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:16,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,boxShadow:"0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06)"}}>
+            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,rgba(212,160,23,0.18),rgba(180,130,10,0.1))",border:"1px solid rgba(212,160,23,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:800,color:"#fbbf24",letterSpacing:"-0.02em"}}>XAU</div>
+            <div><div style={{fontSize:11,color:"rgba(255,255,255,0.38)",marginBottom:2}}>Gold Spot</div><div style={{fontSize:15,color:"#fff",fontWeight:700,letterSpacing:"-0.01em"}}>$3,324.5</div></div>
+            <div style={{fontSize:12,fontWeight:700,color:"#4ade80",background:"rgba(74,222,128,0.1)",padding:"2px 8px",borderRadius:6}}>+0.61%</div>
           </div>
         </div>
 
@@ -715,11 +715,11 @@ export default function Home() {
             <strong style={{color:"rgba(255,255,255,0.85)",fontWeight:700}}>passive monthly income</strong> — with institutional-grade tools once reserved for the ultra-wealthy.
           </p>
 
-          <div className="hero-3" style={{display:"flex",gap:24,justifyContent:"center",marginBottom:32,flexWrap:"wrap"}}>
-            {[{v:"$19.5B",l:"Equity Capital"},{v:"4.4M+",l:"Client Accounts"},{v:"170+",l:"Global Markets"},{v:"50+",l:"Years of Innovation"}].map(s=>(
-              <div key={s.v} style={{textAlign:"center"}}>
-                <div style={{fontSize:18,fontWeight:800,color:"#fff",letterSpacing:"-0.02em"}}>{s.v}</div>
-                <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontWeight:500,letterSpacing:"0.08em",textTransform:"uppercase",marginTop:2}}>{s.l}</div>
+          <div className="hero-3" style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:36,flexWrap:"wrap",gap:0,background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:16,padding:"16px 32px",backdropFilter:"blur(8px)"}}>
+            {[{v:"$19.5B",l:"Equity Capital"},{v:"4.4M+",l:"Client Accounts"},{v:"170+",l:"Global Markets"},{v:"50+",l:"Years of Innovation"}].map((s,i,arr)=>(
+              <div key={s.v} style={{textAlign:"center",padding:"0 28px",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none"}}>
+                <div style={{fontSize:20,fontWeight:800,color:"#fff",letterSpacing:"-0.025em"}}>{s.v}</div>
+                <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase",marginTop:3}}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -755,12 +755,13 @@ export default function Home() {
       </section>
 
       {/* ─── TICKER BAR ─────────────────────────────────────────────── */}
-      <div style={{background:"#0d1017",borderTop:"1px solid rgba(255,255,255,0.04)",borderBottom:"1px solid rgba(255,255,255,0.04)",padding:"10px 0",overflow:"hidden"}}>
+      <div style={{background:"#0a0c11",borderTop:"1px solid rgba(255,255,255,0.05)",borderBottom:"1px solid rgba(255,255,255,0.05)",padding:"11px 0",overflow:"hidden"}}>
         <div className="ticker-track">
           {[...TICKERS,...TICKERS].map((t,i)=>(
-            <div key={i} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"0 28px",borderRight:"1px solid rgba(255,255,255,0.05)",whiteSpace:"nowrap"}}>
-              <span style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontWeight:600,letterSpacing:"0.06em"}}>{t.sym}</span>
-              <span style={{fontSize:12,color:"#fff",fontWeight:700,fontVariantNumeric:"tabular-nums"}}>${t.price}</span>
+            <div key={i} style={{display:"inline-flex",alignItems:"center",gap:10,padding:"0 32px",whiteSpace:"nowrap"}}>
+              <span style={{width:5,height:5,borderRadius:"50%",background:t.up?"#4ade80":"#f87171",display:"inline-block",flexShrink:0}} />
+              <span style={{fontSize:11,color:"rgba(255,255,255,0.4)",fontWeight:600,letterSpacing:"0.06em"}}>{t.sym}</span>
+              <span style={{fontSize:12,color:"rgba(255,255,255,0.88)",fontWeight:700,fontVariantNumeric:"tabular-nums"}}>${t.price}</span>
               <span style={{fontSize:11,fontWeight:700,color:t.up?"#4ade80":"#f87171"}}>{t.chg}</span>
             </div>
           ))}
