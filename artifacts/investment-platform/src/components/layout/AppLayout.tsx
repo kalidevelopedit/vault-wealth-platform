@@ -93,7 +93,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* ── Header — Desktop ── */}
       <header className="app-header hidden md:flex" style={{
-        height: 80, background: HEADER,
+        height: 110, background: HEADER,
         borderBottom: `1px solid ${BORD}`,
         alignItems: "center", justifyContent: "space-between",
         padding: "0 24px",
@@ -105,7 +105,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <img
               src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
               alt="INT Brokers"
-              style={{ height: 68, width: "auto", objectFit: "contain" }}
+              style={{ height: 120, width: "auto", objectFit: "contain" }}
               onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
             />
           </Link>
@@ -166,7 +166,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* ── Header — Mobile ── */}
       <header className="app-header md:hidden" style={{
-        height: 76, background: HEADER,
+        height: 90, background: HEADER,
         borderBottom: `1px solid ${BORD}`,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 16px",
@@ -188,7 +188,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           <img
             src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
             alt="INT Brokers"
-            style={{ height: 64, width: "auto", objectFit: "contain" }}
+            style={{ height: 78, width: "auto", objectFit: "contain" }}
             onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
           />
         </Link>
@@ -347,15 +347,15 @@ export function AppLayout({ children }: AppLayoutProps) {
       <style>{`
         @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        /* Mobile: 76px header */
-        .app-main-layout { margin-top: 76px; }
+        /* Mobile: 90px header */
+        .app-main-layout { margin-top: 90px; }
         .app-header { top: 0 !important; }
-        .app-sidebar { top: 76px !important; height: calc(100vh - 76px) !important; }
-        /* Desktop: 32px ticker + 80px header = 112px */
+        .app-sidebar { top: 90px !important; height: calc(100vh - 90px) !important; }
+        /* Desktop: 32px ticker + 110px header = 142px */
         @media (min-width: 768px) {
-          .app-main-layout { margin-top: 112px; }
+          .app-main-layout { margin-top: 142px; }
           .app-header { top: 32px !important; }
-          .app-sidebar { top: 112px !important; height: calc(100vh - 112px) !important; }
+          .app-sidebar { top: 142px !important; height: calc(100vh - 142px) !important; }
         }
       `}</style>
     </div>
