@@ -52,34 +52,75 @@ const css = `
 
   /* ── Mobile ── */
   @media (max-width: 768px) {
+    /* Hero */
     .hero-float-chip { display: none !important; }
     .hero-mockup { display: none !important; }
+    .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .hero-icon-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; max-width: 100% !important; }
     .hero-stats-row { display: grid !important; grid-template-columns: 1fr 1fr !important; padding: 4px 8px !important; gap: 0 !important; }
     .hero-stats-row > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; padding: 12px 8px !important; }
-    .hero-stats-row > div:nth-child(1), .hero-stats-row > div:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
-    .hero-stats-row > div:nth-child(3), .hero-stats-row > div:nth-child(4) { border-bottom: none !important; }
+    .hero-stats-row > div:nth-child(1),.hero-stats-row > div:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+    .hero-stats-row > div:nth-child(3),.hero-stats-row > div:nth-child(4) { border-bottom: none !important; }
     .hero-stats-row > div:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.08) !important; }
     .hero-cta-row { flex-direction: column !important; gap: 10px !important; }
-    .hero-cta-row a, .hero-cta-row > a { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
-    .section-two-col { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .hero-cta-row a,.hero-cta-row > a { width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
+
+    /* Floating badges & chips — prevent horizontal overflow */
+    .float-chip,.float-chip2,.float-chip3 { display: none !important; }
+    .ret-badge { display: none !important; }
+
+    /* Layout grids */
+    .section-two-col { grid-template-columns: 1fr !important; gap: 24px !important; }
     .section-two-col-img { display: none !important; }
     .rate-cards-grid { grid-template-columns: 1fr !important; }
     .calc-grid { grid-template-columns: 1fr !important; }
-    .feat-grid { grid-template-columns: 1fr 1fr !important; }
-    .inv-tabs { overflow-x: auto; padding-bottom: 4px; }
+    .feat-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+    .stats-grid { grid-template-columns: 1fr 1fr !important; }
+    .steps-grid { grid-template-columns: 1fr !important; }
+
+    /* Investment category panel */
+    .inv-panel { grid-template-columns: 1fr !important; }
+    .inv-panel-img { min-height: 200px !important; }
+    .inv-panel-content { padding: 28px 24px !important; }
+
+    /* Tabs, awards, account types */
+    .inv-tabs { overflow-x: auto !important; padding-bottom: 4px !important; }
     .inv-tabs::-webkit-scrollbar { display: none; }
     .awards-row { gap: 10px !important; }
     .awards-row > div { min-width: 130px !important; padding: 20px 14px !important; }
     .acct-types-row { gap: 10px !important; }
     .acct-types-row > a { width: calc(50% - 5px) !important; padding: 18px 10px !important; }
-    .steps-grid { grid-template-columns: 1fr !important; }
+
+    /* Trust badges */
     .trust-badges { gap: 10px !important; }
     .trust-badges > div { padding: 10px 14px !important; }
-    .stats-grid { grid-template-columns: 1fr 1fr !important; }
+
+    /* Testimonials */
     .testi-track { gap: 16px !important; }
+    .testi-card { min-width: 280px !important; max-width: 300px !important; padding: 24px 20px !important; }
+
+    /* Rate cards */
+    .rate-card { padding: 28px 24px 24px !important; }
+    .rate-card .rate-num { font-size: 52px !important; }
+
+    /* Section spacing */
     .section-pad { padding: 56px 0 !important; }
     .hero-badge { font-size: 11px !important; }
-    .hero-grid { grid-template-columns: 1fr !important; }
+
+    /* Retirement section */
+    .ret-section-img { border-radius: 16px !important; }
+
+    /* Pricing split section image */
+    .pricing-img { display: none !important; }
+
+    /* Step card row */
+    .steps-grid > div { padding: 20px 16px !important; }
+
+    /* Feat cards on mobile: ensure no overflow */
+    .feat-card { padding: 24px 20px 20px !important; }
+
+    /* Account feature cards */
+    .acct-types-row > a { min-width: 0 !important; }
   }
 `;
 
@@ -406,9 +447,9 @@ function InvestmentCategories() {
         </div>
 
         {/* Panel */}
-        <div key={active} className="slide-r section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:0,borderRadius:24,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+        <div key={active} className="slide-r inv-panel" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:0,borderRadius:24,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
           {/* Image */}
-          <div style={{position:"relative",minHeight:380,overflow:"hidden"}}>
+          <div className="inv-panel-img" style={{position:"relative",minHeight:380,overflow:"hidden"}}>
             <img src={cat.image} alt={cat.label} style={{width:"100%",height:"100%",objectFit:"cover",position:"absolute",inset:0}} />
             <div style={{position:"absolute",inset:0,background:`linear-gradient(to right, rgba(8,10,15,0.2), rgba(8,10,15,0.7))`}} />
             <div style={{position:"absolute",inset:0,background:cat.bg,opacity:0.55}} />
@@ -424,7 +465,7 @@ function InvestmentCategories() {
           </div>
 
           {/* Content */}
-          <div style={{background:"linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))",padding:"44px 44px",backdropFilter:"blur(4px)"}}>
+          <div className="inv-panel-content" style={{background:"linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))",padding:"44px 44px",backdropFilter:"blur(4px)"}}>
             <div style={{display:"inline-flex",alignItems:"center",gap:8,marginBottom:16,background:"rgba(255,255,255,0.07)",borderRadius:8,padding:"4px 12px",border:"1px solid rgba(255,255,255,0.12)"}}>
               {<cat.icon size={14} color="rgba(255,255,255,0.7)" />}
               <span style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.7)",textTransform:"uppercase",letterSpacing:"0.12em"}}>{cat.label}</span>
@@ -504,13 +545,13 @@ function RetirementSection() {
               <img src="/senior-couple.jpg" alt="Senior couple reviewing investments" style={{width:"100%",height:"420px",objectFit:"cover",display:"block"}} />
             </div>
             {/* floating badge */}
-            <div style={{position:"absolute",top:24,right:-20,background:"#fff",borderRadius:16,padding:"16px 20px",boxShadow:"0 12px 40px rgba(0,0,0,0.12)",border:"1px solid #E6E8EB",minWidth:180}}>
+            <div className="ret-badge" style={{position:"absolute",top:24,right:-20,background:"#fff",borderRadius:16,padding:"16px 20px",boxShadow:"0 12px 40px rgba(0,0,0,0.12)",border:"1px solid #E6E8EB",minWidth:180}}>
               <div style={{fontSize:10,color:"#9CA3AF",fontWeight:600,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>Average Client Return</div>
               <div style={{fontSize:28,fontWeight:900,color:"#0F172A",letterSpacing:"-0.025em"}}>+14.7%</div>
               <div style={{fontSize:12,color:"#2b6b4e",fontWeight:700,marginTop:2}}>↑ Per year (5yr avg)</div>
             </div>
             {/* second floating badge */}
-            <div style={{position:"absolute",bottom:24,left:-20,background:"#0F172A",borderRadius:16,padding:"16px 20px",boxShadow:"0 12px 40px rgba(0,0,0,0.2)",minWidth:200}}>
+            <div className="ret-badge" style={{position:"absolute",bottom:24,left:-20,background:"#0F172A",borderRadius:16,padding:"16px 20px",boxShadow:"0 12px 40px rgba(0,0,0,0.2)",minWidth:200}}>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",fontWeight:600,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>Cash Yield</div>
               <div style={{fontSize:24,fontWeight:900,color:"#fff",letterSpacing:"-0.02em"}}>3.14% APY</div>
               <div style={{fontSize:12,color:"rgba(255,255,255,0.5)",marginTop:2}}>Instantly available</div>
@@ -674,7 +715,7 @@ function InvestmentCalculator() {
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(440px,1fr))", gap: 32, alignItems: "start" }}>
+        <div className="calc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(440px,1fr))", gap: 32, alignItems: "start" }}>
 
           {/* ── Left: controls ── */}
           <div style={{ background: "linear-gradient(140deg,#0d1520,#141e2e)", borderRadius: 24, padding: "40px 40px 36px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.18)", position: "relative", overflow: "hidden" }}>
@@ -824,15 +865,15 @@ export default function Home() {
               </p>
 
               {/* Asset class icon grid */}
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,maxWidth:400}}>
+              <div className="hero-icon-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,maxWidth:400}}>
                 {[
-                  {icon:BarChart3,   label:"Equities",    sub:"170+ Markets",      accent:"#60a5fa"},
-                  {icon:Bitcoin,     label:"Crypto",      sub:"60+ Coins",         accent:"#f59e0b"},
-                  {icon:Globe2,      label:"Forex",       sub:"100+ Pairs",        accent:"#34d399"},
-                  {icon:Wheat,       label:"Commodities", sub:"Futures & Spot",    accent:"#fbbf24"},
-                  {icon:TrendingUp,  label:"Bonds",       sub:"1M+ Securities",    accent:"#a78bfa"},
-                  {icon:Calculator,  label:"Options",     sub:"$0.65/contract",    accent:"#fb923c"},
-                ].map(({icon:Icon,label,sub,accent})=>(
+                  {icon:BarChart3,   label:"Equities",    sub:"170+ Markets"},
+                  {icon:Bitcoin,     label:"Crypto",      sub:"60+ Coins"},
+                  {icon:Globe2,      label:"Forex",       sub:"100+ Pairs"},
+                  {icon:Wheat,       label:"Commodities", sub:"Futures & Spot"},
+                  {icon:TrendingUp,  label:"Bonds",       sub:"1M+ Securities"},
+                  {icon:Calculator,  label:"Options",     sub:"$0.65/contract"},
+                ].map(({icon:Icon,label,sub})=>(
                   <div key={label} style={{
                     background:"rgba(255,255,255,0.03)",
                     border:"1px solid rgba(255,255,255,0.08)",
@@ -847,11 +888,11 @@ export default function Home() {
                     <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
                     <div style={{
                       width:36,height:36,borderRadius:10,
-                      background:`${accent}12`,
-                      border:`1px solid ${accent}28`,
+                      background:"rgba(255,255,255,0.06)",
+                      border:"1px solid rgba(255,255,255,0.1)",
                       display:"flex",alignItems:"center",justifyContent:"center",
                     }}>
-                      <Icon size={18} color={accent} strokeWidth={1.5} />
+                      <Icon size={18} color="rgba(255,255,255,0.6)" strokeWidth={1.5} />
                     </div>
                     <div>
                       <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.8)",lineHeight:1,letterSpacing:"-0.005em"}}>{label}</div>
