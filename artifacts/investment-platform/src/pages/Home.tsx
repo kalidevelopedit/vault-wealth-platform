@@ -823,30 +823,40 @@ export default function Home() {
                 <span style={{color:"rgba(255,255,255,0.62)",fontWeight:500}}>One account. Zero minimums.</span>
               </p>
 
-              <div className="hero-4 hero-cta-row" style={{display:"flex",gap:12,marginBottom:40,flexWrap:"wrap"}}>
-                <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"#2563eb",color:"#fff",fontWeight:700,fontSize:15,padding:"14px 36px",textDecoration:"none",borderRadius:12,boxShadow:"0 4px 24px rgba(37,99,235,0.38)",whiteSpace:"nowrap" as const,transition:"transform 0.14s,box-shadow 0.14s"}}
-                  onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform="translateY(-1px)";(e.currentTarget as HTMLElement).style.boxShadow="0 8px 32px rgba(37,99,235,0.5)"}}
-                  onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform="";(e.currentTarget as HTMLElement).style.boxShadow="0 4px 24px rgba(37,99,235,0.38)"}}>
-                  Open Free Account
-                </Link>
-                <Link href="/login" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.75)",fontWeight:600,fontSize:15,padding:"14px 26px",border:"1px solid rgba(255,255,255,0.12)",borderRadius:12,textDecoration:"none",whiteSpace:"nowrap" as const,transition:"background 0.14s"}}
-                  onMouseEnter={e=>(e.currentTarget.style.background="rgba(255,255,255,0.1)")}
-                  onMouseLeave={e=>(e.currentTarget.style.background="rgba(255,255,255,0.06)")}>
-                  <Zap size={14} color="#fbbf24" strokeWidth={2.5} />
-                  Try Demo
-                </Link>
-              </div>
-
-              {/* Trust pills */}
-              <div style={{display:"flex",gap:20,flexWrap:"wrap" as const}}>
+              {/* Asset class icon grid */}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,maxWidth:400}}>
                 {[
-                  {icon:ShieldCheck,label:"SIPC Protected"},
-                  {icon:Globe2,label:"170+ Markets"},
-                  {icon:DollarSign,label:"$0 Minimum"},
-                  {icon:Lock,label:"Bank-Grade Security"},
-                ].map(({icon:Icon,label})=>(
-                  <div key={label} style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:"rgba(255,255,255,0.3)",fontWeight:500}}>
-                    <Icon size={12} strokeWidth={1.5} color="rgba(255,255,255,0.25)" />{label}
+                  {icon:BarChart3,   label:"Equities",    sub:"170+ Markets",      accent:"#60a5fa"},
+                  {icon:Bitcoin,     label:"Crypto",      sub:"60+ Coins",         accent:"#f59e0b"},
+                  {icon:Globe2,      label:"Forex",       sub:"100+ Pairs",        accent:"#34d399"},
+                  {icon:Wheat,       label:"Commodities", sub:"Futures & Spot",    accent:"#fbbf24"},
+                  {icon:TrendingUp,  label:"Bonds",       sub:"1M+ Securities",    accent:"#a78bfa"},
+                  {icon:Calculator,  label:"Options",     sub:"$0.65/contract",    accent:"#fb923c"},
+                ].map(({icon:Icon,label,sub,accent})=>(
+                  <div key={label} style={{
+                    background:"rgba(255,255,255,0.03)",
+                    border:"1px solid rgba(255,255,255,0.08)",
+                    borderRadius:14,
+                    padding:"16px 14px",
+                    display:"flex",
+                    flexDirection:"column" as const,
+                    gap:10,
+                    position:"relative" as const,
+                    overflow:"hidden",
+                  }}>
+                    <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
+                    <div style={{
+                      width:36,height:36,borderRadius:10,
+                      background:`${accent}12`,
+                      border:`1px solid ${accent}28`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                    }}>
+                      <Icon size={18} color={accent} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.8)",lineHeight:1,letterSpacing:"-0.005em"}}>{label}</div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:4,lineHeight:1}}>{sub}</div>
+                    </div>
                   </div>
                 ))}
               </div>

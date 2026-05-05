@@ -224,7 +224,7 @@ export function HomeNavbar() {
       }}>
         {/* Drawer header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 16px", borderBottom: "1px solid #f0f0f0" }}>
-          <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 36, width: "auto" }} />
+          <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 56, width: "auto" }} />
           <button onClick={() => setMobileOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 8, borderRadius: 8, color: "#6b7280", display: "flex" }}>
             <X size={20} />
           </button>
@@ -340,9 +340,9 @@ export function HomeNavbar() {
 
         {/* ── Desktop: Top row + Logo ── */}
         <div className="home-desktop-only" style={{ borderBottom: "1px solid #f0f0f0" }}>
-          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "110px" }}>
+          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "160px" }}>
             <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 120, width: "auto", display: "block" }} />
+              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 200, width: "auto", display: "block" }} />
             </Link>
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -450,9 +450,9 @@ export function HomeNavbar() {
 
         {/* ── Mobile: Single row ── */}
         <div className="home-mobile-only" style={{ borderBottom: "1px solid #efefef" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", height: "80px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", height: "110px" }}>
             <Link href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 72, width: "auto", display: "block" }} />
+              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 100, width: "auto", display: "block" }} />
             </Link>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Link href="/register" style={{
