@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-/* ─── Crypto: jsDelivr CDN (spothq/cryptocurrency-icons) — no rate limits ─── */
+/* ─── Crypto symbol set (determines which logos use CryptoIcon) ─── */
 const CRYPTO_SYMBOLS_CDN = new Set([
   "BTC","ETH","BNB","SOL","XRP","USDT","USDC","ADA","AVAX","DOGE",
   "DOT","LINK","MATIC","UNI","LTC","ATOM","XLM","TRX","SHIB","APT",
@@ -10,7 +10,29 @@ const CRYPTO_SYMBOLS_CDN = new Set([
   "RUNE","LUNA","UST","BUSD","DAI","FRAX","TUSD","PAX","GUSD",
 ]);
 
-/* Coin name overrides for the jsDelivr filename */
+/* CoinGecko transparent PNG URLs — image IDs for major coins */
+const COINGECKO_URL: Record<string, string> = {
+  BTC:  "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  ETH:  "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  SOL:  "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  BNB:  "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png",
+  XRP:  "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png",
+  USDT: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+  USDC: "https://assets.coingecko.com/coins/images/6319/small/usdc.png",
+  ADA:  "https://assets.coingecko.com/coins/images/975/small/cardano.png",
+  AVAX: "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png",
+  DOGE: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",
+  DOT:  "https://assets.coingecko.com/coins/images/12171/small/polkadot.png",
+  LINK: "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
+  MATIC:"https://assets.coingecko.com/coins/images/4713/small/matic-token-icon.png",
+  UNI:  "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png",
+  LTC:  "https://assets.coingecko.com/coins/images/2/small/litecoin.png",
+  ATOM: "https://assets.coingecko.com/coins/images/1481/small/cosmos_hub.png",
+  SHIB: "https://assets.coingecko.com/coins/images/11939/small/shiba.png",
+  AAVE: "https://assets.coingecko.com/coins/images/12645/small/AAVE.png",
+};
+
+/* Coin name for spothq fallback */
 const CRYPTO_NAME_MAP: Record<string, string> = {
   BTC: "bitcoin",  ETH: "ethereum",  BNB: "bnb",     SOL: "solana",
   XRP: "xrp",      USDT: "usdt",     USDC: "usd-coin", ADA: "cardano",
@@ -20,13 +42,6 @@ const CRYPTO_NAME_MAP: Record<string, string> = {
   NEAR: "near",    FTM: "fantom",    ALGO: "algorand", VET: "vechain",
   MANA: "decentraland", SAND: "the-sandbox", AXS: "axie-infinity",
 };
-
-function getCryptoIconUrl(symbol: string): string {
-  const sym = symbol.toLowerCase();
-  // Primary: coingecko (most accurate)
-  const name = CRYPTO_NAME_MAP[symbol.toUpperCase()] || sym;
-  return `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/${sym}.png`;
-}
 
 /* ─── Stocks: Parqet logo API (replaces deprecated Clearbit) ─── */
 const STOCK_DOMAINS: Record<string, string> = {
@@ -234,32 +249,39 @@ const CommodityIcon = ({ symbol, size, borderRadius }: { symbol: string; size: n
   );
 };
 
-/* ─── Crypto icon with multiple fallback sources ─── */
+/* ─── Crypto icon — CoinGecko (transparent) → spothq → letter ─── */
 function CryptoIcon({ symbol, size, borderRadius, className }: { symbol: string; size: number; borderRadius: string | number; className?: string }) {
+  const SYM = symbol.toUpperCase();
   const sym = symbol.toLowerCase();
   const [srcIdx, setSrcIdx] = useState(0);
 
-  const sources = [
-    `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/${sym}.png`,
-    `https://assets.coingecko.com/coins/images/1/small/bitcoin.png`.replace("bitcoin", CRYPTO_NAME_MAP[symbol.toUpperCase()] || sym),
-    null, // fallback to letter
-  ];
+  const sources: (string | null)[] = [
+    COINGECKO_URL[SYM] ?? null,
+    `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/${sym}.png`,
+    null, // letter fallback
+  ].filter((s, i, arr) => s !== null || i === arr.length - 1) as (string | null)[];
 
   if (srcIdx < sources.length - 1 && sources[srcIdx]) {
+    const isCoingecko = srcIdx === 0 && !!COINGECKO_URL[SYM];
     return (
       <img
         src={sources[srcIdx]!}
         alt={symbol}
         className={className}
-        style={{ width: size, height: size, borderRadius, objectFit: "cover", flexShrink: 0 }}
+        style={{
+          width: size, height: size, borderRadius, flexShrink: 0,
+          objectFit: "contain",
+          background: "transparent",
+          ...(isCoingecko ? {} : { background: "rgba(0,0,0,0.15)" }),
+        }}
         onError={() => setSrcIdx(i => i + 1)}
       />
     );
   }
 
   // Letter fallback with brand colors
-  const letter = symbol.substring(0, 1).toUpperCase();
-  const hue = [...symbol].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+  const letter = SYM.substring(0, 1).toUpperCase();
+  const hue = [...SYM].reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
   return (
     <div className={className} style={{
       width: size, height: size, borderRadius, flexShrink: 0,

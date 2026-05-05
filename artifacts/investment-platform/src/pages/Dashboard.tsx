@@ -582,7 +582,25 @@ export default function Dashboard() {
     { label: "Markets",  icon: BarChart2,         href: "/markets",  primary: false },
   ];
 
-  const communityFeed = hasSetPreferences ? getCommunityFeed(preferences) : [];
+  // Platform Activity — refreshes on a random 3 / 6 / 9 s cycle
+  const [communityFeed, setCommunityFeed] = useState<ReturnType<typeof getCommunityFeed>>(
+    () => hasSetPreferences ? getCommunityFeed(preferences) : []
+  );
+  useEffect(() => {
+    if (!hasSetPreferences) return;
+    const DELAYS = [3000, 6000, 9000];
+    let tid: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      const delay = DELAYS[Math.floor(Math.random() * DELAYS.length)];
+      tid = setTimeout(() => {
+        setCommunityFeed(getCommunityFeed(preferences));
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(tid);
+  }, [hasSetPreferences, preferences.join(",")]);
+
   const labelForPrefs = preferences.map(p => CATEGORIES.find(c => c.id === p)?.title?.split(" ")[0]).filter(Boolean).join(", ");
 
   // Market tiles filtered by both preferences AND the current tab
