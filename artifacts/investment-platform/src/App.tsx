@@ -30,6 +30,14 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 
+function HomeOrRedirect() {
+  const isPWA = typeof window !== "undefined" && (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as any).standalone === true
+  );
+  return isPWA ? <Redirect to="/login" /> : <Home />;
+}
+
 // Marketing Pages
 import WhyVault from "@/pages/marketing/WhyVault";
 import Pricing from "@/pages/marketing/Pricing";
@@ -273,7 +281,7 @@ function Router() {
   return (
     <Switch>
       {/* Public Routes */}
-      <Route path="/" component={Home} />
+      <Route path="/" component={HomeOrRedirect} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
 

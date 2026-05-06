@@ -10,6 +10,7 @@ import { Loader2, ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { AssetIcon } from "@/components/AssetIcon";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const fmtPrice = (p: number) =>
   p >= 1
@@ -169,6 +170,7 @@ export default function AssetDetail() {
   const symbol = params?.symbol?.toUpperCase() || "";
   const { colors, mode } = useTheme();
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED, inputBg } = colors;
+  const isMobile = useIsMobile(768);
 
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
@@ -280,9 +282,9 @@ export default function AssetDetail() {
       </div>
 
       {/* Main Content */}
-      <div style={{ display: "flex", height: "calc(100vh - 220px)", minHeight: 560 }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", height: isMobile ? "auto" : "calc(100vh - 220px)", minHeight: isMobile ? 0 : 560 }}>
         {/* Chart Area */}
-        <div style={{ flex: 1, minWidth: 0, borderRight: `1px solid ${BORD}`, display: "flex", flexDirection: "column" }}>
+        <div style={{ flex: 1, minWidth: 0, borderRight: isMobile ? "none" : `1px solid ${BORD}`, borderBottom: isMobile ? `1px solid ${BORD}` : "none", display: "flex", flexDirection: "column", height: isMobile ? 320 : undefined }}>
           <div style={{ flex: 1, minHeight: 0 }}>
             {tvSymbol ? (
               <TradingViewChart key={`${tvSymbol}-${mode}`} tvSymbol={tvSymbol} theme={mode} />
@@ -337,7 +339,7 @@ export default function AssetDetail() {
         </div>
 
         {/* Right Panel: Trade + Order Book */}
-        <div style={{ width: 320, flexShrink: 0, display: "flex", flexDirection: "column", overflowY: "auto", background: CARD }}>
+        <div style={{ width: isMobile ? "100%" : 320, flexShrink: 0, display: "flex", flexDirection: "column", overflowY: isMobile ? "visible" : "auto", background: CARD }}>
           {/* Buy / Sell Form */}
           <div style={{ padding: 16, borderBottom: `1px solid ${BORD}` }}>
             {/* Buy / Sell Toggle */}

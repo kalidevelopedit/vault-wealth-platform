@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, ChevronDown, ChevronRight, Check, Building2, ArrowL
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AssetIcon } from "@/components/AssetIcon";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const fmt = (n: number) =>
   n?.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00";
@@ -574,6 +575,7 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
 
 export default function Wallet() {
   const { colors } = useTheme();
+  const isMobile = useIsMobile();
   const { data: balance, isLoading: bl, refetch: refetchBalance } = useGetUserBalance();
   const { data: txData, isLoading: txl, refetch: refetchTx } = useGetTransactions({ limit: 20 });
 
@@ -595,7 +597,7 @@ export default function Wallet() {
   };
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 1440, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div style={{ padding: isMobile ? "16px 12px" : "32px 24px", maxWidth: 1440, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: colors.text, margin: 0 }}>Wallet</h1>
         <button onClick={() => { refetchBalance(); refetchTx(); }} style={{ background: "none", border: "none", cursor: "pointer", color: colors.muted, display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
@@ -654,70 +656,82 @@ export default function Wallet() {
             <div style={{ padding: "18px 24px", borderBottom: `1px solid ${colors.bord}` }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: colors.text }}>Transaction History</div>
             </div>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${colors.bord}` }}>
-                    {["Date", "Type", "Asset", "Amount", "Status"].map((h, i) => (
-                      <th key={h} style={{ padding: "12px 20px", textAlign: i === 0 ? "left" : "right", fontSize: 11, fontWeight: 500, color: colors.muted, letterSpacing: "0.04em" }}>
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {txl ? (
-                    <tr><td colSpan={5} style={{ padding: 40, textAlign: "center" }}>
-                      <Loader2 style={{ width: 24, height: 24, color: colors.muted, animation: "spin 1s linear infinite", margin: "0 auto" }} />
-                    </td></tr>
-                  ) : txData?.transactions?.length ? txData.transactions.map((tx) => {
-                    const badge = txTypeBadge(tx.type);
-                    return (
-                      <tr key={tx.id} style={{ borderBottom: `1px solid ${colors.bord}` }}
-                        onMouseEnter={e => (e.currentTarget.style.background = colors.hover)}
-                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <td style={{ padding: "14px 20px", fontSize: 12, color: colors.muted, fontFamily: "monospace" }}>
-                          {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                        </td>
-                        <td style={{ padding: "14px 20px", textAlign: "right" }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: badge.color }}>{badge.label}</span>
-                        </td>
-                        <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 12, color: colors.text }}>{tx.symbol || "USD"}</td>
-                        <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>
-                          ${fmt(tx.amount)}
-                        </td>
-                        <td style={{ padding: "14px 20px", textAlign: "right" }}>
-                          <span style={{
-                            fontSize: 11, padding: "3px 10px", borderRadius: 999, fontWeight: 600,
-                            background: tx.status === "completed"
-                              ? "rgba(14,203,129,0.1)"
-                              : tx.status === "pending"
-                              ? "rgba(251,191,36,0.1)"
-                              : tx.status === "processing"
-                              ? "rgba(59,130,246,0.1)"
-                              : "rgba(255,255,255,0.06)",
-                            color: tx.status === "completed"
-                              ? colors.green
-                              : tx.status === "pending"
-                              ? "#fbbf24"
-                              : tx.status === "processing"
-                              ? "#60a5fa"
-                              : colors.muted,
-                          }}>
-                            {tx.status === "processing" ? "Processing" : tx.status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  }) : (
-                    <tr><td colSpan={5} style={{ padding: 48, textAlign: "center", color: colors.muted, fontSize: 14 }}>
-                      No transactions yet
-                    </td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+            {txl ? (
+              <div style={{ padding: 40, textAlign: "center" }}>
+                <Loader2 style={{ width: 24, height: 24, color: colors.muted, animation: "spin 1s linear infinite", margin: "0 auto" }} />
+              </div>
+            ) : !txData?.transactions?.length ? (
+              <div style={{ padding: 48, textAlign: "center", color: colors.muted, fontSize: 14 }}>No transactions yet</div>
+            ) : isMobile ? (
+              /* Mobile card list */
+              <div>
+                {txData.transactions.map((tx, i, arr) => {
+                  const badge = txTypeBadge(tx.type);
+                  const statusColor = tx.status === "completed" ? colors.green : tx.status === "pending" ? "#fbbf24" : tx.status === "processing" ? "#60a5fa" : colors.muted;
+                  return (
+                    <div key={tx.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: i < arr.length - 1 ? `1px solid ${colors.bord}` : "none" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: badge.color }}>{badge.label}</span>
+                          {tx.symbol && <span style={{ fontSize: 11, color: colors.muted }}>{tx.symbol}</span>}
+                        </div>
+                        <div style={{ fontSize: 11, color: colors.muted, fontFamily: "monospace" }}>
+                          {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>${fmt(tx.amount)}</div>
+                        <div style={{ fontSize: 10, color: statusColor, marginTop: 2, fontWeight: 600, textTransform: "capitalize" }}>{tx.status}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Desktop table */
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ borderBottom: `1px solid ${colors.bord}` }}>
+                      {["Date", "Type", "Asset", "Amount", "Status"].map((h, i) => (
+                        <th key={h} style={{ padding: "12px 20px", textAlign: i === 0 ? "left" : "right", fontSize: 11, fontWeight: 500, color: colors.muted, letterSpacing: "0.04em" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {txData.transactions.map((tx) => {
+                      const badge = txTypeBadge(tx.type);
+                      return (
+                        <tr key={tx.id} style={{ borderBottom: `1px solid ${colors.bord}` }}
+                          onMouseEnter={e => (e.currentTarget.style.background = colors.hover)}
+                          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                        >
+                          <td style={{ padding: "14px 20px", fontSize: 12, color: colors.muted, fontFamily: "monospace" }}>
+                            {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          </td>
+                          <td style={{ padding: "14px 20px", textAlign: "right" }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: badge.color }}>{badge.label}</span>
+                          </td>
+                          <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 12, color: colors.text }}>{tx.symbol || "USD"}</td>
+                          <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>
+                            ${fmt(tx.amount)}
+                          </td>
+                          <td style={{ padding: "14px 20px", textAlign: "right" }}>
+                            <span style={{
+                              fontSize: 11, padding: "3px 10px", borderRadius: 999, fontWeight: 600,
+                              background: tx.status === "completed" ? "rgba(14,203,129,0.1)" : tx.status === "pending" ? "rgba(251,191,36,0.1)" : tx.status === "processing" ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.06)",
+                              color: tx.status === "completed" ? colors.green : tx.status === "pending" ? "#fbbf24" : tx.status === "processing" ? "#60a5fa" : colors.muted,
+                            }}>
+                              {tx.status === "processing" ? "Processing" : tx.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
 

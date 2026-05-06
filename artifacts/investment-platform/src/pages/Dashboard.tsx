@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useMarketPreferences, MarketCategory } from "@/contexts/MarketPreferencesContext";
 import { AssetIcon } from "@/components/AssetIcon";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   useGetPortfolioSummary, useGetHoldings, useGetTransactions,
 } from "@workspace/api-client-react";
@@ -550,6 +551,7 @@ export default function Dashboard() {
   const { colors, mode } = useTheme();
   const { preferences, hasSetPreferences, setPreferences, resetPreferences } = useMarketPreferences();
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED, inputBg } = colors;
+  const isMobile = useIsMobile();
 
   const { data: summary, isLoading: ls } = useGetPortfolioSummary();
   const { data: holdings, isLoading: lh } = useGetHoldings();
@@ -755,49 +757,72 @@ export default function Dashboard() {
                 Details <ChevronRight style={{ width: 12, height: 12 }} />
               </Link>
             </div>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${BORD}` }}>
-                    {["Asset", "Quantity", "Value", "24h"].map((h, i) => (
-                      <th key={h} style={{ padding: "12px 20px", textAlign: i === 0 ? "left" : "right", fontSize: 11, fontWeight: 500, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {lh ? (
-                    <tr><td colSpan={4} style={{ padding: 36, textAlign: "center" }}>
-                      <Loader2 style={{ width: 20, height: 20, color: MUTED, animation: "spin 1s linear infinite", margin: "0 auto" }} />
-                    </td></tr>
-                  ) : holdings?.length ? holdings.map(h => {
-                    const pos = h.gainLossPercentage >= 0;
-                    return (
-                      <tr key={h.symbol} style={{ borderBottom: `1px solid ${BORD}` }}>
-                        <td style={{ padding: "14px 20px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <AssetIcon symbol={h.symbol} size={30} borderRadius="50%" />
-                            <div>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{h.symbol}</div>
-                              <div style={{ fontSize: 11, color: MUTED }}>{h.name}</div>
+            {lh ? (
+              <div style={{ padding: 36, textAlign: "center" }}>
+                <Loader2 style={{ width: 20, height: 20, color: MUTED, animation: "spin 1s linear infinite", margin: "0 auto" }} />
+              </div>
+            ) : !holdings?.length ? (
+              <div style={{ padding: 36, textAlign: "center", color: MUTED, fontSize: 13 }}>
+                No holdings yet.{" "}
+                <Link href="/wallet" style={{ color: BLUE, textDecoration: "none" }}>Deposit to get started →</Link>
+              </div>
+            ) : isMobile ? (
+              /* Mobile card list */
+              <div>
+                {holdings.map((h, i) => {
+                  const pos = h.gainLossPercentage >= 0;
+                  return (
+                    <div key={h.symbol} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: i < holdings.length - 1 ? `1px solid ${BORD}` : "none" }}>
+                      <AssetIcon symbol={h.symbol} size={32} borderRadius="50%" />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{h.symbol}</div>
+                        <div style={{ fontSize: 11, color: MUTED, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{h.name}</div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>${fmtUSD(h.currentValue)}</div>
+                        <div style={{ fontSize: 11, color: pos ? GREEN : RED, fontFamily: "monospace" }}>{pos ? "+" : ""}{h.gainLossPercentage.toFixed(2)}%</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* Desktop table */
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ borderBottom: `1px solid ${BORD}` }}>
+                      {["Asset", "Quantity", "Value", "24h"].map((h, i) => (
+                        <th key={h} style={{ padding: "12px 20px", textAlign: i === 0 ? "left" : "right", fontSize: 11, fontWeight: 500, color: MUTED, textTransform: "uppercase", letterSpacing: "0.06em" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {holdings.map(h => {
+                      const pos = h.gainLossPercentage >= 0;
+                      return (
+                        <tr key={h.symbol} style={{ borderBottom: `1px solid ${BORD}` }}>
+                          <td style={{ padding: "14px 20px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                              <AssetIcon symbol={h.symbol} size={30} borderRadius="50%" />
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: TEXT }}>{h.symbol}</div>
+                                <div style={{ fontSize: 11, color: MUTED }}>{h.name}</div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, color: TEXT, fontFamily: "monospace" }}>{h.quantity.toLocaleString()}</td>
-                        <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, color: TEXT, fontFamily: "monospace" }}>${fmtUSD(h.currentValue)}</td>
-                        <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: pos ? GREEN : RED }}>
-                          {pos ? "+" : ""}{h.gainLossPercentage.toFixed(2)}%
-                        </td>
-                      </tr>
-                    );
-                  }) : (
-                    <tr><td colSpan={4} style={{ padding: 36, textAlign: "center", color: MUTED, fontSize: 13 }}>
-                      No holdings yet.{" "}
-                      <Link href="/wallet" style={{ color: BLUE, textDecoration: "none" }}>Deposit to get started →</Link>
-                    </td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, color: TEXT, fontFamily: "monospace" }}>{h.quantity.toLocaleString()}</td>
+                          <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, color: TEXT, fontFamily: "monospace" }}>${fmtUSD(h.currentValue)}</td>
+                          <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, fontFamily: "monospace", color: pos ? GREEN : RED }}>
+                            {pos ? "+" : ""}{h.gainLossPercentage.toFixed(2)}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Community Activity */}

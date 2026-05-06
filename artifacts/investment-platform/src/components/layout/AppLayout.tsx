@@ -6,6 +6,7 @@ import {
   LayoutDashboard, BarChart2, Wallet, User, ArrowLeftRight,
   LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X,
 } from "lucide-react";
+import { PwaInstallBanner } from "@/components/PwaInstallBanner";
 
 interface AppLayoutProps { children: ReactNode; }
 
@@ -422,6 +423,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           );
         })}
       </nav>
+
+      <PwaInstallBanner />
 
       <style>{`
         @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
