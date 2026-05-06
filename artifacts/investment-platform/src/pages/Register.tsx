@@ -173,7 +173,7 @@ export default function Register() {
               </div>
             </div>
 
-            <div className={`flex items-start gap-3 pt-1 p-3 rounded-xl transition-colors ${!formData.agreedToTerms ? "bg-amber-50 border border-amber-100" : ""}`}>
+            <div className={`flex items-start gap-3 pt-1 p-3 rounded-xl transition-colors ${!formData.agreedToTerms ? "bg-[#f9f9f9] border border-[#e5e7eb]" : ""}`}>
               <button type="button"
                 onClick={() => setFormData({ ...formData, agreedToTerms: !formData.agreedToTerms })}
                 className={`w-4 h-4 rounded mt-0.5 shrink-0 flex items-center justify-center transition-colors border ${
@@ -187,7 +187,7 @@ export default function Register() {
                 <a href="#" className="text-[#0F172A] font-semibold hover:underline">Terms of Service</a>{" "}
                 and{" "}
                 <a href="#" className="text-[#0F172A] font-semibold hover:underline">Privacy Policy</a>
-                {!formData.agreedToTerms && <span className="block text-amber-600 font-medium mt-0.5">Required to proceed</span>}
+                {!formData.agreedToTerms && <span className="block text-[#6b7280] font-medium mt-0.5">Required to proceed</span>}
               </label>
             </div>
 

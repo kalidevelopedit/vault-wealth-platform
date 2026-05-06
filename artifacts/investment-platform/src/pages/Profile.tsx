@@ -10,7 +10,7 @@ function KYCStatusBadge({ status }: { status: string }) {
   const cfg = status === "approved"
     ? { bg: "rgba(22,163,74,0.1)", border: "rgba(22,163,74,0.25)", color: "#4ade80", icon: CheckCircle, label: "Verified" }
     : status === "pending"
-    ? { bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.25)", color: "#FCD34D", icon: Clock, label: "Pending Review" }
+    ? { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.55)", icon: Clock, label: "Pending Review" }
     : { bg: "rgba(220,38,38,0.1)", border: "rgba(220,38,38,0.25)", color: "#f87171", icon: AlertCircle, label: "Not Verified" };
   const Icon = cfg.icon;
   return (

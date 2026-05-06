@@ -122,11 +122,11 @@ export default function Login() {
           background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)",
         }}>
           <div style={{
-            width: 400, background: "#0f1624", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 20,
+            width: 400, background: "#0f1624", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20,
             padding: "40px 36px", textAlign: "center", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
           }}>
-            <div style={{ width: 56, height: 56, borderRadius: "50%", border: "1px solid rgba(245,158,11,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "rgba(255,255,255,0.92)", margin: "0 0 10px", letterSpacing: "-0.02em" }}>Application Under Review</h2>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.7, margin: "0 0 28px" }}>

@@ -503,7 +503,7 @@ function PromoModal({ colors, mode, onClose }: { colors: any; mode: string; onCl
         {/* Body */}
         <div style={{ padding: "24px 24px 28px" }}>
           <p style={{ fontSize: 13, color: colors.muted, lineHeight: 1.7, marginBottom: 20 }}>
-            Fund your INT Brokers account with a minimum of <strong style={{ color: colors.text }}>$2,000</strong> and receive a <strong style={{ color: "#f59e0b" }}>$500 welcome bonus</strong> credited instantly — no withdrawal restrictions, no lock-in period.
+            Fund your INT Brokers account with a minimum of <strong style={{ color: colors.text }}>$2,000</strong> and receive a <strong style={{ color: colors.text }}>$500 welcome bonus</strong> credited instantly — no withdrawal restrictions, no lock-in period.
           </p>
 
           <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>

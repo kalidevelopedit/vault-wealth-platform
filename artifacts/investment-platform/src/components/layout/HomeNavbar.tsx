@@ -223,36 +223,46 @@ export function HomeNavbar() {
         display: "flex", flexDirection: "column",
       }}>
         {/* Drawer header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 20px 16px", borderBottom: "1px solid #f0f0f0" }}>
-          <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 56, width: "auto" }} />
-          <button onClick={() => setMobileOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 8, borderRadius: 8, color: "#6b7280", display: "flex" }}>
-            <X size={20} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", height: 72, borderBottom: "1px solid #f0f0f0" }}>
+          {/* Logo — overflow-clip to crop the whitespace on the 1536×1024 PNG */}
+          <div style={{ height: 50, width: 180, overflow: "hidden", position: "relative" }}>
+            <img
+              src="/logo-dark.png"
+              alt="INT Brokers"
+              style={{ height: 180, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
+            />
+          </div>
+          <button onClick={() => setMobileOpen(false)} style={{
+            background: "#f3f4f6", border: "1px solid #e5e7eb", cursor: "pointer",
+            width: 34, height: 34, borderRadius: 8, color: "#6b7280", display: "flex",
+            alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Drawer CTA row */}
-        <div style={{ padding: "16px 20px", display: "flex", gap: 10, borderBottom: "1px solid #f0f0f0" }}>
-          <button onClick={handleDemo} disabled={demoLoading} style={{
-            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            fontSize: "13px", fontWeight: 700, color: "#92400e",
-            background: "linear-gradient(135deg,rgba(245,158,11,0.10),rgba(251,191,36,0.12))",
-            border: "1.5px solid rgba(245,158,11,0.40)", padding: "10px",
-            borderRadius: 10, cursor: "pointer",
-          }}>
-            <Zap size={13} color="#d97706" /> {demoLoading ? "Loading…" : "Try Demo"}
-          </button>
-          <Link href="/login" onClick={() => setMobileOpen(false)} style={{
-            flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "13px", fontWeight: 600, color: "#374151",
-            border: "1.5px solid #e5e7eb", padding: "10px",
-            borderRadius: 10, textDecoration: "none", background: "#f9fafb",
-          }}>Log In</Link>
+        {/* Drawer CTAs — stacked vertically */}
+        <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 8, borderBottom: "1px solid #f0f0f0" }}>
           <Link href="/register" onClick={() => setMobileOpen(false)} style={{
-            flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "13px", fontWeight: 700, color: "#fff",
-            background: "#0d1520", padding: "10px",
-            borderRadius: 10, textDecoration: "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            height: 46, fontSize: "14px", fontWeight: 700, color: "#fff",
+            background: "#0d1520", borderRadius: 10, textDecoration: "none",
+            letterSpacing: "0.01em",
           }}>Open Account</Link>
+          <Link href="/login" onClick={() => setMobileOpen(false)} style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            height: 44, fontSize: "14px", fontWeight: 600, color: "#0d1520",
+            border: "1.5px solid #d1d5db", borderRadius: 10, textDecoration: "none", background: "#fff",
+          }}>Log In</Link>
+          <button onClick={handleDemo} disabled={demoLoading} style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+            height: 40, fontSize: "13px", fontWeight: 600, color: "#6b7280",
+            background: "none", border: "none", cursor: demoLoading ? "wait" : "pointer",
+            borderRadius: 10,
+          }}>
+            <Zap size={13} color="#9ca3af" strokeWidth={1.5} />
+            {demoLoading ? "Loading demo…" : "Try Demo Account"}
+          </button>
         </div>
 
         {/* Drawer nav */}
@@ -375,13 +385,15 @@ export function HomeNavbar() {
 
               <button onClick={handleDemo} disabled={demoLoading} style={{
                 display: "flex", alignItems: "center", gap: 6,
-                fontSize: "12px", fontWeight: 700, color: "#92400e",
-                background: demoLoading ? "rgba(245,158,11,0.06)" : "linear-gradient(135deg,rgba(245,158,11,0.10),rgba(251,191,36,0.12))",
-                border: "1.5px solid rgba(245,158,11,0.40)", padding: "7px 16px", borderRadius: 10,
-                cursor: demoLoading ? "wait" : "pointer", letterSpacing: "0.04em", textTransform: "uppercase",
-                transition: "all 0.14s", boxShadow: demoLoading ? "none" : "0 0 10px rgba(245,158,11,0.15)",
-              }}>
-                <Zap size={12} color="#d97706" strokeWidth={2.5} />
+                fontSize: "12px", fontWeight: 600, color: "#374151",
+                background: "#f3f4f6",
+                border: "1px solid #e5e7eb", padding: "7px 16px", borderRadius: 10,
+                cursor: demoLoading ? "wait" : "pointer", letterSpacing: "0.02em",
+                transition: "all 0.14s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#e9eaec"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "#f3f4f6"; }}>
+                <Zap size={12} color="#6b7280" strokeWidth={1.5} />
                 {demoLoading ? "Loading…" : "Demo"}
               </button>
 
