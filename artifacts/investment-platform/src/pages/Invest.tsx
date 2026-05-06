@@ -3,14 +3,7 @@ import { useListAssets, useSearchAssets } from "@workspace/api-client-react";
 import { Search, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { AssetIcon } from "@/components/AssetIcon";
-
-const BG = "#050505";
-const CARD = "#0C0F14";
-const BORD = "rgba(255,255,255,0.08)";
-const TEXT = "rgba(255,255,255,0.96)";
-const MUTED = "rgba(255,255,255,0.45)";
-const GREEN = "#16a34a";
-const RED = "#dc2626";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const ASSET_TYPES = [
   { key: "all", label: "All" },
@@ -22,6 +15,8 @@ const ASSET_TYPES = [
 export default function Invest() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const { colors, mode } = useTheme();
+  const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, inputBg, green: GREEN, red: RED, blue: BLUE } = colors;
 
   const { data: assets, isLoading } = useListAssets(filter !== "all" ? { type: filter as any } : undefined);
   const { data: searchResults, isLoading: sl } = useSearchAssets(
@@ -42,7 +37,7 @@ export default function Invest() {
         <div style={{ display: "flex", gap: 8 }}>
           {ASSET_TYPES.map(({ key, label }) => (
             <button key={key} onClick={() => setFilter(key)} style={{
-              background: filter === key ? "#191F28" : "transparent",
+              background: filter === key ? (mode === "dark" ? "#191F28" : colors.active) : "transparent",
               color: filter === key ? TEXT : MUTED,
               border: "none", borderRadius: 999, padding: "8px 16px", fontSize: 14, fontWeight: 500, cursor: "pointer",
               transition: "all 0.1s"
@@ -53,12 +48,12 @@ export default function Invest() {
         </div>
 
         <div style={{
-          height: 40, background: "#11141A", borderRadius: 999, border: `1px solid ${BORD}`,
+          height: 40, background: inputBg, borderRadius: 999, border: `1px solid ${BORD}`,
           display: "flex", alignItems: "center", padding: "0 16px", gap: 8, width: "100%", maxWidth: 320
         }}>
           <Search style={{ width: 16, height: 16, color: MUTED }} strokeWidth={1.5} />
           <input
-            className="w-full bg-transparent border-none outline-none text-[14px] text-white"
+            style={{ background: "transparent", border: "none", outline: "none", color: TEXT, fontSize: 14, width: "100%" }}
             placeholder="Search instruments…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -82,7 +77,10 @@ export default function Invest() {
               ) : displayed?.length ? displayed.map(a => {
                 const pos = a.changePercent24h >= 0;
                 return (
-                  <tr key={a.symbol} style={{ borderBottom: `1px solid ${BORD}` }} className="hover:bg-[#11141A] transition-colors">
+                  <tr key={a.symbol} style={{ borderBottom: `1px solid ${BORD}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = colors.hover)}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  >
                     <td style={{ padding: "16px 24px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <AssetIcon symbol={a.symbol} size={32} borderRadius="50%" />
@@ -93,7 +91,7 @@ export default function Invest() {
                       </div>
                     </td>
                     <td style={{ padding: "16px 24px", textAlign: "right" }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: MUTED, background: "#191F28", padding: "4px 8px", borderRadius: 4, textTransform: "capitalize" }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: MUTED, background: mode === "dark" ? "#191F28" : colors.active, padding: "4px 8px", borderRadius: 4, textTransform: "capitalize" }}>
                         {a.assetType}
                       </span>
                     </td>
@@ -120,6 +118,7 @@ export default function Invest() {
           </table>
         </div>
       </div>
+      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

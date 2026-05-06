@@ -317,15 +317,15 @@ export default function Login() {
           {/* Demo button */}
           <button onClick={handleDemo} disabled={demoLoading} style={{
             width: "100%", padding: "13px", borderRadius: 12,
-            background: "rgba(245,158,11,0.1)", color: "#f59e0b",
-            border: "1px solid rgba(245,158,11,0.25)",
+            background: "rgba(255,255,255,0.05)", color: TEXT,
+            border: `1px solid ${BORD}`,
             fontSize: 12, fontWeight: 700, letterSpacing: "0.05em",
             cursor: demoLoading ? "wait" : "pointer",
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             transition: "all 0.14s",
           }}
-            onMouseEnter={e => e.currentTarget.style.background = "rgba(245,158,11,0.16)"}
-            onMouseLeave={e => e.currentTarget.style.background = "rgba(245,158,11,0.1)"}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.09)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
           >
             {demoLoading
               ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Loading…</>

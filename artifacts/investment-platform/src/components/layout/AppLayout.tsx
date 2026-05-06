@@ -102,12 +102,14 @@ export function AppLayout({ children }: AppLayoutProps) {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <img
-              src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
-              alt="INT Brokers"
-              style={{ height: 120, width: "auto", objectFit: "contain" }}
-              onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
-            />
+            <div style={{ height: 52, width: 180, overflow: "hidden", position: "relative", flexShrink: 0 }}>
+              <img
+                src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
+                alt="INT Brokers"
+                style={{ height: 220, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
+                onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
+              />
+            </div>
           </Link>
           <nav style={{ display: "flex", alignItems: "center", gap: 20 }}>
             {[
@@ -185,12 +187,14 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Center: Logo */}
         <Link href="/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", flex: 1 }}>
-          <img
-            src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
-            alt="INT Brokers"
-            style={{ height: 78, width: "auto", objectFit: "contain" }}
-            onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
-          />
+          <div style={{ height: 50, width: 180, overflow: "hidden", position: "relative" }}>
+            <img
+              src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
+              alt="INT Brokers"
+              style={{ height: 200, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
+              onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
+            />
+          </div>
         </Link>
 
         {/* Right: avatar */}

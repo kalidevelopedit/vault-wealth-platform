@@ -124,7 +124,7 @@ function PendingApproval({ user }: { user: any }) {
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid #E6E8EB", borderRadius: 99, padding: "5px 14px", marginBottom: 18 }}>
-              <Loader2 size={11} className="animate-spin" style={{ color: "#d97706" }} />
+              <Loader2 size={11} className="animate-spin" style={{ color: "#6B7280" }} />
               <span style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: "0.08em", textTransform: "uppercase" }}>Review In Progress</span>
             </div>
             <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em", marginBottom: 8 }}>Your application is being reviewed</h1>

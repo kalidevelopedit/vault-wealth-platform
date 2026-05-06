@@ -2,7 +2,10 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRoute, Link } from "wouter";
 import {
   useGetAssetDetail, useCreateTransaction, useGetUserBalance,
+  getGetUserBalanceQueryKey, getGetPortfolioSummaryQueryKey,
+  getGetHoldingsQueryKey, getGetTransactionsQueryKey,
 } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { AssetIcon } from "@/components/AssetIcon";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -171,6 +174,7 @@ export default function AssetDetail() {
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [infoTab, setInfoTab] = useState<"about" | "stats">("stats");
+  const queryClient = useQueryClient();
 
   const { data: asset, isLoading } = useGetAssetDetail(symbol, { query: { enabled: !!symbol, refetchInterval: 15_000 } });
   const { data: balance } = useGetUserBalance();
@@ -197,6 +201,12 @@ export default function AssetDetail() {
       await createTx.mutateAsync({ data: { type: side, symbol: asset.symbol, amount: amtNum } });
       toast.success(`${side === "buy" ? "Buy order placed" : "Sell order placed"} — ${asset.symbol}`);
       setAmount("");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getGetUserBalanceQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetPortfolioSummaryQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetHoldingsQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetTransactionsQueryKey() }),
+      ]);
     } catch (e: any) {
       toast.error(e.message || "Order failed");
     } finally {
