@@ -406,7 +406,7 @@ export default function Profile() {
               </button>
 
               {/* FAQ */}
-              <a href="#" style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", color: colors.muted }}
+              <a href="https://wa.me/18886555555" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 32px", textDecoration: "none", color: colors.muted }}
                 onMouseEnter={e => (e.currentTarget.style.background = colors.inputBg)}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >

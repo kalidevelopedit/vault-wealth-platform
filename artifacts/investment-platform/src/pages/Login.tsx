@@ -257,7 +257,7 @@ export default function Login() {
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <label style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.16em" }}>Password</label>
-                <a href="#" style={{ fontSize: 11, color: BLUE, textDecoration: "none", fontWeight: 500 }}>Forgot password?</a>
+                <a href="https://wa.me/18886555555" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: BLUE, textDecoration: "none", fontWeight: 500 }}>Forgot password?</a>
               </div>
               <div style={{ position: "relative" }}>
                 <input

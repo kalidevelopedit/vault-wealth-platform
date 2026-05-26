@@ -110,11 +110,11 @@ export function Footer() {
             {/* Social */}
             <div style={{ display: "flex", gap: 10 }}>
               {[
-                { Icon: Twitter, label: "Twitter" },
-                { Icon: Linkedin, label: "LinkedIn" },
-                { Icon: Youtube, label: "YouTube" },
-              ].map(({ Icon, label }) => (
-                <a key={label} href="#" title={label} style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .15s" }}
+                { Icon: Twitter, label: "Twitter", href: "https://x.com/vaultwealth" },
+                { Icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/company/vaultwealth" },
+                { Icon: Youtube, label: "YouTube", href: "https://youtube.com/@vaultwealth" },
+              ].map(({ Icon, label, href }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" title={label} style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .15s" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.1)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}>
                   <Icon size={14} color="rgba(255,255,255,0.5)" />
@@ -159,7 +159,7 @@ export function Footer() {
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
               { label: "Disclosures", href: "/risk-disclosures" },
-              { label: "Accessibility", href: "#" },
+              { label: "Accessibility", href: "/about" },
             ].map(l => (
               <Link key={l.label} href={l.href} style={{ fontSize: 10, color: "rgba(255,255,255,0.22)", textDecoration: "none", textTransform: "uppercase", letterSpacing: "0.1em", transition: "color .15s" }}
                 onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}

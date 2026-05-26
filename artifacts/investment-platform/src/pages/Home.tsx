@@ -533,7 +533,7 @@ function RetirementSection() {
               <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 32px",borderRadius:12,background:"#0d1520",color:"#fff",fontWeight:700,fontSize:14,textDecoration:"none",boxShadow:"0 4px 16px rgba(13,21,32,0.2)"}}>
                 Open Retirement Account
               </Link>
-              <a href="#" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 24px",borderRadius:12,border:"1px solid #E6E8EB",color:"#374151",fontWeight:600,fontSize:14,textDecoration:"none"}}>
+              <a href="https://wa.me/18886555555" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:8,padding:"13px 24px",borderRadius:12,border:"1px solid #E6E8EB",color:"#374151",fontWeight:600,fontSize:14,textDecoration:"none"}}>
                 Speak to an Advisor <ChevronRight size={14} />
               </a>
             </div>
@@ -946,8 +946,8 @@ export default function Home() {
           </div>
           <div className="rate-cards-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))",gap:20}}>
             {[
-              {head:"Earn up to",currency:"USD",rate:"3.14%",note:"on instantly available cash balances",cta:"View Interest Rates",accent:"#4ade80"},
-              {head:"Borrow at margin rates as low as",currency:"USD",rate:"4.14%",note:"Among the lowest margin rates globally",cta:"View Margin Rates",accent:"#60a5fa"},
+              {head:"Earn up to",currency:"USD",rate:"3.14%",note:"on instantly available cash balances",cta:"View Interest Rates",accent:"#4ade80",href:"/pricing/interest-on-cash"},
+              {head:"Borrow at margin rates as low as",currency:"USD",rate:"4.14%",note:"Among the lowest margin rates globally",cta:"View Margin Rates",accent:"#60a5fa",href:"/pricing/margin-rates"},
             ].map(r=>(
               <div key={r.rate} className="rate-card" style={{background:"linear-gradient(140deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.02) 100%)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:20,padding:"40px 40px 36px",transition:"transform .22s ease,box-shadow .22s ease",cursor:"default",position:"relative",overflow:"hidden",backdropFilter:"blur(12px)"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${r.accent}50,transparent)`}} />
@@ -958,7 +958,7 @@ export default function Home() {
                   <span style={{color:"#fff",fontSize:"clamp(52px,8vw,72px)",fontWeight:900,letterSpacing:"-0.04em",lineHeight:1}}>{r.rate}</span>
                 </div>
                 <p style={{color:"rgba(255,255,255,0.3)",fontSize:13,lineHeight:1.6,marginBottom:32}}>{r.note}</p>
-                <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,color:r.accent,fontSize:13,fontWeight:600,textDecoration:"none"}}>
+                <a href={r.href} style={{display:"inline-flex",alignItems:"center",gap:6,color:r.accent,fontSize:13,fontWeight:600,textDecoration:"none"}}>
                   {r.cta} <ChevronRight size={14} />
                 </a>
               </div>
@@ -983,11 +983,11 @@ export default function Home() {
           </div>
           <div className="feat-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
             {[
-              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)"},
-              {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)"},
-              {Icon:Zap,title:"Premier Technology",desc:"Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",gradient:"linear-gradient(135deg,#2d1f0a,#1e1505)"},
-              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",gradient:"linear-gradient(135deg,#1f0a0a,#150505)"},
-            ].map(({Icon,title,desc,gradient})=>(
+              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)",href:"/pricing"},
+              {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)",href:"/why-vault/global-access"},
+              {Icon:Zap,title:"Premier Technology",desc:"Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",gradient:"linear-gradient(135deg,#2d1f0a,#1e1505)",href:"/why-vault/technology"},
+              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",gradient:"linear-gradient(135deg,#1f0a0a,#150505)",href:"/security"},
+            ].map(({Icon,title,desc,gradient,href})=>(
               <div key={title} className="feat-card" style={{background:gradient,borderRadius:20,padding:"32px 28px 28px",cursor:"pointer",transition:"transform .22s ease,box-shadow .22s ease",boxShadow:"0 4px 20px rgba(0,0,0,0.08)",border:"1px solid rgba(255,255,255,0.04)",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
                 <div style={{marginBottom:20}}>
@@ -995,7 +995,7 @@ export default function Home() {
                 </div>
                 <h3 style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:10,letterSpacing:"-0.01em"}}>{title}</h3>
                 <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",lineHeight:1.75,marginBottom:20}}>{desc}</p>
-                <a href="#" style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>
+                <a href={href} style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>
                   Learn More <ChevronRight size={13} />
                 </a>
               </div>
@@ -1080,7 +1080,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#0d1520",textDecoration:"none"}}>
+              <a href="/why-vault/lower-costs" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#0d1520",textDecoration:"none"}}>
                 Learn More <ChevronRight size={16} />
               </a>
             </div>
@@ -1101,7 +1101,7 @@ export default function Home() {
               <p style={{fontSize:15,color:"rgba(255,255,255,0.4)",lineHeight:1.8,marginBottom:40}}>
                 When placing your money with a broker, you need to make sure your broker is secure and can endure through good and bad times. Our strong capital position, conservative balance sheet and automated risk controls are designed to protect Vault from major market events.
               </p>
-              <a href="#" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#60a5fa",textDecoration:"none"}}>
+              <a href="/security" style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:14,fontWeight:700,color:"#60a5fa",textDecoration:"none"}}>
                 Vault Financial Protection <ChevronRight size={16} />
               </a>
             </div>
@@ -1160,13 +1160,13 @@ export default function Home() {
           <p style={{color:"#6B7280",fontSize:15,marginBottom:52}}>From individual to institutional — we have an account for every investor</p>
           <div className="acct-types-row" style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center",marginBottom:60}}>
             {[
-              {Icon:User,label:"Individual Accounts",sub:"Personal investing accounts"},
-              {Icon:Users,label:"Joint or Trust Accounts",sub:"Shared and fiduciary accounts"},
-              {Icon:Landmark,label:"Retirement Accounts",sub:"IRA, Roth, SEP and SIMPLE"},
-              {Icon:Briefcase,label:"Non-Professional Advisors",sub:"Manage friends & family"},
-              {Icon:Building2,label:"Institutional Accounts",sub:"Advisors, hedge funds & brokers"},
-            ].map(({Icon,label,sub})=>(
-              <a key={label} href="#" className="acct-card" style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"28px 24px",border:"1px solid #E6E8EB",textDecoration:"none",width:175,borderRadius:16,transition:"border-color .18s,background .18s",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",background:"#fff"}}>
+              {Icon:User,label:"Individual Accounts",sub:"Personal investing accounts",href:"/accounts/individual"},
+              {Icon:Users,label:"Joint or Trust Accounts",sub:"Shared and fiduciary accounts",href:"/accounts/joint"},
+              {Icon:Landmark,label:"Retirement Accounts",sub:"IRA, Roth, SEP and SIMPLE",href:"/retirement"},
+              {Icon:Briefcase,label:"Non-Professional Advisors",sub:"Manage friends & family",href:"/accounts/institutional"},
+              {Icon:Building2,label:"Institutional Accounts",sub:"Advisors, hedge funds & brokers",href:"/accounts/institutional"},
+            ].map(({Icon,label,sub,href})=>(
+              <a key={label} href={href} className="acct-card" style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"28px 24px",border:"1px solid #E6E8EB",textDecoration:"none",width:175,borderRadius:16,transition:"border-color .18s,background .18s",boxShadow:"0 1px 3px rgba(0,0,0,0.04)",background:"#fff"}}>
                 <div style={{width:48,height:48,borderRadius:14,background:"linear-gradient(135deg,#080a0f,#131a26)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,boxShadow:"0 4px 12px rgba(0,0,0,0.15)"}}>
                   <Icon size={20} color="rgba(255,255,255,0.7)" strokeWidth={1.5} />
                 </div>
@@ -1212,7 +1212,7 @@ export default function Home() {
           <p style={{color:"rgba(255,255,255,0.45)",fontSize:15,lineHeight:1.8,marginBottom:32}}>
             React immediately to market-moving news. Trade over 10,000 US Stocks and ETFs, Index Futures and Options, US Treasuries, and global bonds when it's convenient for you.
           </p>
-          <a href="#" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",color:"#fff",fontSize:14,fontWeight:600,padding:"12px 32px",textDecoration:"none",borderRadius:12,backdropFilter:"blur(8px)",transition:"background .15s,border-color .15s"}}
+          <a href="/products/stocks" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.2)",color:"#fff",fontSize:14,fontWeight:600,padding:"12px 32px",textDecoration:"none",borderRadius:12,backdropFilter:"blur(8px)",transition:"background .15s,border-color .15s"}}
             onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.background="rgba(255,255,255,0.16)"}}
             onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.background="rgba(255,255,255,0.1)"}}>
             Learn About 24/7 Trading <ChevronRight size={14} />

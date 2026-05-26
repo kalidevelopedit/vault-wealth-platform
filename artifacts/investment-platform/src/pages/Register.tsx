@@ -184,9 +184,9 @@ export default function Register() {
               <label className="text-[11px] text-[#6B7280] leading-relaxed cursor-pointer"
                 onClick={() => setFormData({ ...formData, agreedToTerms: !formData.agreedToTerms })}>
                 I agree to the{" "}
-                <a href="#" className="text-[#0F172A] font-semibold hover:underline">Terms of Service</a>{" "}
+                <a href="/terms" className="text-[#0F172A] font-semibold hover:underline">Terms of Service</a>{" "}
                 and{" "}
-                <a href="#" className="text-[#0F172A] font-semibold hover:underline">Privacy Policy</a>
+                <a href="/privacy" className="text-[#0F172A] font-semibold hover:underline">Privacy Policy</a>
                 {!formData.agreedToTerms && <span className="block text-[#6b7280] font-medium mt-0.5">Required to proceed</span>}
               </label>
             </div>

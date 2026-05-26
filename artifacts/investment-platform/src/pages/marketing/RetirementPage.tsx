@@ -42,7 +42,7 @@ export default function RetirementPage() {
             <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 40px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(13,21,32,0.2)" }}>
               Open Retirement Account <ArrowUpRight size={16} />
             </Link>
-            <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: 15, textDecoration: "none" }}>
+            <a href="https://wa.me/18886555555" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: 15, textDecoration: "none" }}>
               Speak to an Advisor <ChevronRight size={15} />
             </a>
           </div>
