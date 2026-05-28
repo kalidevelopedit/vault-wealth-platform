@@ -166,11 +166,15 @@ function ArrowOverlay({ icon, color }: { icon: string; color: string }) {
 
 function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [phase, setPhase] = useState<"intro" | "camera" | "countdown" | "recording" | "done" | "error">("intro");
+  const [phase, setPhase] = useState<"intro" | "camera" | "countdown" | "recording" | "done" | "error" | "fallback">("intro");
   const [bStep, setBStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [countdown, setCountdown] = useState(3);
   const [faceDetected, setFaceDetected] = useState(false);
+  const [errorType, setErrorType] = useState<"permission" | "notfound" | "other" | null>(null);
+  const [fallbackImg, setFallbackImg] = useState<string | null>(null);
+  const [fallbackFace, setFallbackFace] = useState<"idle" | "checking" | "found" | "notfound">("idle");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -225,9 +229,40 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
       streamRef.current = stream;
       if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
       setPhase("camera");
-    } catch {
+    } catch (err: any) {
+      const name = err?.name ?? "";
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") setErrorType("permission");
+      else if (name === "NotFoundError" || name === "DevicesNotFoundError") setErrorType("notfound");
+      else setErrorType("other");
       setPhase("error");
     }
+  };
+
+  const goFallback = () => { setFallbackImg(null); setFallbackFace("idle"); setPhase("fallback"); };
+
+  const handleFallbackFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setFallbackImg(url);
+    setFallbackFace("checking");
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 80; canvas.height = 80;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { setFallbackFace("notfound"); return; }
+      ctx.drawImage(img, 0, 0, 80, 80);
+      const { data } = ctx.getImageData(10, 10, 60, 60);
+      let skinPixels = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        if (r > 60 && g > 40 && b > 15 && r > b && r > g * 0.85 && Math.abs(r - g) > 8) skinPixels++;
+      }
+      setFallbackFace(skinPixels > 150 ? "found" : "notfound");
+    };
+    img.onerror = () => setFallbackFace("notfound");
+    img.src = url;
   };
 
   const startCountdown = () => {
@@ -306,12 +341,32 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
 
   // ── error state ──
   if (phase === "error") {
+    const errMsg =
+      errorType === "permission"
+        ? { title: "Camera permission denied", sub: "Open your browser settings, allow camera access for this site, then try again." }
+        : errorType === "notfound"
+        ? { title: "No camera detected", sub: "This device has no camera available. Use the selfie photo option below." }
+        : { title: "Camera unavailable", sub: "Something went wrong starting your camera. Try again or use the photo option." };
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "white", border: "1px solid #E6E8EB", borderRadius: 12 }}>
-        <AlertCircle size={18} color="#6B7280" />
-        <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#0F172A" }}>Camera access required</p>
-          <p style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Allow camera access in your browser settings, then reload.</p>
+      <div style={{ padding: "16px", background: "white", border: "1px solid #E6E8EB", borderRadius: 12 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+          <AlertCircle size={18} color="#c8102e" style={{ flexShrink: 0, marginTop: 2 }} />
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#0F172A" }}>{errMsg.title}</p>
+            <p style={{ fontSize: 12, color: "#6B7280", marginTop: 3, lineHeight: 1.5 }}>{errMsg.sub}</p>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {errorType !== "notfound" && (
+            <button onClick={() => { setPhase("intro"); setErrorType(null); }}
+              style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "11px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
+              <Camera size={13} /> Try Again
+            </button>
+          )}
+          <button onClick={goFallback}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#F5F6F7", color: "#0d1520", fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "11px 0", borderRadius: 8, cursor: "pointer", border: "1px solid #E6E8EB" }}>
+            📷 Take a selfie photo instead
+          </button>
         </div>
       </div>
     );
@@ -344,6 +399,96 @@ function BiometricRecorder({ onComplete }: { onComplete: () => void }) {
             style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
             <Camera size={14} /> Enable Camera & Start
           </button>
+          <button onClick={goFallback}
+            style={{ width: "100%", marginTop: 8, background: "none", border: "none", cursor: "pointer", color: "#9ca3af", fontSize: 11, fontWeight: 500, padding: "4px 0", textDecoration: "underline", textDecorationColor: "#d1d5db" }}>
+            Having issues with camera? Take a selfie photo instead
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── fallback: selfie photo ──
+  if (phase === "fallback") {
+    return (
+      <div className={CARD} style={{ overflow: "hidden" }}>
+        <div style={{ padding: "13px 16px", borderBottom: "1px solid #E6E8EB", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <Camera size={15} color="#6B7280" />
+            <span style={{ fontWeight: 700, fontSize: 13, color: "#0F172A" }}>Selfie verification — photo</span>
+          </div>
+          <button onClick={() => { setPhase("intro"); setFallbackImg(null); setFallbackFace("idle"); }}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#9ca3af", textDecoration: "underline" }}>
+            Use camera instead
+          </button>
+        </div>
+        <div style={{ padding: 16 }}>
+          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 14, lineHeight: 1.65 }}>
+            Take a clear selfie or upload a photo. Your full face must be visible with good lighting. Remove glasses, hats, or anything covering your face.
+          </p>
+
+          {/* Hidden file input — capture="user" opens front camera on mobile */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            style={{ display: "none" }}
+            onChange={handleFallbackFile}
+          />
+
+          {!fallbackImg ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#0d1520", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none" }}>
+                <Camera size={14} /> Take Selfie / Upload Photo
+              </button>
+            </div>
+          ) : (
+            <div>
+              {/* Photo preview */}
+              <div style={{ position: "relative", borderRadius: 10, overflow: "hidden", border: "1px solid #E6E8EB", marginBottom: 12, aspectRatio: "4/3", background: "#0a0a0a" }}>
+                <img src={fallbackImg} alt="Selfie preview" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transform: "scaleX(-1)" }} />
+                {fallbackFace === "checking" && (
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.55)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                    <Loader2 size={24} color="white" style={{ animation: "spin 1s linear infinite" }} />
+                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", fontWeight: 600 }}>Checking for face…</span>
+                  </div>
+                )}
+                {fallbackFace === "found" && (
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 12px", background: "rgba(34,197,94,0.85)", display: "flex", alignItems: "center", gap: 6 }}>
+                    <Check size={13} color="white" strokeWidth={2.5} />
+                    <span style={{ fontSize: 11, color: "white", fontWeight: 700, letterSpacing: "0.04em" }}>FACE DETECTED</span>
+                  </div>
+                )}
+                {fallbackFace === "notfound" && (
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 12px", background: "rgba(200,16,46,0.85)", display: "flex", alignItems: "center", gap: 6 }}>
+                    <AlertCircle size={13} color="white" />
+                    <span style={{ fontSize: 11, color: "white", fontWeight: 700, letterSpacing: "0.04em" }}>NO FACE DETECTED</span>
+                  </div>
+                )}
+              </div>
+
+              {fallbackFace === "found" && (
+                <button
+                  onClick={() => { setPhase("done"); onComplete(); }}
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#c8102e", color: "white", fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", padding: "12px 0", borderRadius: 8, cursor: "pointer", border: "none", marginBottom: 8 }}>
+                  <Check size={14} /> Confirm &amp; Continue
+                </button>
+              )}
+              {fallbackFace === "notfound" && (
+                <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 10, lineHeight: 1.5 }}>
+                  No face was detected. Ensure your full face is clearly visible, well-lit, and centred in the frame.
+                </p>
+              )}
+              <button
+                onClick={() => { setFallbackImg(null); setFallbackFace("idle"); if (fileInputRef.current) fileInputRef.current.value = ""; fileInputRef.current?.click(); }}
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "#F5F6F7", color: "#0d1520", fontSize: 12, fontWeight: 600, padding: "11px 0", borderRadius: 8, cursor: "pointer", border: "1px solid #E6E8EB" }}>
+                <Camera size={13} /> Retake Photo
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

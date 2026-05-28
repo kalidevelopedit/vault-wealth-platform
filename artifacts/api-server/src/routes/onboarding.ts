@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { usersTable, kycDocumentsTable, activityLogTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { sendKycSubmittedEmail } from "../lib/email.js";
+import { notifyKycSubmission } from "../lib/telegram.js";
 
 const router: IRouter = Router();
 
@@ -157,7 +158,10 @@ router.post("/kyc/submit", requireAuth, async (req, res) => {
 
     const [user] = await db.select({ email: usersTable.email, fullName: usersTable.fullName })
       .from(usersTable).where(eq(usersTable.id, userId)).limit(1);
-    if (user) sendKycSubmittedEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
+    if (user) {
+      sendKycSubmittedEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
+      notifyKycSubmission({ email: user.email, fullName: user.fullName, userId }).catch(() => {});
+    }
 
     res.json({ message: "KYC submitted for review" });
   } catch (err) {

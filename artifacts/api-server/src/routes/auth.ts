@@ -5,6 +5,7 @@ import { eq, desc } from "drizzle-orm";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { sendWelcomeEmail, sendForgotPinEmail } from "../lib/email.js";
+import { notifyNewRegistration } from "../lib/telegram.js";
 
 function parseUserAgent(ua: string): { browser: string; os: string; deviceInfo: string } {
   let browser = "Unknown Browser";
@@ -127,6 +128,7 @@ router.post("/register", async (req, res) => {
     });
 
     sendWelcomeEmail({ email: user.email, fullName: user.fullName }).catch(() => {});
+    notifyNewRegistration({ fullName: user.fullName, email: user.email, phone: user.phone, country: user.country, userId: user.id }).catch(() => {});
 
     (req.session as any).userId = user.id;
     const token = signToken(user.id, false);
