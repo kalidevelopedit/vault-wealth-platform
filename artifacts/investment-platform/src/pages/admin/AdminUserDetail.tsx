@@ -88,9 +88,9 @@ const labelSx: React.CSSProperties = {
   textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6,
 };
 
-export default function AdminUserDetail() {
+export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number } = {}) {
   const [_, params] = useRoute("/admin/users/:id");
-  const userId = Number(params?.id);
+  const userId = urlUserId || Number(params?.id);
 
   const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId } });
   const updateStatus = useUpdateUserKycStatus();
@@ -154,10 +154,11 @@ export default function AdminUserDetail() {
   if (!detail) return <div style={{ padding: 48, textAlign: "center", color: MUTED }}>User not found</div>;
 
   const { user, balance, kycDocuments, selfieStatus, holdings, recentTransactions, activityTimeline } = detail as any;
-  const isFrozen = user.isFrozen;
-  const UID = `VW-${String(user.id).padStart(6, "0")}`;
-  const kycColor = KYC_FG[user.kycStatus] ?? "#6b7280";
-  const initials = user.fullName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const isFrozen = user?.isFrozen ?? false;
+  const UID = `VW-${String(user?.id ?? userId).padStart(6, "0")}`;
+  const kycColor = KYC_FG[user?.kycStatus] ?? "#6b7280";
+  const safeName: string = user?.fullName || user?.email || "Unknown";
+  const initials = safeName.split(" ").map((n: string) => n?.[0] ?? "").filter(Boolean).join("").slice(0, 2).toUpperCase() || "??";
 
   const doKyc = async (status: "approved" | "rejected" | "flagged") => {
     setProcessing(true);
@@ -350,7 +351,7 @@ export default function AdminUserDetail() {
           }}>{initials}</div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: 18, fontWeight: 700, color: TEXT, margin: 0 }}>{user.fullName}</h1>
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: TEXT, margin: 0 }}>{safeName}</h1>
               {isFrozen && (
                 <span style={{
                   display: "inline-flex", alignItems: "center", gap: 4,
@@ -371,7 +372,7 @@ export default function AdminUserDetail() {
               </span>
             </div>
             <div style={{ fontSize: 12, color: MUTED, marginTop: 4 }}>
-              {user.email} · {UID} · Joined {new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {user?.email} · {UID} · Joined {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
             </div>
           </div>
         </div>

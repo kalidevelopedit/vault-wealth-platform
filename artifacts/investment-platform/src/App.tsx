@@ -334,7 +334,7 @@ function Router() {
         <AdminLayout><AdminDashboard /></AdminLayout>
       </Route>
       <Route path="/admin/users/:id">
-        <AdminLayout><AdminUserDetail /></AdminLayout>
+        {(params: any) => <AdminLayout><AdminUserDetail urlUserId={parseInt(params?.id || "0", 10)} /></AdminLayout>}
       </Route>
       <Route path="/admin/users">
         <AdminLayout><AdminDashboard /></AdminLayout>

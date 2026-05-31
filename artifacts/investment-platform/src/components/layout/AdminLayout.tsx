@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, Component } from "react";
 import { Link, useLocation } from "wouter";
 import { Users, LogOut, LayoutDashboard, Menu, X, Shield } from "lucide-react";
 
@@ -96,6 +96,28 @@ function Sidebar({ location, onClose, onLogout }: { location: string; onClose?: 
   );
 }
 
+class AdminErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message: string }> {
+  state = { hasError: false, message: "" };
+  static getDerivedStateFromError(err: any) {
+    return { hasError: true, message: err?.message || "Unknown error" };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: "60px 32px", textAlign: "center" }}>
+          <div style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 16 }}>Something went wrong loading this page.</div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", fontFamily: "monospace", marginBottom: 24, wordBreak: "break-all", maxWidth: 480, margin: "0 auto 24px" }}>{this.state.message}</div>
+          <button onClick={() => this.setState({ hasError: false, message: "" })}
+            style={{ padding: "10px 24px", borderRadius: 10, border: "none", background: "#3b82f6", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+            Retry
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [location, setLocation] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -152,7 +174,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </header>
 
         <main style={{ flex: 1, padding: "32px 28px 64px" }} className="sm:px-6 lg:px-10">
-          {children}
+          <AdminErrorBoundary>{children}</AdminErrorBoundary>
         </main>
       </div>
     </div>
