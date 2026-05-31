@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth, saveAuthToken } from "@/hooks/use-auth";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, Zap } from "lucide-react";
+import { Loader2, Eye, EyeOff, Zap, ArrowLeft } from "lucide-react";
 
 const BG   = "#080c18";
 const CARD = "#0f1624";
@@ -334,12 +334,25 @@ export default function Login() {
 
           {/* Footer link + demo card */}
           <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORD}` }}>
-            <p style={{ fontSize: 12, color: MUTED, marginBottom: 16 }}>
-              No account?{" "}
-              <Link href="/register" style={{ color: TEXT, fontWeight: 700, textDecoration: "none" }}>
-                Open an account
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <p style={{ fontSize: 12, color: MUTED, margin: 0 }}>
+                No account?{" "}
+                <Link href="/register" style={{ color: TEXT, fontWeight: 700, textDecoration: "none" }}>
+                  Open an account
+                </Link>
+              </p>
+              <Link href="/" style={{
+                display: "flex", alignItems: "center", gap: 5,
+                fontSize: 12, color: MUTED, textDecoration: "none",
+                transition: "color 0.12s",
+              }}
+                onMouseEnter={e => (e.currentTarget.style.color = TEXT)}
+                onMouseLeave={e => (e.currentTarget.style.color = MUTED)}
+              >
+                <ArrowLeft size={12} strokeWidth={2} />
+                Back to home
               </Link>
-            </p>
+            </div>
 
             <div style={{
               padding: "14px 16px", borderRadius: 12,

@@ -57,8 +57,10 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +76,15 @@ export function AppLayout({ children }: AppLayoutProps) {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [showProfileMenu]);
+
+  useEffect(() => {
+    if (!showMobileMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) setShowMobileMenu(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showMobileMenu]);
 
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, headerBg: HEADER, sidebarBg: SIDE, active: ACTIVE, hover: HOVER, inputBg: INPUTBG } = colors;
 
@@ -294,13 +305,71 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </Link>
 
-        {/* Right: avatar */}
-        <Link href="/profile" style={{
-          width: 34, height: 34, borderRadius: "50%",
-          background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: "#fff", textDecoration: "none", fontSize: 12, fontWeight: 700, flexShrink: 0,
-        }}>{initials}</Link>
+        {/* Right: avatar with dropdown */}
+        <div ref={mobileMenuRef} style={{ position: "relative", flexShrink: 0 }}>
+          <button
+            onClick={() => setShowMobileMenu(v => !v)}
+            style={{
+              width: 34, height: 34, borderRadius: "50%",
+              background: showMobileMenu
+                ? "linear-gradient(135deg,#2563FF,#1d4ed8)"
+                : "linear-gradient(135deg,#1d4ed8,#2563FF)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#fff", fontSize: 12, fontWeight: 700,
+              border: "2px solid " + (showMobileMenu ? BLUE : "transparent"),
+              cursor: "pointer", outline: "none", transition: "border-color 0.15s",
+            }}
+          >{initials}</button>
+
+          {showMobileMenu && (
+            <div style={{
+              position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 9999,
+              background: CARD, border: `1px solid ${BORD}`, borderRadius: 14,
+              padding: "6px 0", minWidth: 180,
+              boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+            }}>
+              <div style={{ padding: "10px 16px 12px", borderBottom: `1px solid ${BORD}`, marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 2 }}>{user?.fullName || "User"}</div>
+                <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+              </div>
+              <Link href="/profile"
+                onClick={() => setShowMobileMenu(false)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "9px 16px", textDecoration: "none",
+                  color: TEXT, fontSize: 13,
+                }}
+              >
+                <User style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+                My Profile
+              </Link>
+              <Link href="/settings"
+                onClick={() => setShowMobileMenu(false)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "9px 16px", textDecoration: "none",
+                  color: TEXT, fontSize: 13,
+                }}
+              >
+                <Settings style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+                Settings
+              </Link>
+              <div style={{ height: 1, background: BORD, margin: "4px 0" }} />
+              <button
+                onClick={() => { setShowMobileMenu(false); logout(); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "9px 16px", background: "none", border: "none",
+                  cursor: "pointer", color: "#ef4444", fontSize: 13,
+                  width: "100%",
+                }}
+              >
+                <LogOut style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+                Sign out
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* ── Main Layout ── */}
