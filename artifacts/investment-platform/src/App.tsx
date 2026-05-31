@@ -95,6 +95,7 @@ import Profile from "@/pages/Profile";
 import UserSecurity from "@/pages/UserSecurity";
 import Convert from "@/pages/Convert";
 import Settings from "@/pages/Settings";
+import WealthBuilder from "@/pages/WealthBuilder";
 
 // Admin Pages
 import AdminLogin from "@/pages/admin/AdminLogin";
@@ -389,6 +390,7 @@ function Router() {
       <Route path="/assets/:type(crypto|stocks|commodities)"><ProtectedRoute component={AssetList} /></Route>
       <Route path="/assets/:symbol"><ProtectedRoute component={AssetDetail} /></Route>
       <Route path="/wallet"><ProtectedRoute component={Wallet} /></Route>
+      <Route path="/wealth-builder"><ProtectedRoute component={WealthBuilder} /></Route>
       <Route path="/profile"><ProtectedRoute component={Profile} /></Route>
       <Route path="/account/security"><ProtectedRoute component={UserSecurity} /></Route>
       <Route path="/convert"><ProtectedRoute component={Convert} /></Route>

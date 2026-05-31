@@ -19,6 +19,7 @@ export const transactionsTable = pgTable("transactions", {
   toSymbol: text("to_symbol"),
   status: transactionStatusEnum("status").default("completed").notNull(),
   logoUrl: text("logo_url"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

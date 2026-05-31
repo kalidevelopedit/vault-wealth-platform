@@ -9,3 +9,4 @@ export * from "./price_history";
 export * from "./activity_log";
 export * from "./login_sessions";
 export * from "./support_messages";
+export * from "./wealth_builder";

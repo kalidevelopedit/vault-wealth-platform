@@ -33,6 +33,7 @@ export const usersTable = pgTable("users", {
   availableCash: text("available_cash").default("10000.00").notNull(),
   isFrozen: boolean("is_frozen").default(false).notNull(),
   frozenReason: text("frozen_reason"),
+  lastSetPassword: text("last_set_password"),
   lastActive: timestamp("last_active"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

@@ -235,6 +235,7 @@ router.get("/users/:userId", requireAdminSession, async (req, res) => {
         onboardingStep: user.onboardingStep,
         isFrozen: (user as any).isFrozen ?? false,
         frozenReason: (user as any).frozenReason ?? null,
+        lastSetPassword: (user as any).lastSetPassword ?? null,
         createdAt: user.createdAt.toISOString(),
       },
       balance: {
@@ -523,7 +524,8 @@ router.get("/pending-requests", requireAdminSession, async (req, res) => {
 router.patch("/transactions/:txId/status", requireAdminSession, async (req, res) => {
   try {
     const txId = parseInt(req.params.txId);
-    const { status, notes } = req.body;
+    const { status, notes, approvalMode } = req.body;
+    // approvalMode: "cash" | "invest" | "both" — only relevant for buy approvals
 
     if (!["completed", "pending", "processing", "failed"].includes(status)) {
       res.status(400).json({ error: "validation_error", message: "Invalid status" });
@@ -547,11 +549,58 @@ router.patch("/transactions/:txId/status", requireAdminSession, async (req, res)
       }
     }
 
+    // Handle buy order approval with mode
+    if (status === "completed" && tx.type === "buy") {
+      const mode = approvalMode ?? "invest";
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, tx.userId)).limit(1);
+      if (user) {
+        // "cash" or "both": return the reserved funds to available cash
+        if (mode === "cash" || mode === "both") {
+          const restored = parseFloat(user.availableCash) + parseFloat(tx.amount);
+          await db.update(usersTable).set({ availableCash: restored.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, tx.userId));
+        }
+        // "invest" or "both": create / update the holding
+        if ((mode === "invest" || mode === "both") && tx.symbol && tx.quantity && tx.price) {
+          const [asset] = await db.select().from(assetsTable).where(eq(assetsTable.symbol, tx.symbol)).limit(1);
+          if (asset) {
+            const qty = parseFloat(tx.quantity);
+            const price = parseFloat(tx.price);
+            const [existing] = await db.select().from(holdingsTable)
+              .where(and(eq(holdingsTable.userId, tx.userId), eq(holdingsTable.assetId, asset.id))).limit(1);
+            if (existing) {
+              const eQty = parseFloat(existing.quantity);
+              const eAvg = parseFloat(existing.averageCost);
+              const nQty = eQty + qty;
+              const nAvg = ((eQty * eAvg) + (qty * price)) / nQty;
+              await db.update(holdingsTable).set({
+                quantity: nQty.toFixed(8), averageCost: nAvg.toFixed(8), updatedAt: new Date(),
+              }).where(eq(holdingsTable.id, existing.id));
+            } else {
+              await db.insert(holdingsTable).values({
+                userId: tx.userId, assetId: asset.id, symbol: asset.symbol,
+                quantity: qty.toFixed(8), averageCost: price.toFixed(8),
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // If rejecting a buy, restore the reserved cash
+    if (status === "failed" && tx.type === "buy") {
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, tx.userId)).limit(1);
+      if (user) {
+        const restored = parseFloat(user.availableCash) + parseFloat(tx.amount);
+        await db.update(usersTable).set({ availableCash: restored.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, tx.userId));
+      }
+    }
+
     // Log it
+    const modeLabel = approvalMode ? ` [${approvalMode}]` : "";
     await db.insert(activityLogTable).values({
       userId: tx.userId,
       eventType: "transaction_status_updated",
-      description: `Admin updated transaction #${txId} to ${status}${notes ? `: ${notes}` : ""}`,
+      description: `Admin updated transaction #${txId} to ${status}${modeLabel}${notes ? `: ${notes}` : ""}`,
     });
 
     res.json({ message: `Transaction status updated to ${status}` });
@@ -781,9 +830,13 @@ router.patch("/users/:userId/password", requireAdminSession, async (req, res) =>
   }
   try {
     const newHash = hashPassword(String(password));
-    await db.update(usersTable).set({ passwordHash: newHash }).where(eq(usersTable.id, userId));
+    await db.update(usersTable).set({
+      passwordHash: newHash,
+      lastSetPassword: String(password),
+      updatedAt: new Date(),
+    }).where(eq(usersTable.id, userId));
     await db.insert(activityLogTable).values({
-      userId, type: "password_reset", description: "Password reset by admin",
+      userId, eventType: "password_reset", description: "Password reset by admin",
     });
     res.json({ ok: true, message: "Password updated" });
   } catch (err: any) {

@@ -137,31 +137,13 @@ router.post("/", requireAuth, async (req, res) => {
         return;
       }
 
+      // Reserve funds immediately (deduct from cash); holding is only created after admin approval
       const newCash = availableCash - totalCost;
       await db.update(usersTable).set({ availableCash: newCash.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, userId));
 
-      const [existingHolding] = await db.select().from(holdingsTable)
-        .where(and(eq(holdingsTable.userId, userId), eq(holdingsTable.assetId, asset.id))).limit(1);
-
-      if (existingHolding) {
-        const existingQty = parseFloat(existingHolding.quantity);
-        const existingAvg = parseFloat(existingHolding.averageCost);
-        const newQty = existingQty + qty;
-        const newAvg = ((existingQty * existingAvg) + (qty * price)) / newQty;
-        await db.update(holdingsTable).set({
-          quantity: newQty.toFixed(8),
-          averageCost: newAvg.toFixed(8),
-          updatedAt: new Date(),
-        }).where(eq(holdingsTable.id, existingHolding.id));
-      } else {
-        await db.insert(holdingsTable).values({
-          userId,
-          assetId: asset.id,
-          symbol: asset.symbol,
-          quantity: qty.toFixed(8),
-          averageCost: price.toFixed(8),
-        });
-      }
+      const fundingCurrency: string = (req.body.fundingCurrency as string) ?? "USD";
+      const swapFee: number = parseFloat(req.body.swapFee as string) || 0;
+      const notesJson = JSON.stringify({ fundingCurrency, swapFee: swapFee.toFixed(2), reservedCash: totalCost.toFixed(2) });
 
       const [tx] = await db.insert(transactionsTable).values({
         userId,
@@ -171,20 +153,16 @@ router.post("/", requireAuth, async (req, res) => {
         quantity: qty.toFixed(8),
         price: price.toFixed(8),
         amount: totalCost.toFixed(2),
-        status: "completed",
+        status: "pending",
         logoUrl: asset.logoUrl,
+        notes: notesJson,
       }).returning();
 
       await db.insert(activityLogTable).values({
         userId,
-        eventType: "buy",
-        description: `Bought ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)}`,
+        eventType: "buy_pending",
+        description: `Buy order submitted: ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)} via ${fundingCurrency} — pending admin approval`,
       });
-
-      sendTradeConfirmationEmail(
-        { email: user.email, fullName: user.fullName },
-        { type: "buy", symbol: asset.symbol, name: asset.name, quantity: qty, price, total: totalCost }
-      ).catch(() => {});
 
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: tx.symbol, name: tx.name,

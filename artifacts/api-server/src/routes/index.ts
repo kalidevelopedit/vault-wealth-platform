@@ -11,6 +11,7 @@ import usersRouter from "./users";
 import adminRouter from "./admin";
 import storageRouter from "./storage";
 import supportRouter from "./support";
+import wealthBuilderRouter from "./wealth-builder";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use("/users", usersRouter);
 router.use("/admin", adminRouter);
 router.use(storageRouter);
 router.use("/support", supportRouter);
+router.use("/wealth-builder", wealthBuilderRouter);
 
 export default router;

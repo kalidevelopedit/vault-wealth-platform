@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
   LayoutDashboard, BarChart2, Wallet, User, ArrowLeftRight,
   LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X,
-  MessageCircle,
+  MessageCircle, Gem,
 } from "lucide-react";
 import { PwaInstallBanner } from "@/components/PwaInstallBanner";
 
@@ -89,13 +89,14 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, headerBg: HEADER, sidebarBg: SIDE, active: ACTIVE, hover: HOVER, inputBg: INPUTBG } = colors;
 
   const navLinks = [
-    { icon: LayoutDashboard, label: "Overview",  href: "/dashboard" },
-    { icon: BarChart2,       label: "Markets",   href: "/markets" },
-    { icon: Wallet,          label: "Wallet",    href: "/wallet" },
-    { icon: ArrowLeftRight,  label: "Convert",   href: "/convert" },
-    { icon: User,            label: "Profile",   href: "/profile" },
-    { icon: Shield,          label: "Security",  href: "/account/security" },
-    { icon: Settings,        label: "Settings",  href: "/settings" },
+    { icon: LayoutDashboard, label: "Overview",        href: "/dashboard" },
+    { icon: BarChart2,       label: "Markets",         href: "/markets" },
+    { icon: Wallet,          label: "Wallet",          href: "/wallet" },
+    { icon: Gem,             label: "Wealth Builder",  href: "/wealth-builder" },
+    { icon: ArrowLeftRight,  label: "Convert",         href: "/convert" },
+    { icon: User,            label: "Profile",         href: "/profile" },
+    { icon: Shield,          label: "Security",        href: "/account/security" },
+    { icon: Settings,        label: "Settings",        href: "/settings" },
   ];
 
   // Bottom nav shows 5 items (mobile)

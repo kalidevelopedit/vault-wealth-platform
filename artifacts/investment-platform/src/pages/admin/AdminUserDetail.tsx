@@ -20,13 +20,21 @@ const AMB   = "#f59e0b";
 const WHATSAPP_LINK = "https://wa.me/18886555555";
 const API_BASE = "/api";
 
+class AdminSessionExpiredError extends Error {
+  code = "ADMIN_SESSION_EXPIRED";
+  constructor() { super("Admin session expired"); }
+}
+
 async function adminFetch(path: string, opts: RequestInit = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     ...opts, credentials: "include",
     headers: { "Content-Type": "application/json", ...(opts.headers ?? {}) },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Request failed");
+  if (!res.ok) {
+    if (res.status === 401) throw new AdminSessionExpiredError();
+    throw new Error(data.message || "Request failed");
+  }
   return data;
 }
 
@@ -92,7 +100,7 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
   const [_, params] = useRoute("/admin/users/:id");
   const userId = urlUserId || Number(params?.id);
 
-  const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId } as any });
+  const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId, refetchInterval: 30000 } as any });
   const updateStatus = useUpdateUserKycStatus();
 
   const [notes,      setNotes]      = useState("");
@@ -144,6 +152,15 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
   const [newPassword,  setNewPassword]  = useState("");
   const [pwLoading,    setPwLoading]    = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Re-auth interceptor
+  const [showReauth,    setShowReauth]    = useState(false);
+  const [reauthCode,    setReauthCode]    = useState("");
+  const [reauthLoading, setReauthLoading] = useState(false);
+  const pendingFn = useRef<(() => Promise<void>) | null>(null);
+
+  // Pending buy approvals
+  const [approvingTx,  setApprovingTx]  = useState<number | null>(null);
 
   // Asset search — must be before early returns to satisfy Rules of Hooks
   const searchAssets = useCallback(async (q: string) => {
@@ -311,8 +328,67 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
       await adminFetch(`/admin/users/${userId}/password`, { method: "PATCH", body: JSON.stringify({ password: newPassword }) });
       toast.success("Password updated successfully");
       setNewPassword("");
-    } catch (e: any) { toast.error(e.message); }
+      refetch();
+    } catch (e: any) {
+      if (e instanceof AdminSessionExpiredError) { pendingFn.current = doSetPassword; setShowReauth(true); }
+      else toast.error(e.message);
+    }
     finally { setPwLoading(false); }
+  };
+
+  const runSafe = async (fn: () => Promise<void>) => {
+    try { await fn(); }
+    catch (e: any) {
+      if (e instanceof AdminSessionExpiredError) { pendingFn.current = fn; setShowReauth(true); }
+      else toast.error(e.message);
+    }
+  };
+
+  const submitReauth = async () => {
+    if (!reauthCode.trim()) { toast.error("Enter the admin passcode"); return; }
+    setReauthLoading(true);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        credentials: "include", body: JSON.stringify({ passcode: reauthCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Invalid passcode");
+      setShowReauth(false);
+      setReauthCode("");
+      toast.success("Re-authenticated successfully");
+      if (pendingFn.current) {
+        const fn = pendingFn.current;
+        pendingFn.current = null;
+        await fn();
+      }
+    } catch (e: any) { toast.error(e.message); }
+    finally { setReauthLoading(false); }
+  };
+
+  const approveOrder = async (txId: number, mode: "cash" | "invest" | "both") => {
+    setApprovingTx(txId);
+    await runSafe(async () => {
+      await adminFetch(`/admin/transactions/${txId}/status`, {
+        method: "PATCH", body: JSON.stringify({ status: "completed", approvalMode: mode }),
+      });
+      toast.success(`Buy order approved (${mode})`);
+      refetch();
+    });
+    setApprovingTx(null);
+  };
+
+  const rejectOrder = async (txId: number) => {
+    if (!window.confirm("Reject this buy order? Funds will be returned to the user.")) return;
+    setApprovingTx(txId);
+    await runSafe(async () => {
+      await adminFetch(`/admin/transactions/${txId}/status`, {
+        method: "PATCH", body: JSON.stringify({ status: "failed" }),
+      });
+      toast.success("Buy order rejected — funds returned");
+      refetch();
+    });
+    setApprovingTx(null);
   };
 
   return (
@@ -471,6 +547,19 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
                 <div style={{ fontSize: 10, color: MUTED, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em" }}>Account Security</div>
               </div>
               <div style={{ padding: "20px 24px" }}>
+                {user.lastSetPassword && (
+                  <div style={{
+                    marginBottom: 14, padding: "10px 14px", borderRadius: 10,
+                    background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)",
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>Last Set Password</div>
+                      <div style={{ fontSize: 14, fontFamily: "monospace", color: TEXT, fontWeight: 600 }}>{user.lastSetPassword}</div>
+                    </div>
+                    <KeyRound size={16} color={BLUE} />
+                  </div>
+                )}
                 <div style={{ fontSize: 13, color: MUTED, marginBottom: 14 }}>Set a new password for this user's account.</div>
                 <div style={{ position: "relative" }}>
                   <input
@@ -737,6 +826,82 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
       {/* ═══════════════ ACTIVITY ═══════════════ */}
       {tab === "transactions" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20 }} className="ud-asset-grid">
+
+          {/* ── Pending Buy Orders ── */}
+          {(() => {
+            const pendingBuys = (recentTransactions ?? []).filter((t: any) => t.type === "buy" && t.status === "pending");
+            if (!pendingBuys.length) return null;
+            return (
+              <div style={{ gridColumn: "1 / -1", background: CARD, border: `1.5px solid ${AMB}`, borderRadius: 18, overflow: "hidden", marginBottom: 4 }}>
+                <div style={{ padding: "16px 24px", borderBottom: `1px solid rgba(255,255,255,0.06)`, display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: AMB, boxShadow: "0 0 8px rgba(245,158,11,0.5)" }} />
+                  <div style={{ fontSize: 10, fontWeight: 700, color: AMB, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                    Pending Buy Orders ({pendingBuys.length}) — Awaiting Approval
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                  {pendingBuys.map((t: any) => {
+                    let fundingCurrency = "USD";
+                    let swapFee = 0;
+                    try { const n = JSON.parse(t.notes || "{}"); fundingCurrency = n.fundingCurrency || "USD"; swapFee = parseFloat(n.swapFee) || 0; } catch {}
+                    return (
+                      <div key={t.id} style={{
+                        padding: "16px 24px", borderBottom: `1px solid rgba(255,255,255,0.04)`,
+                        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
+                      }}>
+                        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                          <div style={{
+                            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+                            background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 11, fontWeight: 800, color: AMB,
+                          }}>{t.symbol?.slice(0, 3) || "BUY"}</div>
+                          <div>
+                            <div style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>
+                              Buy {t.symbol} — ${parseFloat(t.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                            </div>
+                            <div style={{ fontSize: 11, color: MUTED, marginTop: 2, display: "flex", gap: 8 }}>
+                              <span>{t.quantity ? `${parseFloat(t.quantity).toFixed(6)} units` : ""}</span>
+                              <span style={{ color: "rgba(255,255,255,0.12)" }}>·</span>
+                              <span>via {fundingCurrency}</span>
+                              {swapFee > 0 && <><span style={{ color: "rgba(255,255,255,0.12)" }}>·</span><span style={{ color: AMB }}>fee ${swapFee}</span></>}
+                              <span style={{ color: "rgba(255,255,255,0.12)" }}>·</span>
+                              <span>{new Date(t.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
+                          {[
+                            { mode: "invest" as const,  label: "→ Invest",       bg: GAIN,                 tip: "Create holding position" },
+                            { mode: "cash"   as const,  label: "→ Cash",          bg: BLUE,                 tip: "Credit to available cash" },
+                            { mode: "both"   as const,  label: "→ Both",          bg: "#a78bfa",            tip: "Invest + credit cash" },
+                          ].map(({ mode, label, bg }) => (
+                            <button key={mode} onClick={() => approveOrder(t.id, mode)} disabled={approvingTx === t.id} style={{
+                              padding: "7px 14px", borderRadius: 9, border: "none", cursor: "pointer",
+                              background: bg, color: "#fff", fontSize: 11, fontWeight: 700,
+                              opacity: approvingTx === t.id ? 0.5 : 1,
+                              display: "flex", alignItems: "center", gap: 5,
+                            }}>
+                              {approvingTx === t.id ? <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} /> : null}
+                              {label}
+                            </button>
+                          ))}
+                          <button onClick={() => rejectOrder(t.id)} disabled={approvingTx === t.id} style={{
+                            padding: "7px 14px", borderRadius: 9, border: "1px solid rgba(239,68,68,0.3)",
+                            background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 11, fontWeight: 700,
+                            cursor: "pointer", opacity: approvingTx === t.id ? 0.5 : 1,
+                          }}>
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Activity Feed */}
           <Card title="Recent Activity" sub="Transaction History">
             {!recentTransactions?.length ? (
@@ -1100,6 +1265,57 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
           ))}
         </Card>
       )}
+
+      {/* ── Re-auth Modal ── */}
+      {showReauth && (
+        <div onClick={() => setShowReauth(false)} style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: CARD, border: `1px solid ${BORD}`, borderRadius: 20,
+            maxWidth: 380, width: "100%", padding: 28,
+            boxShadow: "0 24px 80px rgba(0,0,0,0.7)",
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: 14, background: "rgba(59,130,246,0.12)",
+                border: "1px solid rgba(59,130,246,0.25)",
+                display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px",
+              }}>
+                <KeyRound size={22} color={BLUE} />
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 6 }}>Session Expired</div>
+              <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6 }}>
+                Your admin session has expired. Enter the admin passcode to continue.
+              </div>
+            </div>
+            <input
+              type="password"
+              autoFocus
+              placeholder="Admin passcode"
+              value={reauthCode}
+              onChange={e => setReauthCode(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && submitReauth()}
+              style={{ ...inputSx, fontSize: 15, textAlign: "center", letterSpacing: "0.15em", marginBottom: 12 }}
+            />
+            <button onClick={submitReauth} disabled={reauthLoading} style={{
+              width: "100%", height: 44, borderRadius: 12, border: "none",
+              background: BLUE, color: "#fff", fontSize: 14, fontWeight: 700,
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              opacity: reauthLoading ? 0.6 : 1,
+            }}>
+              {reauthLoading ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Verifying…</> : "Verify & Continue"}
+            </button>
+            <button onClick={() => setShowReauth(false)} style={{
+              marginTop: 8, width: "100%", height: 36, borderRadius: 10, border: `1px solid ${BORD}`,
+              background: "transparent", color: MUTED, fontSize: 12, fontWeight: 500, cursor: "pointer",
+            }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
