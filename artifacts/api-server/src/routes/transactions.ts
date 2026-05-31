@@ -199,7 +199,12 @@ router.post("/", requireAuth, async (req, res) => {
       const proceeds = qty * price;
 
       // Reserve the holding (mark as locked) — cash credited only after admin approval
-      const reservedNotes = JSON.stringify({ reservedQty: qty.toFixed(8), reservedProceeds: proceeds.toFixed(2) });
+      const payoutInfo = req.body.payoutInfo ?? null;
+      const reservedNotes = JSON.stringify({
+        reservedQty: qty.toFixed(8),
+        reservedProceeds: proceeds.toFixed(2),
+        ...(payoutInfo ? { payout: payoutInfo } : {}),
+      });
 
       const [tx] = await db.insert(transactionsTable).values({
         userId,

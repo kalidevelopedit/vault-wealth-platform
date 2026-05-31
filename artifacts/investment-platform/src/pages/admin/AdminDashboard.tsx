@@ -47,7 +47,7 @@ type PendingRequest = {
   userId: number;
   userFullName: string;
   userEmail: string;
-  type: "deposit" | "withdraw";
+  type: "deposit" | "withdraw" | "buy" | "sell";
   symbol: string | null;
   name: string | null;
   amount: number;
@@ -458,13 +458,25 @@ export default function AdminDashboard() {
             ) : (
               <div>
                 {pendingRequests.map((req, i) => {
-                  const isDeposit = req.type === "deposit";
+                  const isDeposit  = req.type === "deposit";
+                  const isSell     = req.type === "sell";
+                  const isBuy      = req.type === "buy";
                   const isProcessing = processingTx === req.id;
+
+                  // Parse payout info for sell orders
+                  let payout: any = {};
+                  if (isSell && req.notes) {
+                    try { const n = JSON.parse(req.notes); payout = n.payout ?? {}; } catch {}
+                  }
+
+                  const typeLabel = isDeposit ? "DEPOSIT" : isSell ? "SELL" : isBuy ? "BUY" : "WITHDRAW";
+                  const typeColor = isDeposit ? GAIN : isSell || !isDeposit ? LOSS : MUTED;
+
                   return (
                     <div key={req.id} style={{
                       padding: "18px 24px",
                       borderBottom: i < pendingRequests.length - 1 ? `1px solid rgba(255,255,255,0.05)` : "none",
-                      display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap",
+                      display: "flex", alignItems: "flex-start", gap: 16, flexWrap: "wrap",
                     }}>
                       {/* Icon */}
                       <div style={{
@@ -472,26 +484,32 @@ export default function AdminDashboard() {
                         background: isDeposit ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
                         border: `1px solid ${isDeposit ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: isSell ? 14 : undefined,
                       }}>
                         {isDeposit
                           ? <ArrowDownToLine size={18} color={GAIN} strokeWidth={1.8} />
-                          : <ArrowUpFromLine size={18} color={LOSS} strokeWidth={1.8} />
+                          : isSell
+                            ? <span style={{ fontSize: 14, fontWeight: 800, color: LOSS }}>S</span>
+                            : <ArrowUpFromLine size={18} color={LOSS} strokeWidth={1.8} />
                         }
                       </div>
 
-                      {/* User info */}
+                      {/* User + payout info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                           <span style={{ fontSize: 14, fontWeight: 700, color: TEXT }}>{req.userFullName}</span>
                           <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
                             background: isDeposit ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
-                            color: isDeposit ? GAIN : LOSS,
+                            color: typeColor,
                           }}>
-                            {isDeposit ? "DEPOSIT" : "WITHDRAW"}
+                            {typeLabel}
                           </span>
-                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600,
-                            background: "rgba(245,158,11,0.12)", color: AMB,
-                          }}>
+                          {req.symbol && (
+                            <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, background: "rgba(59,130,246,0.12)", color: "#60a5fa", fontFamily: "monospace" }}>
+                              {req.symbol}
+                            </span>
+                          )}
+                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 99, fontWeight: 600, background: "rgba(245,158,11,0.12)", color: AMB }}>
                             {req.status.toUpperCase()}
                           </span>
                         </div>
@@ -499,6 +517,26 @@ export default function AdminDashboard() {
                           {req.userEmail} · <span style={{ fontFamily: "monospace" }}>#{req.id}</span> · {timeAgo(req.createdAt)}
                         </div>
                         {req.name && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{req.name}</div>}
+                        {/* Sell payout destination */}
+                        {isSell && payout.payoutMethod && (
+                          <div style={{ marginTop: 6, padding: "6px 10px", borderRadius: 7, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", fontSize: 11, color: MUTED, display: "flex", flexWrap: "wrap", gap: 8 }}>
+                            {payout.payoutMethod === "bank" && (
+                              <>
+                                <span>🏦 <strong style={{ color: TEXT }}>{payout.bankName}</strong></span>
+                                {payout.iban && <span>IBAN: <span style={{ fontFamily: "monospace", color: TEXT }}>{payout.iban}</span></span>}
+                                {payout.routingNumber && <span>Routing: <span style={{ fontFamily: "monospace", color: TEXT }}>{payout.routingNumber}</span></span>}
+                                {payout.accountNumber && <span>Acct: <span style={{ fontFamily: "monospace", color: TEXT }}>{payout.accountNumber}</span></span>}
+                                {payout.timeline && <span style={{ color: AMB }}>⏱ {payout.timeline}</span>}
+                              </>
+                            )}
+                            {payout.payoutMethod === "crypto" && (
+                              <>
+                                <span>₿ <strong style={{ color: TEXT }}>{payout.walletType}</strong></span>
+                                {payout.walletAddress && <span style={{ fontFamily: "monospace", color: TEXT, wordBreak: "break-all" }}>{payout.walletAddress.slice(0, 16)}…</span>}
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Amount */}
@@ -510,7 +548,7 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Actions */}
-                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                      <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap" }}>
                         <Link href={`/admin/users/${req.userId}`} style={{
                           padding: "8px 14px", borderRadius: 10, border: `1px solid ${BORD}`, color: MUTED,
                           fontSize: 11, fontWeight: 600, textDecoration: "none",
@@ -518,43 +556,76 @@ export default function AdminDashboard() {
                         }}>
                           User <ChevronRight size={12} />
                         </Link>
-                        <button
-                          onClick={() => updateTxStatus(req.id, "processing")}
-                          disabled={isProcessing || req.status === "processing"}
-                          style={{
-                            padding: "8px 14px", borderRadius: 10, border: "1px solid rgba(245,158,11,0.25)",
-                            background: "rgba(245,158,11,0.1)", color: AMB, fontSize: 11, fontWeight: 600,
-                            cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
-                          }}
-                        >
-                          Processing
-                        </button>
-                        {req.type === "deposit" && (
-                          <button
-                            onClick={() => updateTxStatus(req.id, "completed")}
-                            disabled={isProcessing}
-                            style={{
-                              padding: "8px 16px", borderRadius: 10, border: "none",
-                              background: GAIN, color: "#fff", fontSize: 11, fontWeight: 600,
-                              cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
-                              display: "flex", alignItems: "center", gap: 5,
-                            }}
-                          >
-                            {isProcessing ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={12} strokeWidth={3} />}
-                            Approve
-                          </button>
+                        {/* Sell: simple Approve / Reject */}
+                        {isSell ? (
+                          <>
+                            <button
+                              onClick={() => updateTxStatus(req.id, "completed")}
+                              disabled={isProcessing}
+                              style={{
+                                padding: "8px 16px", borderRadius: 10, border: "none",
+                                background: GAIN, color: "#fff", fontSize: 11, fontWeight: 600,
+                                cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                                display: "flex", alignItems: "center", gap: 5,
+                              }}
+                            >
+                              {isProcessing ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={12} strokeWidth={3} />}
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => updateTxStatus(req.id, "failed")}
+                              disabled={isProcessing}
+                              style={{
+                                padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.25)",
+                                background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 11, fontWeight: 600,
+                                cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                              }}
+                            >
+                              <X size={13} strokeWidth={2.5} />
+                            </button>
+                          </>
+                        ) : (
+                          /* Deposit / Withdraw: existing flow */
+                          <>
+                            <button
+                              onClick={() => updateTxStatus(req.id, "processing")}
+                              disabled={isProcessing || req.status === "processing"}
+                              style={{
+                                padding: "8px 14px", borderRadius: 10, border: "1px solid rgba(245,158,11,0.25)",
+                                background: "rgba(245,158,11,0.1)", color: AMB, fontSize: 11, fontWeight: 600,
+                                cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                              }}
+                            >
+                              Processing
+                            </button>
+                            {req.type === "deposit" && (
+                              <button
+                                onClick={() => updateTxStatus(req.id, "completed")}
+                                disabled={isProcessing}
+                                style={{
+                                  padding: "8px 16px", borderRadius: 10, border: "none",
+                                  background: GAIN, color: "#fff", fontSize: 11, fontWeight: 600,
+                                  cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                                  display: "flex", alignItems: "center", gap: 5,
+                                }}
+                              >
+                                {isProcessing ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <Check size={12} strokeWidth={3} />}
+                                Approve
+                              </button>
+                            )}
+                            <button
+                              onClick={() => updateTxStatus(req.id, "failed")}
+                              disabled={isProcessing}
+                              style={{
+                                padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.25)",
+                                background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 11, fontWeight: 600,
+                                cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
+                              }}
+                            >
+                              <X size={13} strokeWidth={2.5} />
+                            </button>
+                          </>
                         )}
-                        <button
-                          onClick={() => updateTxStatus(req.id, "failed")}
-                          disabled={isProcessing}
-                          style={{
-                            padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.25)",
-                            background: "rgba(239,68,68,0.08)", color: LOSS, fontSize: 11, fontWeight: 600,
-                            cursor: "pointer", opacity: isProcessing ? 0.5 : 1,
-                          }}
-                        >
-                          <X size={13} strokeWidth={2.5} />
-                        </button>
                       </div>
                     </div>
                   );
