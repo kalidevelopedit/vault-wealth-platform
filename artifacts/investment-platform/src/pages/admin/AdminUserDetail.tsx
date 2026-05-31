@@ -145,6 +145,18 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
   const [pwLoading,    setPwLoading]    = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Asset search — must be before early returns to satisfy Rules of Hooks
+  const searchAssets = useCallback(async (q: string) => {
+    if (!q.trim()) { setAssetResults([]); setShowAssetDrop(false); return; }
+    setAssetSearching(true);
+    try {
+      const res = await adminFetch(`/admin/assets/search?q=${encodeURIComponent(q)}`);
+      setAssetResults(Array.isArray(res) ? res : []);
+      setShowAssetDrop(true);
+    } catch {}
+    finally { setAssetSearching(false); }
+  }, []);
+
   if (isLoading) return (
     <div style={{ padding: 80, display: "flex", justifyContent: "center" }}>
       <Loader2 size={20} color={MUTED} style={{ animation: "spin 1s linear infinite" }} />
@@ -184,7 +196,7 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
   };
 
   const doDelete = async () => {
-    if (!window.confirm(`Permanently delete ${user.fullName}? This cannot be undone.`)) return;
+    if (!window.confirm(`Permanently delete ${safeName}? This cannot be undone.`)) return;
     setProcessing(true);
     try {
       await adminFetch(`/admin/users/${userId}`, { method: "DELETE" });
@@ -193,17 +205,6 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
     } catch (e: any) { toast.error(e.message); }
     finally { setProcessing(false); }
   };
-
-  const searchAssets = useCallback(async (q: string) => {
-    if (!q.trim()) { setAssetResults([]); setShowAssetDrop(false); return; }
-    setAssetSearching(true);
-    try {
-      const res = await adminFetch(`/admin/assets/search?q=${encodeURIComponent(q)}`);
-      setAssetResults(Array.isArray(res) ? res : []);
-      setShowAssetDrop(true);
-    } catch {}
-    finally { setAssetSearching(false); }
-  }, []);
 
   const onAssetQueryChange = (v: string) => {
     setAssetQuery(v);
