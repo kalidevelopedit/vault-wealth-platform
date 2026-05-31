@@ -595,6 +595,33 @@ router.patch("/transactions/:txId/status", requireAdminSession, async (req, res)
       }
     }
 
+    // If approving a sell: credit cash and reduce holdings
+    if (status === "completed" && tx.type === "sell" && tx.symbol && tx.quantity) {
+      const [user] = await db.select().from(usersTable).where(eq(usersTable.id, tx.userId)).limit(1);
+      if (user) {
+        const proceeds = parseFloat(tx.amount);
+        const newCash = parseFloat(user.availableCash) + proceeds;
+        await db.update(usersTable).set({ availableCash: newCash.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, tx.userId));
+
+        const [asset] = await db.select().from(assetsTable).where(eq(assetsTable.symbol, tx.symbol)).limit(1);
+        if (asset) {
+          const [holding] = await db.select().from(holdingsTable)
+            .where(and(eq(holdingsTable.userId, tx.userId), eq(holdingsTable.assetId, asset.id))).limit(1);
+          if (holding) {
+            const sellQty = parseFloat(tx.quantity);
+            const remainingQty = parseFloat(holding.quantity) - sellQty;
+            if (remainingQty <= 0.000001) {
+              await db.delete(holdingsTable).where(eq(holdingsTable.id, holding.id));
+            } else {
+              await db.update(holdingsTable).set({ quantity: remainingQty.toFixed(8), updatedAt: new Date() }).where(eq(holdingsTable.id, holding.id));
+            }
+          }
+        }
+      }
+    }
+
+    // If rejecting a sell: no holdings were reserved, nothing to revert
+
     // Log it
     const modeLabel = approvalMode ? ` [${approvalMode}]` : "";
     await db.insert(activityLogTable).values({

@@ -50,7 +50,7 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
 
   const queryClient   = useQueryClient();
   const { data: balance } = useGetUserBalance();
-  const { data: holdingsRaw } = useGetHoldings({ query: {} as any });
+  const { data: holdingsRaw, isLoading: holdingsLoading } = useGetHoldings({ query: {} as any });
   const createTx      = useCreateTransaction();
 
   const availableCash = Number(balance?.availableCash) || 0;
@@ -62,11 +62,15 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
 
   const myHolding = useMemo(() => {
     const list = Array.isArray(holdingsRaw) ? (holdingsRaw as any[]) : [];
-    return list.find((h: any) => h.symbol === asset?.symbol);
+    return list.find((h: any) =>
+      typeof h.symbol === "string" &&
+      h.symbol.toUpperCase() === asset?.symbol?.toUpperCase()
+    );
   }, [holdingsRaw, asset?.symbol]);
 
-  const holdingQty   = Number(myHolding?.quantity) || 0;
-  const holdingValue = holdingQty * (asset?.currentPrice ?? 0);
+  // Use the server's pre-calculated currentValue — avoids any client-side price drift
+  const holdingQty    = Number(myHolding?.quantity) || 0;
+  const holdingValue  = Number(myHolding?.currentValue) || 0;
 
   const insufficient = side === "buy"
     ? amtNum > availableCash && amtNum > 0
@@ -82,6 +86,16 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
     if (side === "buy" && amtNum > availableCash) {
       toast.error(`Insufficient funds — available: $${fmt2(availableCash)}`);
       return;
+    }
+    if (side === "sell") {
+      if (holdingValue <= 0) {
+        toast.error(`You don't hold any ${asset?.symbol ?? "this asset"}`);
+        return;
+      }
+      if (amtNum > holdingValue) {
+        toast.error(`Exceeds your ${asset?.symbol} position — max sellable: $${fmt2(holdingValue)}`);
+        return;
+      }
     }
     setSubmitting(true);
     try {
@@ -343,8 +357,10 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                   {side === "sell" ? (
                     <>
                       <div>
-                        <div style={{ fontSize: 12, color: MUTED }}>Your position</div>
-                        {holdingQty > 0 && (
+                        <div style={{ fontSize: 12, color: MUTED }}>
+                          {asset.symbol} position
+                        </div>
+                        {holdingQty > 0 && !holdingsLoading && (
                           <div style={{ fontSize: 11, color: MUTED, marginTop: 1, fontFamily: "monospace" }}>
                             {holdingQty < 0.0001 ? holdingQty.toFixed(8) : holdingQty.toFixed(6)} {asset.symbol}
                           </div>
@@ -352,9 +368,13 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                       </div>
                       <span style={{
                         fontSize: 13, fontWeight: 600, fontFamily: "monospace",
-                        color: insufficient ? RED : holdingValue > 0 ? GREEN : MUTED,
+                        color: holdingsLoading ? MUTED : insufficient ? RED : holdingValue > 0 ? GREEN : RED,
                       }}>
-                        {holdingValue > 0 ? `$${fmt2(holdingValue)}` : "No position"}
+                        {holdingsLoading
+                          ? "Loading…"
+                          : holdingValue > 0
+                            ? `$${fmt2(holdingValue)}`
+                            : `No ${asset.symbol} held`}
                       </span>
                     </>
                   ) : (
@@ -476,27 +496,25 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                         ${fmt2(amtNum)}
                       </span>
                     </div>
-                    {side === "buy" && (
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: 11, color: MUTED }}>Status after submission</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#eab308" }}>⏳ Pending Review</span>
-                      </div>
-                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: 11, color: MUTED }}>Status after submission</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#eab308" }}>⏳ Pending Admin Review</span>
+                    </div>
                   </div>
                 )}
 
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={submitting || insufficient || !amtNum}
+                  disabled={submitting || insufficient || !amtNum || (side === "sell" && !holdingsLoading && holdingValue <= 0)}
                   style={{
                     width: "100%", height: 48, borderRadius: 12, border: "none",
                     fontSize: 15, fontWeight: 700, color: "#fff",
                     background: side === "buy" ? GREEN : RED,
-                    cursor: submitting || insufficient || !amtNum ? "not-allowed" : "pointer",
-                    opacity: submitting || !amtNum ? 0.65 : 1,
+                    cursor: submitting || insufficient || !amtNum || (side === "sell" && !holdingsLoading && holdingValue <= 0) ? "not-allowed" : "pointer",
+                    opacity: submitting || !amtNum || (side === "sell" && !holdingsLoading && holdingValue <= 0) ? 0.55 : 1,
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    boxShadow: !submitting && amtNum && !insufficient
+                    boxShadow: !submitting && amtNum && !insufficient && !(side === "sell" && holdingValue <= 0)
                       ? `0 4px 18px ${side === "buy" ? "rgba(14,203,129,0.35)" : "rgba(246,70,93,0.35)"}`
                       : "none",
                     transition: "all 0.15s",
@@ -504,17 +522,21 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                 >
                   {submitting
                     ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Processing…</>
-                    : side === "buy"
-                      ? `Submit Buy Order — ${asset.symbol}`
-                      : `Sell ${asset.symbol}`
+                    : holdingsLoading && side === "sell"
+                      ? <><Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} /> Loading position…</>
+                      : side === "buy"
+                        ? `Submit Buy Order — ${asset.symbol}`
+                        : holdingValue <= 0
+                          ? `No ${asset.symbol} to sell`
+                          : `Submit Sell Order — ${asset.symbol}`
                   }
                 </button>
 
-                {side === "buy" && (
-                  <div style={{ marginTop: 10, textAlign: "center", fontSize: 11, color: MUTED }}>
-                    Orders are reviewed and processed within 24 hours
-                  </div>
-                )}
+                <div style={{ marginTop: 10, textAlign: "center", fontSize: 11, color: MUTED }}>
+                  {side === "sell"
+                    ? "Sell orders are reviewed by admin — USD credited upon approval"
+                    : "Orders are reviewed and processed within 24 hours"}
+                </div>
               </>
             )}
           </form>

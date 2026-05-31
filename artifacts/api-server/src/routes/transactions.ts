@@ -197,15 +197,9 @@ router.post("/", requireAuth, async (req, res) => {
       }
 
       const proceeds = qty * price;
-      const newCash = availableCash + proceeds;
-      await db.update(usersTable).set({ availableCash: newCash.toFixed(2), updatedAt: new Date() }).where(eq(usersTable.id, userId));
 
-      const newQty = existingQty - qty;
-      if (newQty <= 0.000001) {
-        await db.delete(holdingsTable).where(eq(holdingsTable.id, holding.id));
-      } else {
-        await db.update(holdingsTable).set({ quantity: newQty.toFixed(8), updatedAt: new Date() }).where(eq(holdingsTable.id, holding.id));
-      }
+      // Reserve the holding (mark as locked) — cash credited only after admin approval
+      const reservedNotes = JSON.stringify({ reservedQty: qty.toFixed(8), reservedProceeds: proceeds.toFixed(2) });
 
       const [tx] = await db.insert(transactionsTable).values({
         userId,
@@ -215,20 +209,16 @@ router.post("/", requireAuth, async (req, res) => {
         quantity: qty.toFixed(8),
         price: price.toFixed(8),
         amount: proceeds.toFixed(2),
-        status: "completed",
+        status: "pending",
         logoUrl: asset.logoUrl,
+        notes: reservedNotes,
       }).returning();
 
       await db.insert(activityLogTable).values({
         userId,
-        eventType: "sell",
-        description: `Sold ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)}`,
+        eventType: "sell_pending",
+        description: `Sell order submitted: ${qty.toFixed(4)} ${asset.symbol} at $${price.toFixed(2)} — pending admin approval`,
       });
-
-      sendTradeConfirmationEmail(
-        { email: user.email, fullName: user.fullName },
-        { type: "sell", symbol: asset.symbol, name: asset.name, quantity: qty, price, total: proceeds }
-      ).catch(() => {});
 
       res.status(201).json({
         id: tx.id, type: tx.type, symbol: tx.symbol, name: tx.name,
