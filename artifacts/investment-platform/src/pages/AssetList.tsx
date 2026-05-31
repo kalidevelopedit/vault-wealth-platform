@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "wouter";
-import { useListAssets } from "@workspace/api-client-react";
+import { useListAssets, useGetHoldings } from "@workspace/api-client-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   Loader2, Search, Star,
@@ -208,6 +208,18 @@ export default function AssetList() {
     { query: { refetchInterval: 30_000 } as any }
   );
 
+  const { data: holdingsRaw } = useGetHoldings({ query: {} as any });
+  const holdMap = useMemo(() => {
+    const list = Array.isArray(holdingsRaw) ? (holdingsRaw as any[]) : [];
+    const m: Record<string, { qty: number; value: number }> = {};
+    for (const h of list) {
+      const qty = Number(h.quantity) || 0;
+      const price = Number(h.currentPrice) || 0;
+      if (qty > 0) m[h.symbol] = { qty, value: qty * price };
+    }
+    return m;
+  }, [holdingsRaw]);
+
   const displayed = assets?.filter(a =>
     a.name.toLowerCase().includes(search.toLowerCase()) ||
     a.symbol.toLowerCase().includes(search.toLowerCase())
@@ -320,7 +332,7 @@ export default function AssetList() {
           <thead>
             <tr style={{ borderBottom: `1px solid ${BORD}` }}>
               <th style={{ padding: "14px 8px", width: 36 }}></th>
-              {["Asset", "Price", "24h Change", "24h High", "24h Low", "Market Cap", ""].map((h, i) => (
+              {["Asset", "Price", "24h Change", "My Position", "Market Cap", ""].map((h, i) => (
                 <th key={i} style={{
                   padding: "14px 16px", textAlign: i === 0 ? "left" : "right",
                   fontSize: 11, fontWeight: 500, color: MUTED,
@@ -331,11 +343,12 @@ export default function AssetList() {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={8} style={{ padding: 60, textAlign: "center" }}>
+              <tr><td colSpan={7} style={{ padding: 60, textAlign: "center" }}>
                 <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite", margin: "0 auto", display: "block" }} />
               </td></tr>
-            ) : displayed?.length ? displayed.map(a => {
+            ) : displayed?.length ? displayed.map((a: any) => {
               const pos = a.changePercent24h >= 0;
+              const holding = holdMap[a.symbol];
               return (
                 <tr key={a.symbol}
                   style={{ borderBottom: `1px solid ${BORD}`, transition: "background 0.1s" }}
@@ -343,9 +356,17 @@ export default function AssetList() {
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <td style={{ padding: "14px 8px", textAlign: "center" }}>
-                    <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}>
-                      <Star style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
-                    </button>
+                    <div style={{ position: "relative", display: "inline-flex" }}>
+                      <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}>
+                        <Star style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+                      </button>
+                      {holding && (
+                        <div style={{
+                          position: "absolute", top: -3, right: -3, width: 7, height: 7,
+                          borderRadius: "50%", background: GREEN, border: `1.5px solid ${BORD}`,
+                        }} />
+                      )}
+                    </div>
                   </td>
 
                   {/* Asset name */}
@@ -377,14 +398,24 @@ export default function AssetList() {
                     </div>
                   </td>
 
-                  {/* 24h High */}
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
-                    ${fmtPrice(a.currentPrice * (1 + Math.abs(a.changePercent24h) * 0.006 + 0.004))}
-                  </td>
-
-                  {/* 24h Low */}
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
-                    ${fmtPrice(a.currentPrice * (1 - Math.abs(a.changePercent24h) * 0.006 - 0.003))}
+                  {/* My Position */}
+                  <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                    {holdMap[a.symbol] ? (
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: GREEN, fontFamily: "monospace" }}>
+                          ${holdMap[a.symbol].value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                        <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginTop: 1 }}>
+                          {holdMap[a.symbol].qty < 0.0001
+                            ? holdMap[a.symbol].qty.toFixed(8)
+                            : holdMap[a.symbol].qty < 1
+                              ? holdMap[a.symbol].qty.toFixed(6)
+                              : holdMap[a.symbol].qty.toLocaleString("en-US", { maximumFractionDigits: 4 })} {a.symbol}
+                        </div>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: 13, color: MUTED }}>—</span>
+                    )}
                   </td>
 
                   {/* Market Cap */}
@@ -439,7 +470,7 @@ export default function AssetList() {
                 </tr>
               );
             }) : (
-              <tr><td colSpan={8} style={{ padding: 60, textAlign: "center", color: MUTED, fontSize: 14 }}>No assets found.</td></tr>
+              <tr><td colSpan={7} style={{ padding: 60, textAlign: "center", color: MUTED, fontSize: 14 }}>No assets found.</td></tr>
             )}
           </tbody>
         </table>

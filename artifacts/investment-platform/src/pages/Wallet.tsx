@@ -37,6 +37,37 @@ const CRYPTO_NETWORKS = [
   { symbol: "SOL",  name: "Solana",   network: "Solana" },
 ];
 
+const WALLET_TYPES = [
+  { id: "metamask",  name: "MetaMask",       tag: "Browser",  color: "#F6851B", logo: "https://www.google.com/s2/favicons?domain=metamask.io&sz=64",         coins: ["ETH","USDT","USDC","BNB"] },
+  { id: "ledger",    name: "Ledger",         tag: "Hardware", color: "#1A1A1A", logo: "https://www.google.com/s2/favicons?domain=ledger.com&sz=64",           coins: ["BTC","ETH","USDT","USDC","BNB","SOL"] },
+  { id: "trezor",    name: "Trezor",         tag: "Hardware", color: "#1DA462", logo: "https://www.google.com/s2/favicons?domain=trezor.io&sz=64",            coins: ["BTC","ETH","USDT","USDC"] },
+  { id: "coinbase",  name: "Coinbase Wallet",tag: "Mobile",   color: "#0052FF", logo: "https://www.google.com/s2/favicons?domain=wallet.coinbase.com&sz=64", coins: ["BTC","ETH","USDT","USDC","SOL"] },
+  { id: "trust",     name: "Trust Wallet",   tag: "Mobile",   color: "#3375BB", logo: "https://www.google.com/s2/favicons?domain=trustwallet.com&sz=64",     coins: ["BTC","ETH","USDT","USDC","BNB","SOL"] },
+  { id: "phantom",   name: "Phantom",        tag: "Browser",  color: "#AB9FF2", logo: "https://www.google.com/s2/favicons?domain=phantom.app&sz=64",         coins: ["SOL","ETH","USDC"] },
+  { id: "exodus",    name: "Exodus",         tag: "Desktop",  color: "#3D4CEA", logo: "https://www.google.com/s2/favicons?domain=exodus.com&sz=64",          coins: ["BTC","ETH","USDT","SOL","BNB"] },
+  { id: "atomic",    name: "Atomic Wallet",  tag: "Desktop",  color: "#00C5FF", logo: "https://www.google.com/s2/favicons?domain=atomicwallet.io&sz=64",     coins: ["BTC","ETH","USDT","USDC","BNB","SOL"] },
+];
+
+const ADDRESS_FORMATS: Record<string, { hint: string; prefixes: string[]; minLen: number; maxLen: number }> = {
+  BTC:  { hint: "Starts with 1, 3, or bc1 · 26–62 characters",                        prefixes: ["1","3","bc1"],  minLen: 26, maxLen: 62 },
+  ETH:  { hint: "Starts with 0x · 42 characters (ERC-20)",                            prefixes: ["0x"],           minLen: 42, maxLen: 42 },
+  USDT: { hint: "ERC-20: starts with 0x · TRC-20: starts with T · 34–42 characters", prefixes: ["0x","T"],       minLen: 34, maxLen: 42 },
+  USDC: { hint: "Starts with 0x · 42 characters (ERC-20)",                            prefixes: ["0x"],           minLen: 42, maxLen: 42 },
+  BNB:  { hint: "BEP-20: starts with 0x · BSC: bnb1 · 40–45 characters",             prefixes: ["0x","bnb1"],    minLen: 40, maxLen: 45 },
+  SOL:  { hint: "Base58 alphanumeric · 32–44 characters",                             prefixes: [],               minLen: 32, maxLen: 44 },
+};
+
+function validateWalletAddress(addr: string, symbol: string): { ok: boolean; warn?: string } {
+  if (!addr || addr.length < 10) return { ok: false };
+  const fmt = ADDRESS_FORMATS[symbol];
+  if (!fmt) return { ok: true };
+  const hasPrefix = fmt.prefixes.length === 0 || fmt.prefixes.some(p => addr.toLowerCase().startsWith(p.toLowerCase()));
+  if (!hasPrefix) return { ok: false, warn: `Expected prefix: ${fmt.prefixes.join(" or ")}` };
+  if (addr.length < fmt.minLen) return { ok: false, warn: `Too short — min ${fmt.minLen} characters` };
+  if (addr.length > fmt.maxLen) return { ok: false, warn: `Too long — max ${fmt.maxLen} characters` };
+  return { ok: true };
+}
+
 function BankLogo({ bank, colors }: { bank: typeof US_BANKS[0]; colors: any }) {
   const [err, setErr] = useState(false);
   return (
@@ -663,6 +694,8 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
   const [cryptoNetwork, setCryptoNetwork] = useState("");
   const [cryptoDropOpen, setCryptoDropOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
+  const [walletType, setWalletType] = useState("");
+  const [addrFocused, setAddrFocused] = useState(false);
   const [bankName, setBankName] = useState("");
   const [accountNum, setAccountNum] = useState("");
   const [routing, setRouting] = useState("");
@@ -671,6 +704,9 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
   const [done, setDone] = useState(false);
 
   const selectedCrypto = CRYPTO_NETWORKS.find(c => c.symbol === cryptoNetwork);
+  const compatibleWallets = WALLET_TYPES.filter(w => !cryptoNetwork || w.coins.includes(cryptoNetwork));
+  const addrValidation = walletAddress ? validateWalletAddress(walletAddress, cryptoNetwork) : { ok: false };
+  const addrFmt = ADDRESS_FORMATS[cryptoNetwork];
 
   const num = parseFloat(amount) || 0;
   const insufficient = num > availableCash && num > 0;
@@ -837,15 +873,130 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
               </div>
             )}
           </div>
+          {/* Wallet type chips */}
+          {cryptoNetwork && compatibleWallets.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ ...labelStyle, marginBottom: 8, display: "block" }}>WALLET TYPE (OPTIONAL)</label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {compatibleWallets.map(w => (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => setWalletType(walletType === w.id ? "" : w.id)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 7,
+                      height: 34, padding: "0 12px", borderRadius: 999,
+                      background: walletType === w.id ? `${w.color}18` : colors.inputBg,
+                      border: `1.5px solid ${walletType === w.id ? w.color : colors.bord}`,
+                      cursor: "pointer", transition: "all 0.14s", flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={w.logo}
+                      alt={w.name}
+                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      style={{ width: 16, height: 16, borderRadius: 4, flexShrink: 0 }}
+                    />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: walletType === w.id ? w.color : colors.text }}>
+                      {w.name}
+                    </span>
+                    <span style={{
+                      fontSize: 10, color: walletType === w.id ? w.color : colors.muted,
+                      background: walletType === w.id ? `${w.color}20` : "rgba(255,255,255,0.04)",
+                      padding: "1px 6px", borderRadius: 4, fontWeight: 500,
+                    }}>{w.tag}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Smart wallet address input */}
           <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>WALLET ADDRESS</label>
-            <input
-              type="text"
-              value={walletAddress}
-              onChange={e => setWalletAddress(e.target.value)}
-              placeholder={selectedCrypto ? `Your ${selectedCrypto.name} wallet address` : "Your wallet address"}
-              style={fieldStyle}
-            />
+            <label style={{ ...labelStyle, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span>DESTINATION WALLET ADDRESS</span>
+              {walletAddress && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5,
+                  background: addrValidation.ok ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
+                  color: addrValidation.ok ? "#22c55e" : colors.red,
+                }}>
+                  {addrValidation.ok ? "✓ Valid format" : "Invalid format"}
+                </span>
+              )}
+            </label>
+            <div style={{
+              borderRadius: 10, border: `1.5px solid ${
+                !walletAddress ? (addrFocused ? colors.blue : colors.bord)
+                  : addrValidation.ok ? "#22c55e"
+                  : colors.red
+              }`, overflow: "hidden", transition: "border-color 0.15s",
+            }}>
+              <div style={{ position: "relative", display: "flex", alignItems: "center", background: colors.inputBg }}>
+                {walletType && (() => {
+                  const wt = WALLET_TYPES.find(w => w.id === walletType);
+                  return wt ? (
+                    <div style={{ paddingLeft: 12, flexShrink: 0, display: "flex", alignItems: "center" }}>
+                      <img src={wt.logo} alt={wt.name} style={{ width: 16, height: 16, borderRadius: 3 }} />
+                    </div>
+                  ) : null;
+                })()}
+                <input
+                  type="text"
+                  value={walletAddress}
+                  onChange={e => setWalletAddress(e.target.value.trim())}
+                  onFocus={() => setAddrFocused(true)}
+                  onBlur={() => setAddrFocused(false)}
+                  placeholder={selectedCrypto
+                    ? addrFmt
+                      ? addrFmt.prefixes.length > 0
+                        ? `${addrFmt.prefixes[0]}…  ${selectedCrypto.name} address`
+                        : `Your ${selectedCrypto.name} wallet address`
+                      : `Your ${selectedCrypto.name} wallet address`
+                    : "Paste your wallet address here"
+                  }
+                  style={{
+                    flex: 1, height: 46, background: "transparent", border: "none",
+                    outline: "none", color: colors.text, fontSize: 13,
+                    padding: walletType ? "0 14px 0 10px" : "0 14px",
+                    fontFamily: walletAddress ? "monospace" : "inherit",
+                  }}
+                />
+                {walletAddress && (
+                  <button
+                    type="button"
+                    onClick={() => setWalletAddress("")}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "0 12px", color: colors.muted, display: "flex", alignItems: "center", flexShrink: 0 }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              {/* Format hint bar */}
+              {addrFmt && !addrValidation.ok && (
+                <div style={{
+                  padding: "7px 14px",
+                  background: "rgba(37,99,255,0.04)",
+                  borderTop: `1px solid ${colors.bord}`,
+                  fontSize: 11, color: colors.muted, lineHeight: 1.5,
+                }}>
+                  {addrValidation.warn
+                    ? <span style={{ color: colors.red }}>⚠ {addrValidation.warn}</span>
+                    : <span>💡 {addrFmt.hint}</span>
+                  }
+                </div>
+              )}
+              {addrValidation.ok && walletAddress && (
+                <div style={{
+                  padding: "6px 14px", background: "rgba(34,197,94,0.04)",
+                  borderTop: `1px solid rgba(34,197,94,0.15)`,
+                  fontSize: 11, color: "#22c55e",
+                }}>
+                  ✓ Address format looks valid for {selectedCrypto?.name ?? cryptoNetwork}
+                  {walletType && ` · ${WALLET_TYPES.find(w => w.id === walletType)?.name ?? ""}`}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
-  useCreateTransaction, useGetUserBalance,
+  useCreateTransaction, useGetUserBalance, useGetHoldings,
   getGetUserBalanceQueryKey, getGetPortfolioSummaryQueryKey,
   getGetHoldingsQueryKey, getGetTransactionsQueryKey,
 } from "@workspace/api-client-react";
@@ -50,6 +50,7 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
 
   const queryClient   = useQueryClient();
   const { data: balance } = useGetUserBalance();
+  const { data: holdingsRaw } = useGetHoldings({ query: {} as any });
   const createTx      = useCreateTransaction();
 
   const availableCash = Number(balance?.availableCash) || 0;
@@ -58,7 +59,18 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
   const feeAmount     = amtNum * feeOpt.fee;
   const netAmount     = amtNum - feeAmount;
   const estQty        = asset && asset.currentPrice > 0 ? netAmount / asset.currentPrice : 0;
-  const insufficient  = side === "buy" && amtNum > availableCash && amtNum > 0;
+
+  const myHolding = useMemo(() => {
+    const list = Array.isArray(holdingsRaw) ? (holdingsRaw as any[]) : [];
+    return list.find((h: any) => h.symbol === asset?.symbol);
+  }, [holdingsRaw, asset?.symbol]);
+
+  const holdingQty   = Number(myHolding?.quantity) || 0;
+  const holdingValue = holdingQty * (asset?.currentPrice ?? 0);
+
+  const insufficient = side === "buy"
+    ? amtNum > availableCash && amtNum > 0
+    : amtNum > holdingValue && amtNum > 0;
 
   if (!asset) return null;
 
@@ -157,29 +169,27 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
           <div style={{ padding: "40px 20px", textAlign: "center" }}>
             <div style={{
               width: 64, height: 64, borderRadius: "50%", margin: "0 auto 20px",
-              background: side === "buy" ? "rgba(234,179,8,0.1)" : "rgba(14,203,129,0.1)",
-              border: `2px solid ${side === "buy" ? "#eab308" : GREEN}`,
+              background: "rgba(234,179,8,0.1)",
+              border: `2px solid #eab308`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Clock size={28} style={{ color: side === "buy" ? "#eab308" : GREEN }} strokeWidth={1.5} />
+              <Clock size={28} style={{ color: "#eab308" }} strokeWidth={1.5} />
             </div>
             <div style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 8 }}>
-              {side === "buy" ? "Order Pending Review" : "Sell Order Placed"}
+              {side === "buy" ? "Buy Order Pending Review" : "Sell Order Pending Approval"}
             </div>
-            <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>
+            <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, maxWidth: 300, margin: "0 auto" }}>
               {side === "buy"
                 ? `Your order to buy ${asset.symbol} with ${funding} is under review. You will be notified once approved.`
-                : `Sold $${fmt2(amtNum)} of ${asset.symbol} successfully.`}
+                : `Your sell order for $${fmt2(amtNum)} of ${asset.symbol} is pending admin approval. Once approved, USD will be credited to your account.`}
             </div>
-            {side === "buy" && (
-              <div style={{
-                marginTop: 16, padding: "10px 16px", borderRadius: 10,
-                background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)",
-                fontSize: 12, color: "#eab308",
-              }}>
-                ⏳ Orders are typically processed within 24 hours
-              </div>
-            )}
+            <div style={{
+              marginTop: 16, padding: "10px 16px", borderRadius: 10,
+              background: "rgba(234,179,8,0.06)", border: "1px solid rgba(234,179,8,0.2)",
+              fontSize: 12, color: "#eab308",
+            }}>
+              ⏳ {side === "buy" ? "Orders are typically processed within 24 hours" : "Sell orders are converted to USD and credited upon admin approval"}
+            </div>
           </div>
         ) : (
           <form onSubmit={handleTrade} style={{ padding: 20 }}>
@@ -324,19 +334,40 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                   </div>
                 )}
 
-                {/* Balance strip */}
+                {/* Balance / Position strip */}
                 <div style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
                   padding: "10px 14px", borderRadius: 10, background: BG,
                   border: `1px solid ${BORD}`, marginBottom: 16,
                 }}>
-                  <span style={{ fontSize: 12, color: MUTED }}>Available balance</span>
-                  <span style={{
-                    fontSize: 13, fontWeight: 600, fontFamily: "monospace",
-                    color: insufficient ? RED : TEXT,
-                  }}>
-                    ${fmt2(availableCash)}
-                  </span>
+                  {side === "sell" ? (
+                    <>
+                      <div>
+                        <div style={{ fontSize: 12, color: MUTED }}>Your position</div>
+                        {holdingQty > 0 && (
+                          <div style={{ fontSize: 11, color: MUTED, marginTop: 1, fontFamily: "monospace" }}>
+                            {holdingQty < 0.0001 ? holdingQty.toFixed(8) : holdingQty.toFixed(6)} {asset.symbol}
+                          </div>
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: 13, fontWeight: 600, fontFamily: "monospace",
+                        color: insufficient ? RED : holdingValue > 0 ? GREEN : MUTED,
+                      }}>
+                        {holdingValue > 0 ? `$${fmt2(holdingValue)}` : "No position"}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: 12, color: MUTED }}>Available balance</span>
+                      <span style={{
+                        fontSize: 13, fontWeight: 600, fontFamily: "monospace",
+                        color: insufficient ? RED : TEXT,
+                      }}>
+                        ${fmt2(availableCash)}
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* Amount input */}
@@ -398,10 +429,18 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                   )}
 
                   {/* Insufficient error */}
-                  {insufficient && (
+                  {insufficient && side === "buy" && (
                     <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 7, color: RED, fontSize: 12 }}>
                       <AlertCircle size={12} strokeWidth={2} />
                       Insufficient funds — you need ${fmt2(amtNum - availableCash)} more
+                    </div>
+                  )}
+                  {insufficient && side === "sell" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 7, color: RED, fontSize: 12 }}>
+                      <AlertCircle size={12} strokeWidth={2} />
+                      {holdingValue > 0
+                        ? `Exceeds position — max sellable: $${fmt2(holdingValue)}`
+                        : `You don't hold any ${asset.symbol} to sell`}
                     </div>
                   )}
                 </div>
@@ -410,7 +449,7 @@ export function TradeModal({ asset, defaultSide = "buy", onClose }: Props) {
                 <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
                   {[25, 50, 75, 100].map(pct => (
                     <button key={pct} type="button"
-                      onClick={() => setAmount(((availableCash * pct) / 100).toFixed(2))}
+                      onClick={() => setAmount((((side === "sell" ? holdingValue : availableCash) * pct) / 100).toFixed(2))}
                       style={{
                         flex: 1, height: 30, fontSize: 12, borderRadius: 8,
                         background: "transparent", border: `1px solid ${BORD}`,
