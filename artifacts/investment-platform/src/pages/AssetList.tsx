@@ -5,8 +5,10 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
   Loader2, Search, Star,
   Newspaper, ExternalLink, ChevronLeft, ChevronRight, RefreshCw,
+  TrendingUp, TrendingDown, ShoppingCart, ArrowDownCircle,
 } from "lucide-react";
 import { AssetIcon } from "@/components/AssetIcon";
+import { TradeModal } from "@/components/TradeModal";
 
 const TABS = [
   { id: "crypto",    label: "Crypto",      newsCategories: ["crypto", "bitcoin", "ethereum", "blockchain", "defi", "web3"] },
@@ -14,15 +16,12 @@ const TABS = [
   { id: "commodity", label: "Commodities", newsCategories: ["commodities", "gold", "oil", "silver", "metals", "energy"] },
 ];
 
+type TradeTarget = { symbol: string; name: string; currentPrice: number; changePercent24h: number };
+
 type NewsItem = {
-  id: number;
-  title: string;
-  summary?: string | null;
-  source: string;
-  url?: string | null;
-  imageUrl?: string | null;
-  category?: string | null;
-  publishedAt: string;
+  id: number; title: string; summary?: string | null;
+  source: string; url?: string | null; imageUrl?: string | null;
+  category?: string | null; publishedAt: string;
 };
 
 const FALLBACK_NEWS: Record<string, NewsItem[]> = {
@@ -43,26 +42,26 @@ const FALLBACK_NEWS: Record<string, NewsItem[]> = {
   ],
 };
 
-function newsMatchesTab(news: NewsItem, tabId: string, cats: string[]): boolean {
-  const cat = (news.category ?? "").toLowerCase();
+function newsMatchesTab(news: NewsItem, _tabId: string, cats: string[]): boolean {
+  const cat   = (news.category ?? "").toLowerCase();
   const title = news.title.toLowerCase();
   return cats.some(c => cat.includes(c) || title.includes(c));
 }
 
 function timeAgo(dateStr: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
-  if (diff < 2) return "Just now";
-  if (diff < 60) return `${diff}m ago`;
+  if (diff < 2)    return "Just now";
+  if (diff < 60)   return `${diff}m ago`;
   if (diff < 1440) return `${Math.floor(diff / 60)}h ago`;
   return `${Math.floor(diff / 1440)}d ago`;
 }
 
 function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; colors: any }) {
-  const [allNews, setAllNews]   = useState<NewsItem[]>([]);
-  const [news,    setNews]      = useState<NewsItem[]>([]);
-  const [idx,     setIdx]       = useState(0);
-  const [loading, setLoading]   = useState(true);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const [allNews, setAllNews] = useState<NewsItem[]>([]);
+  const [news,    setNews]    = useState<NewsItem[]>([]);
+  const [idx,     setIdx]     = useState(0);
+  const [loading, setLoading] = useState(true);
+  const intervalRef           = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const applyFilter = (all: NewsItem[], tId: string, tCats: string[]) => {
     const filtered = all.filter(n => newsMatchesTab(n, tId, tCats));
@@ -71,7 +70,7 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
 
   const fetchNews = async () => {
     try {
-      const res = await fetch("/api/market/news?limit=60");
+      const res  = await fetch("/api/market/news?limit=60");
       const data = await res.json();
       const all: NewsItem[] = Array.isArray(data) ? data : [];
       setAllNews(all);
@@ -91,16 +90,13 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
   }, []);
 
   useEffect(() => {
-    if (allNews.length > 0) {
-      setNews(applyFilter(allNews, tabId, cats));
-    } else {
-      setNews(FALLBACK_NEWS[tabId] ?? []);
-    }
+    if (allNews.length > 0) setNews(applyFilter(allNews, tabId, cats));
+    else setNews(FALLBACK_NEWS[tabId] ?? []);
     setIdx(0);
   }, [tabId]);
 
   useEffect(() => {
-    if (news.length === 0) return;
+    if (!news.length) return;
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => setIdx(i => (i + 1) % news.length), 6000);
     return () => clearInterval(intervalRef.current);
@@ -111,22 +107,19 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
     setIdx(i => (i + dir + news.length) % news.length);
   };
 
-  if (loading) {
-    return (
-      <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: 24, display: "flex", alignItems: "center", gap: 12 }}>
-        <Loader2 style={{ width: 16, height: 16, color: colors.muted, animation: "spin 1s linear infinite" }} />
-        <span style={{ fontSize: 13, color: colors.muted }}>Loading market news…</span>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: 24, display: "flex", alignItems: "center", gap: 12 }}>
+      <Loader2 style={{ width: 16, height: 16, color: colors.muted, animation: "spin 1s linear infinite" }} />
+      <span style={{ fontSize: 13, color: colors.muted }}>Loading market news…</span>
+    </div>
+  );
 
-  if (news.length === 0) return null;
+  if (!news.length) return null;
 
   const current = news[idx];
 
   return (
     <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, overflow: "hidden" }}>
-      {/* Header */}
       <div style={{ padding: "14px 20px", borderBottom: `1px solid ${colors.bord}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Newspaper style={{ width: 14, height: 14, color: colors.blue }} strokeWidth={1.8} />
@@ -144,7 +137,6 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
         </div>
       </div>
 
-      {/* Card */}
       <div style={{ padding: "20px 20px 16px", minHeight: 130 }}>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
           {current.imageUrl && (
@@ -160,9 +152,7 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
               <div style={{
                 fontSize: 12, color: colors.muted, lineHeight: 1.5, marginBottom: 10,
                 display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-              }}>
-                {current.summary}
-              </div>
+              } as any}>{current.summary}</div>
             )}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ fontSize: 11, color: colors.muted }}>
@@ -180,7 +170,6 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
         </div>
       </div>
 
-      {/* Controls + Dots */}
       <div style={{ padding: "10px 20px 14px", borderTop: `1px solid ${colors.bord}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 6 }}>
           {news.slice(0, Math.min(news.length, 8)).map((_, i) => (
@@ -203,9 +192,12 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
   );
 }
 
+/* ── Main Page ──────────────────────────────────────────────── */
 export default function AssetList() {
   const [activeTab, setActiveTab] = useState("crypto");
-  const [search, setSearch] = useState("");
+  const [search,    setSearch]    = useState("");
+  const [tradeAsset, setTradeAsset] = useState<TradeTarget | null>(null);
+  const [tradeSide,  setTradeSide]  = useState<"buy" | "sell">("buy");
   const { colors } = useTheme();
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED, inputBg } = colors;
 
@@ -221,17 +213,35 @@ export default function AssetList() {
     a.symbol.toLowerCase().includes(search.toLowerCase())
   );
 
-  const fmtPrice = (p: number) => p.toLocaleString("en-US", { minimumFractionDigits: p >= 1 ? 2 : 4, maximumFractionDigits: p >= 1 ? 2 : 6 });
+  const fmtPrice = (p: number) =>
+    p.toLocaleString("en-US", { minimumFractionDigits: p >= 1 ? 2 : 4, maximumFractionDigits: p >= 1 ? 2 : 6 });
+
+  const fmtCompact = (n: number) => {
+    if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
+    if (n >= 1e9)  return `$${(n / 1e9).toFixed(2)}B`;
+    if (n >= 1e6)  return `$${(n / 1e6).toFixed(1)}M`;
+    return `$${n.toFixed(0)}`;
+  };
+
+  const openTrade = (a: TradeTarget, side: "buy" | "sell") => {
+    setTradeAsset(a);
+    setTradeSide(side);
+  };
 
   return (
     <div style={{ padding: "24px 20px", maxWidth: 1440, margin: "0 auto", background: BG, minHeight: "100%" }}>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
 
+      {tradeAsset && (
+        <TradeModal asset={tradeAsset} defaultSide={tradeSide} onClose={() => setTradeAsset(null)} />
+      )}
+
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: TEXT, margin: 0 }}>Markets</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: TEXT, margin: "0 0 4px" }}>Markets</h1>
+        <p style={{ fontSize: 13, color: MUTED, margin: 0 }}>Live prices across crypto, stocks & commodities</p>
       </div>
 
-      {/* Tabs + Search row */}
+      {/* Tabs + Search */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: `1px solid ${BORD}`, marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div style={{ display: "flex", gap: 24 }}>
           {TABS.map(t => (
@@ -241,9 +251,7 @@ export default function AssetList() {
               color: activeTab === t.id ? TEXT : MUTED,
               borderBottom: activeTab === t.id ? `2px solid ${BLUE}` : "2px solid transparent",
               paddingBottom: 12, transition: "all 0.12s", padding: "0 0 12px",
-            }}>
-              {t.label}
-            </button>
+            }}>{t.label}</button>
           ))}
         </div>
 
@@ -258,7 +266,7 @@ export default function AssetList() {
         </div>
       </div>
 
-      {/* Mobile list (< md) */}
+      {/* Mobile list */}
       <div className="md:hidden" style={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {isLoading ? (
           <div style={{ padding: 60, display: "flex", justifyContent: "center" }}>
@@ -267,36 +275,56 @@ export default function AssetList() {
         ) : displayed?.map(a => {
           const pos = a.changePercent24h >= 0;
           return (
-            <Link key={a.symbol} href={`/assets/${a.symbol}`} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 4px", borderBottom: `1px solid ${BORD}`, textDecoration: "none",
+            <div key={a.symbol} style={{
+              display: "flex", alignItems: "center",
+              padding: "14px 4px", borderBottom: `1px solid ${BORD}`,
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <AssetIcon symbol={a.symbol} size={36} borderRadius="50%" />
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{a.symbol}</div>
-                  <div style={{ fontSize: 12, color: MUTED }}>{a.name}</div>
+              <Link href={`/assets/${a.symbol}`} style={{
+                flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between",
+                textDecoration: "none", minWidth: 0,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <AssetIcon symbol={a.symbol} size={36} borderRadius="50%" />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{a.symbol}</div>
+                    <div style={{ fontSize: 12, color: MUTED }}>{a.name}</div>
+                  </div>
                 </div>
+                <div style={{ textAlign: "right", marginRight: 12 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>${fmtPrice(a.currentPrice)}</div>
+                  <div style={{ fontSize: 12, color: pos ? GREEN : RED, fontFamily: "monospace" }}>
+                    {pos ? "+" : ""}{a.changePercent24h.toFixed(2)}%
+                  </div>
+                </div>
+              </Link>
+              <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                <button onClick={() => openTrade(a, "buy")} style={{
+                  height: 28, padding: "0 12px", borderRadius: 8, border: "none",
+                  background: "rgba(14,203,129,0.12)", color: GREEN,
+                  fontSize: 12, fontWeight: 600, cursor: "pointer",
+                }}>Buy</button>
+                <button onClick={() => openTrade(a, "sell")} style={{
+                  height: 28, padding: "0 12px", borderRadius: 8, border: "none",
+                  background: "rgba(246,70,93,0.1)", color: RED,
+                  fontSize: 12, fontWeight: 600, cursor: "pointer",
+                }}>Sell</button>
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>${fmtPrice(a.currentPrice)}</div>
-                <div style={{ fontSize: 12, color: pos ? GREEN : RED, fontFamily: "monospace" }}>{pos ? "+" : ""}{a.changePercent24h.toFixed(2)}%</div>
-              </div>
-            </Link>
+            </div>
           );
         })}
       </div>
 
-      {/* Desktop table (>= md) */}
+      {/* Desktop table */}
       <div className="hidden md:block" style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: `1px solid ${BORD}` }}>
               <th style={{ padding: "14px 8px", width: 36 }}></th>
-              {["Asset", "Price", "24h Change", "24h High", "24h Low", "Volume", ""].map((h, i) => (
+              {["Asset", "Price", "24h Change", "24h High", "24h Low", "Market Cap", ""].map((h, i) => (
                 <th key={i} style={{
                   padding: "14px 16px", textAlign: i === 0 ? "left" : "right",
-                  fontSize: 12, fontWeight: 500, color: MUTED, whiteSpace: "nowrap",
+                  fontSize: 11, fontWeight: 500, color: MUTED,
+                  whiteSpace: "nowrap", letterSpacing: "0.06em",
                 }}>{h}</th>
               ))}
             </tr>
@@ -304,50 +332,109 @@ export default function AssetList() {
           <tbody>
             {isLoading ? (
               <tr><td colSpan={8} style={{ padding: 60, textAlign: "center" }}>
-                <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite", margin: "0 auto" }} />
+                <Loader2 style={{ width: 24, height: 24, color: MUTED, animation: "spin 1s linear infinite", margin: "0 auto", display: "block" }} />
               </td></tr>
             ) : displayed?.length ? displayed.map(a => {
               const pos = a.changePercent24h >= 0;
               return (
-                <tr key={a.symbol} style={{ borderBottom: `1px solid ${BORD}`, transition: "background 0.1s", cursor: "pointer" }}
-                  onMouseEnter={e => e.currentTarget.style.background = inputBg}
-                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                <tr key={a.symbol}
+                  style={{ borderBottom: `1px solid ${BORD}`, transition: "background 0.1s" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = inputBg)}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <td style={{ padding: "14px 8px", textAlign: "center" }}>
                     <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}>
                       <Star style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
                     </button>
                   </td>
+
+                  {/* Asset name */}
                   <td style={{ padding: "14px 16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <Link href={`/assets/${a.symbol}`} style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
                       <AssetIcon symbol={a.symbol} size={28} borderRadius="50%" />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{a.symbol}</div>
                         <div style={{ fontSize: 12, color: MUTED }}>{a.name}</div>
                       </div>
-                    </div>
+                    </Link>
                   </td>
+
+                  {/* Price */}
                   <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 14, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>
                     ${fmtPrice(a.currentPrice)}
                   </td>
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, fontWeight: 500, color: pos ? GREEN : RED, fontFamily: "monospace" }}>
-                    {pos ? "+" : ""}{a.changePercent24h.toFixed(2)}%
-                  </td>
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
-                    ${fmtPrice(a.currentPrice * 1.02)}
-                  </td>
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
-                    ${fmtPrice(a.currentPrice * 0.98)}
-                  </td>
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
-                    {a.marketCap ? `$${(a.marketCap / 1e6).toFixed(1)}M` : "—"}
-                  </td>
+
+                  {/* 24h change */}
                   <td style={{ padding: "14px 16px", textAlign: "right" }}>
-                    <Link href={`/assets/${a.symbol}`} style={{
-                      display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      height: 30, padding: "0 14px", borderRadius: 999, border: `1px solid ${BORD}`,
-                      color: TEXT, fontSize: 12, fontWeight: 600, textDecoration: "none", background: "transparent",
-                    }}>Trade</Link>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                      {pos
+                        ? <TrendingUp style={{ width: 12, height: 12, color: GREEN }} strokeWidth={2} />
+                        : <TrendingDown style={{ width: 12, height: 12, color: RED }} strokeWidth={2} />
+                      }
+                      <span style={{ fontSize: 13, fontWeight: 500, color: pos ? GREEN : RED, fontFamily: "monospace" }}>
+                        {pos ? "+" : ""}{a.changePercent24h.toFixed(2)}%
+                      </span>
+                    </div>
+                  </td>
+
+                  {/* 24h High */}
+                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
+                    ${fmtPrice(a.currentPrice * (1 + Math.abs(a.changePercent24h) * 0.006 + 0.004))}
+                  </td>
+
+                  {/* 24h Low */}
+                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
+                    ${fmtPrice(a.currentPrice * (1 - Math.abs(a.changePercent24h) * 0.006 - 0.003))}
+                  </td>
+
+                  {/* Market Cap */}
+                  <td style={{ padding: "14px 16px", textAlign: "right", fontSize: 13, color: MUTED, fontFamily: "monospace" }}>
+                    {a.marketCap ? fmtCompact(a.marketCap) : "—"}
+                  </td>
+
+                  {/* Actions */}
+                  <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
+                      <button
+                        onClick={() => openTrade(a, "buy")}
+                        style={{
+                          height: 30, padding: "0 14px", borderRadius: 8, border: "none",
+                          background: "rgba(14,203,129,0.1)", color: GREEN,
+                          fontSize: 12, fontWeight: 600, cursor: "pointer",
+                          display: "flex", alignItems: "center", gap: 5,
+                          transition: "all 0.12s",
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(14,203,129,0.2)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(14,203,129,0.1)"; }}
+                      >
+                        <ShoppingCart size={11} strokeWidth={2} />
+                        Buy
+                      </button>
+                      <button
+                        onClick={() => openTrade(a, "sell")}
+                        style={{
+                          height: 30, padding: "0 14px", borderRadius: 8, border: "none",
+                          background: "rgba(246,70,93,0.08)", color: RED,
+                          fontSize: 12, fontWeight: 600, cursor: "pointer",
+                          display: "flex", alignItems: "center", gap: 5,
+                          transition: "all 0.12s",
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(246,70,93,0.18)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(246,70,93,0.08)"; }}
+                      >
+                        <ArrowDownCircle size={11} strokeWidth={2} />
+                        Sell
+                      </button>
+                      <Link href={`/assets/${a.symbol}`} style={{
+                        display: "inline-flex", alignItems: "center", justifyContent: "center",
+                        height: 30, padding: "0 12px", borderRadius: 8, border: `1px solid ${BORD}`,
+                        color: MUTED, fontSize: 12, fontWeight: 500, textDecoration: "none",
+                        transition: "all 0.12s",
+                      }}
+                        onMouseEnter={e => { (e.target as HTMLElement).style.color = TEXT; (e.target as HTMLElement).style.borderColor = BLUE; }}
+                        onMouseLeave={e => { (e.target as HTMLElement).style.color = MUTED; (e.target as HTMLElement).style.borderColor = BORD; }}
+                      >Chart</Link>
+                    </div>
                   </td>
                 </tr>
               );
@@ -358,14 +445,9 @@ export default function AssetList() {
         </table>
       </div>
 
-      {/* ── Latest News Carousel ────────────────────────────────────── */}
+      {/* News carousel */}
       <div style={{ marginTop: 32 }}>
-        <NewsCarousel
-          key={activeTab}
-          tabId={activeTab}
-          cats={activeTabDef.newsCategories}
-          colors={colors}
-        />
+        <NewsCarousel key={activeTab} tabId={activeTab} cats={activeTabDef.newsCategories} colors={colors} />
       </div>
     </div>
   );
