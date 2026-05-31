@@ -92,7 +92,7 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
   const [_, params] = useRoute("/admin/users/:id");
   const userId = urlUserId || Number(params?.id);
 
-  const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId } });
+  const { data: detail, isLoading, refetch } = useGetAdminUserDetail(userId, { query: { enabled: !!userId } as any });
   const updateStatus = useUpdateUserKycStatus();
 
   const [notes,      setNotes]      = useState("");

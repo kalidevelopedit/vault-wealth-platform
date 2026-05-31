@@ -44,10 +44,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute("data-theme", mode);
     document.body.style.background = colors.bg;
     document.body.style.color = colors.text;
+    if (mode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [mode, colors]);
 
   return <Ctx.Provider value={{ mode, colors, toggle }}>{children}</Ctx.Provider>;
 }
 
 export const useTheme = () => useContext(Ctx);
-export { DARK, LIGHT };

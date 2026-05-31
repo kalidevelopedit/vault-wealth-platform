@@ -4,7 +4,18 @@ import type { User, LoginRequest, RegisterRequest } from "@workspace/api-client-
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
-export interface ExtendedUser extends User {
+export interface ExtendedUser {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  country: string;
+  role: string;
+  kycStatus: string;
+  onboardingStep: number;
+  onboardingComplete: boolean;
+  profilePhotoUrl?: string | null;
+  createdAt: string;
   mustSetPin?: boolean;
   hasPin?: boolean;
   pinVerified?: boolean;

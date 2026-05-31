@@ -49,11 +49,11 @@ function ChangePasswordModal({ onClose, colors }: { onClose: () => void; colors:
   const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
   const strengthColor = ["", "#ef4444", "#f59e0b", "#22c55e", "#4ade80"][strength];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    if (!current || !next || !confirm) return toast.error("All fields are required");
-    if (next.length < 8) return toast.error("Password must be at least 8 characters");
-    if (next !== confirm) return toast.error("Passwords do not match");
+    if (!current || !next || !confirm) { toast.error("All fields are required"); return; }
+    if (next.length < 8) { toast.error("Password must be at least 8 characters"); return; }
+    if (next !== confirm) { toast.error("Passwords do not match"); return; }
     setLoading(true);
     try {
       const token = localStorage.getItem("vault_auth_token");

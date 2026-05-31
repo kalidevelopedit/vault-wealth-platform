@@ -9,6 +9,8 @@ import {
   TrendingUp, ArrowUpRight, Star, Shield, Lock, Clock,
   Bitcoin, BarChart3, Wheat, Calculator, PiggyBank, Target
 } from "lucide-react";
+import { useListAssets } from "@workspace/api-client-react";
+import { AssetIcon } from "@/components/AssetIcon";
 
 /* ─── CSS ──────────────────────────────────────────────────────────────── */
 const css = `
@@ -259,7 +261,47 @@ function Sparkline({ data, up }: { data: number[]; up: boolean }) {
 }
 
 /* ─── Hero Terminal Widget ───────────────────────────────────────────────── */
+const HERO_SYMS = ["BTC", "ETH", "AAPL", "NVDA", "GOLD", "SOL"];
+const HERO_COLORS: Record<string, string> = {
+  BTC: "#f59e0b", ETH: "#818cf8", AAPL: "#60a5fa",
+  NVDA: "#34d399", GOLD: "#fbbf24", SOL: "#a78bfa",
+  MSFT: "#60a5fa", BNB: "#f59e0b", AMZN: "#f97316",
+};
+const HERO_SPARKLINES: Record<string, number[]> = {
+  BTC:  [72,68,75,74,82,79,88,85,92,90,98,102,99,107,105],
+  ETH:  [58,61,57,65,63,70,68,76,74,79,77,83,81,87,85],
+  AAPL: [82,81,85,84,87,85,89,88,87,91,90,92,91,94,93],
+  NVDA: [48,54,51,60,58,66,64,72,70,78,76,84,81,90,88],
+  GOLD: [74,76,75,78,77,80,79,82,81,83,82,85,84,86,85],
+  SOL:  [88,83,87,81,85,79,83,77,81,76,79,74,77,72,75],
+};
+
+function fmtLivePrice(n: number) {
+  if (!n || isNaN(n)) return "$—";
+  if (n >= 10000) return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  if (n >= 100)   return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (n >= 1)     return "$" + n.toFixed(4);
+  return "$" + n.toFixed(6);
+}
+
 function HeroTerminal() {
+  const { data: assetsRaw } = useListAssets(undefined, { query: { refetchInterval: 30_000 } as any });
+  const assets = (assetsRaw as any[]) ?? [];
+
+  const rows = HERO_SYMS.map(sym => {
+    const live = assets.find((a: any) => a.symbol === sym) as any | undefined;
+    const sparkSym = sym === "GOLD" ? "GOLD" : sym;
+    return {
+      sym,
+      name: live?.name ?? sym,
+      price: live ? fmtLivePrice(live.currentPrice) : "—",
+      chg: live ? `${live.changePercent24h >= 0 ? "+" : ""}${live.changePercent24h.toFixed(2)}%` : "—",
+      up: live ? live.changePercent24h >= 0 : true,
+      col: HERO_COLORS[sym] ?? "#60a5fa",
+      data: HERO_SPARKLINES[sparkSym] ?? [70,72,68,75,74,80,79,85,83,90,88,95,92,100,98],
+    };
+  });
+
   return (
     <div className="hero-1" style={{
       background: "rgba(255,255,255,0.025)",
@@ -278,19 +320,14 @@ function HeroTerminal() {
         </div>
       </div>
       {/* Asset rows */}
-      {HERO_ASSETS.map((asset, i) => (
+      {rows.map((asset, i) => (
         <div key={asset.sym} style={{
           display: "flex", alignItems: "center", gap: 14,
           padding: "11px 20px",
-          borderBottom: i < HERO_ASSETS.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+          borderBottom: i < rows.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
         }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 9,
-            background: `${asset.col}18`,
-            border: `1px solid ${asset.col}30`,
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-          }}>
-            <span style={{ fontSize: 8, fontWeight: 900, color: asset.col, letterSpacing: "0em" }}>{asset.sym}</span>
+          <div style={{ flexShrink: 0 }}>
+            <AssetIcon symbol={asset.sym} size={32} borderRadius={8} />
           </div>
           <div style={{ flex: "0 0 68px" }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.78)", lineHeight: 1 }}>{asset.name}</div>

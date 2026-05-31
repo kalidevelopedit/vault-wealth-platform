@@ -86,8 +86,8 @@ function WireDepositFlow({ onBack, colors }: { onBack: () => void; colors: any }
   const canProceed0 = !!country;
   const canProceed1 = isUSA ? !!bank : (!!form.name && !!form.account);
 
-  const handleSubmit = async () => {
-    if (!form.amount || parseFloat(form.amount) <= 0) return toast.error("Enter a valid amount");
+  const handleSubmit = async (): Promise<void> => {
+    if (!form.amount || parseFloat(form.amount) <= 0) { toast.error("Enter a valid amount"); return; }
     setSubmitting(true);
     try {
       const details = bank
@@ -338,11 +338,11 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
   const num = parseFloat(amount) || 0;
   const insufficient = num > availableCash && num > 0;
 
-  const handleSubmit = async () => {
-    if (!num || num <= 0) return toast.error("Enter a valid amount");
-    if (num > availableCash) return toast.error("Amount exceeds available balance");
-    if (method === "crypto" && (!cryptoNetwork || !walletAddress)) return toast.error("Enter wallet details");
-    if (method === "bank" && (!bankName || !accountNum)) return toast.error("Enter bank details");
+  const handleSubmit = async (): Promise<void> => {
+    if (!num || num <= 0) { toast.error("Enter a valid amount"); return; }
+    if (num > availableCash) { toast.error("Amount exceeds available balance"); return; }
+    if (method === "crypto" && (!cryptoNetwork || !walletAddress)) { toast.error("Enter wallet details"); return; }
+    if (method === "bank" && (!bankName || !accountNum)) { toast.error("Enter bank details"); return; }
     setSubmitting(true);
     try {
       const details = method === "bank"
@@ -667,7 +667,8 @@ export default function Wallet() {
               <div>
                 {txData.transactions.map((tx, i, arr) => {
                   const badge = txTypeBadge(tx.type);
-                  const statusColor = tx.status === "completed" ? colors.green : tx.status === "pending" ? "#fbbf24" : tx.status === "processing" ? "#60a5fa" : colors.muted;
+                  const s = tx.status as string;
+                  const statusColor = s === "completed" ? colors.green : s === "pending" ? "#fbbf24" : s === "processing" ? "#60a5fa" : colors.muted;
                   return (
                     <div key={tx.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: i < arr.length - 1 ? `1px solid ${colors.bord}` : "none" }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -719,10 +720,10 @@ export default function Wallet() {
                           <td style={{ padding: "14px 20px", textAlign: "right" }}>
                             <span style={{
                               fontSize: 11, padding: "3px 10px", borderRadius: 999, fontWeight: 600,
-                              background: tx.status === "completed" ? "rgba(14,203,129,0.1)" : tx.status === "pending" ? "rgba(251,191,36,0.1)" : tx.status === "processing" ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.06)",
-                              color: tx.status === "completed" ? colors.green : tx.status === "pending" ? "#fbbf24" : tx.status === "processing" ? "#60a5fa" : colors.muted,
+                              background: (tx.status as string) === "completed" ? "rgba(14,203,129,0.1)" : (tx.status as string) === "pending" ? "rgba(251,191,36,0.1)" : (tx.status as string) === "processing" ? "rgba(59,130,246,0.1)" : "rgba(255,255,255,0.06)",
+                              color: (tx.status as string) === "completed" ? colors.green : (tx.status as string) === "pending" ? "#fbbf24" : (tx.status as string) === "processing" ? "#60a5fa" : colors.muted,
                             }}>
-                              {tx.status === "processing" ? "Processing" : tx.status}
+                              {(tx.status as string) === "processing" ? "Processing" : tx.status}
                             </span>
                           </td>
                         </tr>

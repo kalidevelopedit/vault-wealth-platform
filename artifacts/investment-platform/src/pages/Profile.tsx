@@ -105,11 +105,11 @@ export default function Profile() {
     toast.success("Referral link copied");
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) return toast.error("Please select an image file");
-    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image must be under 5MB"); return; }
 
     setUploadingPhoto(true);
     try {
