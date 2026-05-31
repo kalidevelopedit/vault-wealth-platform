@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AssetIcon } from "@/components/AssetIcon";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import {
   useGetPortfolioSummary, useGetHoldings, useGetTransactions,
   useListAssets, useGetWatchlist, useGetMarketNews,
@@ -13,7 +14,7 @@ import {
   Loader2, Search, Repeat2, BarChart2, Calculator, Wifi,
 } from "lucide-react";
 
-// ── Formatters ────────────────────────────────────────────────────────────────
+// ── Formatters ─────────────────────────────────────────────────────────────────
 const fmt2 = (n: number) =>
   isNaN(n) ? "0.00" : n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtUSD = (n: number) => "$" + fmt2(n);
@@ -36,21 +37,29 @@ const fmtPrice = (n: number) => {
 };
 
 const timeAgo = (d: string) => {
-  const ms = Date.now() - new Date(d).getTime();
-  const h = Math.floor(ms / 3_600_000);
-  if (h < 1) return "Just now";
-  if (h < 24) return `${h}h ago`;
-  const days = Math.floor(h / 24);
-  return days < 7 ? `${days}d ago` : new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  try {
+    const ms = Date.now() - new Date(d).getTime();
+    const h = Math.floor(ms / 3_600_000);
+    if (h < 1) return "Just now";
+    if (h < 24) return `${h}h ago`;
+    const days = Math.floor(h / 24);
+    return days < 7 ? `${days}d ago` : new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch {
+    return "";
+  }
 };
 
-// ── Sparkline bar ─────────────────────────────────────────────────────────────
+// ── Sparkline bar ──────────────────────────────────────────────────────────────
 function SparkBar({ pct }: { pct: number }) {
   const { colors, mode } = useTheme();
   const isPos = pct >= 0;
   const BARS = 10;
   const lit = Math.min(BARS, Math.round((Math.abs(pct) / 8) * BARS));
-  const heights = useMemo(() => Array.from({ length: BARS }, () => 30 + Math.floor(Math.random() * 65)), []);
+  // stable heights per instance (seeded from pct to avoid hydration mismatch)
+  const heights = useMemo(() => {
+    const seed = Math.abs(pct * 1000);
+    return Array.from({ length: BARS }, (_, i) => 30 + ((seed * (i + 1) * 7919) % 65));
+  }, [pct]);
   const dim = mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   return (
     <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 26 }}>
@@ -65,27 +74,27 @@ function SparkBar({ pct }: { pct: number }) {
   );
 }
 
-// ── Portfolio Hero ────────────────────────────────────────────────────────────
-function PortfolioHero() {
+// ── Portfolio Hero ─────────────────────────────────────────────────────────────
+function PortfolioHeroInner() {
   const { mode } = useTheme();
   const { data: summary, isLoading } = useGetPortfolioSummary();
   const s = summary as any;
-  const total    = s?.totalValue     ?? 0;
-  const dayPnl   = s?.dayPnl         ?? 0;
-  const dayPct   = s?.dayPnlPercent  ?? 0;
-  const cash     = s?.availableCash  ?? 0;
+  const total    = Number(s?.totalValue)    || 0;
+  const dayPnl   = Number(s?.dayPnl)        || 0;
+  const dayPct   = Number(s?.dayPnlPercent) || 0;
+  const cash     = Number(s?.availableCash) || 0;
   const invested = Math.max(0, total - cash);
   const isGain   = dayPnl >= 0;
 
   const heroBg = mode === "dark"
     ? "linear-gradient(135deg, #0f1733 0%, #111827 55%, #0a0d18 100%)"
     : "linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #2563eb 100%)";
-  const heroBord = mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.15)";
-  const heroText = "rgba(255,255,255,0.95)";
+  const heroBord  = mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.15)";
+  const heroText  = "rgba(255,255,255,0.95)";
   const heroMuted = "rgba(255,255,255,0.55)";
-  const heroDim = "rgba(255,255,255,0.15)";
+  const heroDim   = "rgba(255,255,255,0.15)";
   const green = "#22c55e";
-  const red = "#ef4444";
+  const red   = "#ef4444";
 
   return (
     <div style={{
@@ -97,11 +106,12 @@ function PortfolioHero() {
       <div style={{ position: "absolute", bottom: -40, left: 40, width: 180, height: 180, borderRadius: "50%", background: "rgba(59,130,246,0.06)", filter: "blur(50px)", pointerEvents: "none" }} />
 
       <div style={{ position: "relative", display: "flex", flexWrap: "wrap", gap: "16px 40px", alignItems: "flex-start", justifyContent: "space-between" }}>
-        {/* Balance */}
         <div>
           <p style={{ fontSize: 10.5, color: heroMuted, letterSpacing: "0.13em", fontWeight: 600, marginBottom: 10, textTransform: "uppercase" }}>Total Portfolio Value</p>
           {isLoading ? (
-            <div style={{ height: 52, display: "flex", alignItems: "center" }}><Loader2 size={20} style={{ color: heroMuted, animation: "spin 1s linear infinite" }} /></div>
+            <div style={{ height: 52, display: "flex", alignItems: "center" }}>
+              <Loader2 size={20} style={{ color: heroMuted, animation: "spin 1s linear infinite" }} />
+            </div>
           ) : (
             <>
               <h1 style={{ fontSize: 38, fontWeight: 700, color: heroText, margin: 0, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{fmtUSD(total)}</h1>
@@ -116,7 +126,6 @@ function PortfolioHero() {
           )}
         </div>
 
-        {/* Stats */}
         <div style={{ display: "flex", gap: "24px 36px", flexWrap: "wrap" }}>
           {[["Available Cash", fmtUSD(cash)], ["Invested", fmtUSD(invested)]].map(([lbl, val]) => (
             <div key={lbl}>
@@ -126,14 +135,13 @@ function PortfolioHero() {
           ))}
         </div>
 
-        {/* Actions */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          {[
-            { label: "Deposit",  href: "/wallet",  Icon: ArrowDownToLine,  primary: true },
-            { label: "Withdraw", href: "/wallet",  Icon: ArrowUpFromLine,  primary: false },
-            { label: "Trade",    href: "/markets", Icon: BarChart2,        primary: false },
-            { label: "Convert",  href: "/convert", Icon: Repeat2,          primary: false },
-          ].map(({ label, href, Icon, primary }) => (
+          {([
+            { label: "Deposit",  href: "/wallet",  Icon: ArrowDownToLine, primary: true  },
+            { label: "Withdraw", href: "/wallet",  Icon: ArrowUpFromLine, primary: false },
+            { label: "Trade",    href: "/markets", Icon: BarChart2,       primary: false },
+            { label: "Convert",  href: "/convert", Icon: Repeat2,         primary: false },
+          ] as const).map(({ label, href, Icon, primary }) => (
             <Link key={label} href={href} style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "8px 16px", borderRadius: 10,
@@ -149,40 +157,45 @@ function PortfolioHero() {
           ))}
         </div>
       </div>
-      <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
 
-// ── ROI Calculator ────────────────────────────────────────────────────────────
-const ROI_SCENARIOS = [
-  { label: "Conservative", rate: 0.08, desc: "Bonds & Fixed Income",    color: "#6366f1" },
-  { label: "Balanced",     rate: 0.15, desc: "Diversified Portfolio",   color: "#3b82f6" },
-  { label: "Aggressive",   rate: 0.32, desc: "Growth & Crypto Focus",   color: "#22c55e" },
-];
-const PRESETS = [1000, 5000, 10000, 50000];
+function PortfolioHero() {
+  return (
+    <ErrorBoundary section="Portfolio Summary">
+      <PortfolioHeroInner />
+    </ErrorBoundary>
+  );
+}
 
-function ROICalculator() {
+// ── ROI Calculator ─────────────────────────────────────────────────────────────
+const ROI_SCENARIOS = [
+  { label: "Conservative", rate: 0.08, desc: "Bonds & Fixed Income",  color: "#6366f1" },
+  { label: "Balanced",     rate: 0.15, desc: "Diversified Portfolio", color: "#3b82f6" },
+  { label: "Aggressive",   rate: 0.32, desc: "Growth & Crypto Focus", color: "#22c55e" },
+] as const;
+const PRESETS = [1000, 5000, 10000, 50000] as const;
+
+function ROICalculatorInner() {
   const { colors, mode } = useTheme();
   const { card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE } = colors;
-  const [amount, setAmount] = useState(10000);
+  const [amount, setAmount]   = useState(10000);
   const [customVal, setCustomVal] = useState("");
   const [useCustom, setUseCustom] = useState(false);
 
-  const invest = useCustom ? (parseFloat(customVal.replace(/,/g, "")) || 10000) : amount;
+  const invest  = useCustom ? (parseFloat(customVal.replace(/,/g, "")) || 10000) : amount;
   const project = (rate: number, yrs: number) => invest * Math.pow(1 + rate, yrs);
-  const dim = mode === "dark" ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.025)";
+  const dim     = mode === "dark" ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.025)";
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, padding: "20px 24px", marginBottom: 20 }}>
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <Calculator size={15} style={{ color: BLUE }} strokeWidth={1.5} />
         <h2 style={{ fontSize: 14, fontWeight: 600, color: TEXT, margin: 0 }}>Investment Return Calculator</h2>
         <span style={{ fontSize: 11, color: MUTED, marginLeft: "auto" }}>Illustrative estimates · past returns don't guarantee future results</span>
       </div>
 
-      {/* Amount presets */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
         <span style={{ fontSize: 12, color: MUTED }}>If you invest:</span>
         {PRESETS.map(p => {
@@ -197,9 +210,7 @@ function ROICalculator() {
                 color: active ? "#fff" : TEXT,
                 fontSize: 12.5, fontWeight: 600,
               }}
-            >
-              {p >= 1000 ? `$${p / 1000}K` : `$${p}`}
-            </button>
+            >{p >= 1000 ? `$${p / 1000}K` : `$${p}`}</button>
           );
         })}
         <input
@@ -216,7 +227,6 @@ function ROICalculator() {
         />
       </div>
 
-      {/* Strategy cards */}
       <div className="roi-grid">
         {ROI_SCENARIOS.map(s => (
           <div key={s.label} style={{ background: dim, border: `1px solid ${BORD}`, borderRadius: 12, padding: "14px 16px" }}>
@@ -228,8 +238,8 @@ function ROICalculator() {
               <div style={{ fontSize: 11, color: MUTED }}>{s.desc}</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: s.color, marginTop: 4 }}>{(s.rate * 100).toFixed(0)}% avg / year</div>
             </div>
-            {[1, 3, 5, 10].map(yrs => {
-              const val = project(s.rate, yrs);
+            {([1, 3, 5, 10] as const).map(yrs => {
+              const val  = project(s.rate, yrs);
               const gain = val - invest;
               return (
                 <div key={yrs} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderTop: `1px solid ${BORD}` }}>
@@ -248,17 +258,25 @@ function ROICalculator() {
   );
 }
 
-// ── Market Overview ───────────────────────────────────────────────────────────
+function ROICalculator() {
+  return (
+    <ErrorBoundary section="ROI Calculator">
+      <ROICalculatorInner />
+    </ErrorBoundary>
+  );
+}
+
+// ── Market Overview ────────────────────────────────────────────────────────────
 type AssetRow = {
-  symbol: string; name: string; assetType: string;
-  currentPrice: number; change24h: number; changePercent24h: number;
+  symbol: string; name: string; assetType?: string;
+  currentPrice: number; change24h?: number; changePercent24h: number;
   marketCap?: number | null; logoUrl?: string | null;
 };
 type TabId = "hot" | "favorites" | "all" | "crypto" | "stocks" | "metals" | "futures";
 
 const MARKET_TABS: { id: TabId; label: string; icon?: React.ReactNode }[] = [
-  { id: "hot",       label: "Hot",         icon: <Flame size={12} /> },
-  { id: "favorites", label: "Favorites",   icon: <Star size={12} /> },
+  { id: "hot",       label: "Hot",        icon: <Flame size={12} /> },
+  { id: "favorites", label: "Favorites",  icon: <Star size={12} /> },
   { id: "all",       label: "All Markets" },
   { id: "crypto",    label: "Crypto" },
   { id: "stocks",    label: "Stocks" },
@@ -266,7 +284,7 @@ const MARKET_TABS: { id: TabId; label: string; icon?: React.ReactNode }[] = [
   { id: "futures",   label: "Futures" },
 ];
 
-function MarketOverview() {
+function MarketOverviewInner() {
   const { colors, mode } = useTheme();
   const { card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED } = colors;
 
@@ -277,27 +295,27 @@ function MarketOverview() {
   const [, navigate]         = useLocation();
 
   const OPTS = { query: { refetchInterval: 30_000 } as any };
-  const { data: allRaw,    isLoading: lAll }    = useListAssets(undefined, OPTS);
-  const { data: cryptoRaw, isLoading: lCrypto } = useListAssets({ type: ListAssetsType.crypto }, OPTS);
-  const { data: stockRaw,  isLoading: lStock }  = useListAssets({ type: ListAssetsType.stock },  OPTS);
-  const { data: metalRaw,  isLoading: lMetal }  = useListAssets({ type: ListAssetsType.commodity }, OPTS);
-  const { data: watchRaw }                       = useGetWatchlist();
+  const { data: allRaw,    isLoading: lAll    } = useListAssets(undefined,                                  OPTS);
+  const { data: cryptoRaw, isLoading: lCrypto } = useListAssets({ type: ListAssetsType.crypto },            OPTS);
+  const { data: stockRaw,  isLoading: lStock  } = useListAssets({ type: ListAssetsType.stock },             OPTS);
+  const { data: metalRaw,  isLoading: lMetal  } = useListAssets({ type: ListAssetsType.commodity },        OPTS);
+  const { data: watchRaw }                       = useGetWatchlist({ query: {} as any });
 
   const isLoading = lAll || lCrypto || lStock || lMetal;
 
   const watchSet = useMemo(() =>
-    new Set(((watchRaw as any[]) ?? []).map((w: any) => w.symbol)),
+    new Set(Array.isArray(watchRaw) ? (watchRaw as any[]).map((w: any) => w?.symbol).filter(Boolean) : []),
     [watchRaw]
   );
 
-  const all    = ((allRaw    as any[]) ?? []) as AssetRow[];
-  const crypto = ((cryptoRaw as any[]) ?? []) as AssetRow[];
-  const stocks = ((stockRaw  as any[]) ?? []) as AssetRow[];
-  const metals = ((metalRaw  as any[]) ?? []) as AssetRow[];
+  const all    = Array.isArray(allRaw)    ? (allRaw    as any[]) as AssetRow[] : [];
+  const crypto = Array.isArray(cryptoRaw) ? (cryptoRaw as any[]) as AssetRow[] : [];
+  const stocks = Array.isArray(stockRaw)  ? (stockRaw  as any[]) as AssetRow[] : [];
+  const metals = Array.isArray(metalRaw)  ? (metalRaw  as any[]) as AssetRow[] : [];
 
   const base = useMemo((): AssetRow[] => {
     switch (tab) {
-      case "hot":       return [...all].sort((a, b) => b.changePercent24h - a.changePercent24h).slice(0, 15);
+      case "hot":       return [...all].sort((a, b) => (b.changePercent24h ?? 0) - (a.changePercent24h ?? 0)).slice(0, 15);
       case "favorites": return all.filter(a => watchSet.has(a.symbol));
       case "crypto":    return crypto;
       case "stocks":    return stocks;
@@ -316,9 +334,9 @@ function MarketOverview() {
       );
     }
     return [...list].sort((a, b) => {
-      const d = sortBy === "price" ? a.currentPrice - b.currentPrice
-              : sortBy === "change" ? a.changePercent24h - b.changePercent24h
-              : (a.marketCap ?? 0) - (b.marketCap ?? 0);
+      const d = sortBy === "price"  ? (a.currentPrice     ?? 0) - (b.currentPrice     ?? 0)
+              : sortBy === "change" ? (a.changePercent24h ?? 0) - (b.changePercent24h ?? 0)
+              :                       (a.marketCap        ?? 0) - (b.marketCap        ?? 0);
       return sortDir === "desc" ? -d : d;
     });
   }, [base, search, sortBy, sortDir]);
@@ -328,9 +346,9 @@ function MarketOverview() {
     else { setSortBy(col); setSortDir("desc"); }
   };
 
-  const COL = "36px 1fr 110px 80px 110px 56px 60px";
+  const COL     = "36px 1fr 110px 80px 110px 56px 60px";
   const shimmer = mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
-  const shimmerDark = mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+  const shimmerD = mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden" }}>
@@ -350,7 +368,6 @@ function MarketOverview() {
           </button>
         ))}
 
-        {/* Live + Filter */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, padding: "0 0 0 10px", flexShrink: 0 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: GREEN, fontWeight: 600 }}>
             <Wifi size={9} strokeWidth={2} /> LIVE
@@ -374,9 +391,9 @@ function MarketOverview() {
             }}
             style={{
               fontSize: 10.5, fontWeight: 600, color: MUTED, letterSpacing: "0.07em",
-              textTransform: "uppercase", cursor: ["Price","24h %","Market Cap"].includes(lbl) ? "pointer" : "default",
+              textTransform: "uppercase", cursor: ["Price", "24h %", "Market Cap"].includes(lbl) ? "pointer" : "default",
               display: "flex", alignItems: "center", gap: 2,
-              justifyContent: i >= 2 ? "flex-end" : i === 5 ? "center" : "flex-start",
+              justifyContent: i >= 2 ? "flex-end" : "flex-start",
             }}>
             {lbl}
             {(lbl === "Price"      && sortBy === "price")  && <span style={{ fontSize: 8 }}>{sortDir === "desc" ? "▼" : "▲"}</span>}
@@ -395,8 +412,8 @@ function MarketOverview() {
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <div style={{ width: 27, height: 27, borderRadius: "50%", background: shimmer, flexShrink: 0 }} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                  <div style={{ height: 11, width: 50, borderRadius: 4, background: shimmerDark }} />
-                  <div style={{ height: 9, width: 80, borderRadius: 4, background: shimmer }} />
+                  <div style={{ height: 11, width: 50, borderRadius: 4, background: shimmerD }} />
+                  <div style={{ height: 9,  width: 80, borderRadius: 4, background: shimmer }} />
                 </div>
               </div>
               <div style={{ height: 12, width: 70, borderRadius: 4, background: shimmer, marginLeft: "auto" }} />
@@ -416,8 +433,8 @@ function MarketOverview() {
               ? <><span>No watchlist items. </span><Link href="/markets" style={{ color: BLUE, textDecoration: "none" }}>Browse markets →</Link></>
               : "No assets match your filter"}
           </div>
-        ) : rows.map((a, idx) => {
-          const pos = a.changePercent24h >= 0;
+        ) : rows.map((a, rowIdx) => {
+          const pos = (a.changePercent24h ?? 0) >= 0;
           return (
             <div key={a.symbol}
               onClick={() => navigate(`/assets/${a.symbol}`)}
@@ -425,7 +442,7 @@ function MarketOverview() {
               onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.022)" : "rgba(0,0,0,0.022)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
-              <span style={{ fontSize: 11.5, color: MUTED }}>{idx + 1}</span>
+              <span style={{ fontSize: 11.5, color: MUTED }}>{rowIdx + 1}</span>
 
               <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
                 <AssetIcon symbol={a.symbol} size={27} borderRadius="50%" />
@@ -435,22 +452,24 @@ function MarketOverview() {
                 </div>
               </div>
 
-              <div style={{ textAlign: "right", fontSize: 13.5, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>{fmtPrice(a.currentPrice)}</div>
+              <div style={{ textAlign: "right", fontSize: 13.5, fontWeight: 600, color: TEXT, fontFamily: "monospace" }}>{fmtPrice(a.currentPrice ?? 0)}</div>
 
               <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 3 }}>
                 {pos ? <TrendingUp size={11} style={{ color: GREEN }} strokeWidth={2.5} /> : <TrendingDown size={11} style={{ color: RED }} strokeWidth={2.5} />}
-                <span style={{ fontSize: 13, fontWeight: 600, color: pos ? GREEN : RED }}>{pos ? "+" : ""}{fmt2(a.changePercent24h)}%</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: pos ? GREEN : RED }}>{pos ? "+" : ""}{fmt2(a.changePercent24h ?? 0)}%</span>
               </div>
 
               <div style={{ textAlign: "right", fontSize: 12, color: MUTED }}>{fmtCompact(a.marketCap ?? 0)}</div>
 
-              <div style={{ display: "flex", justifyContent: "center" }}><SparkBar pct={a.changePercent24h} /></div>
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <SparkBar pct={a.changePercent24h ?? 0} />
+              </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Link href={`/assets/${a.symbol}`} onClick={e => e.stopPropagation()} style={{
                   padding: "5px 10px", borderRadius: 6,
                   background: mode === "dark" ? "rgba(37,99,255,0.12)" : "rgba(37,99,255,0.08)",
-                  border: `1px solid rgba(37,99,255,0.28)`,
+                  border: "1px solid rgba(37,99,255,0.28)",
                   color: BLUE, fontSize: 11.5, fontWeight: 600, textDecoration: "none",
                 }}>Buy</Link>
               </div>
@@ -469,22 +488,30 @@ function MarketOverview() {
   );
 }
 
-// ── Portfolio Panel ───────────────────────────────────────────────────────────
+function MarketOverview() {
+  return (
+    <ErrorBoundary section="Market Overview">
+      <MarketOverviewInner />
+    </ErrorBoundary>
+  );
+}
+
+// ── Portfolio Panel ────────────────────────────────────────────────────────────
 const TX_LABEL: Record<string, string> = {
   buy: "BUY", sell: "SELL", deposit: "DEPOSIT", withdraw: "WITHDRAW",
   bank_transfer: "BANK TRANSFER", crypto_deposit: "CRYPTO DEPOSIT",
   crypto_withdraw: "CRYPTO WITHDRAW",
 };
 
-function PortfolioPanel() {
+function PortfolioPanelInner() {
   const { colors, mode } = useTheme();
   const { card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE, green: GREEN, red: RED } = colors;
 
-  const { data: holdings, isLoading: hLoad } = useGetHoldings();
+  const { data: holdings, isLoading: hLoad } = useGetHoldings({ query: {} as any });
   const { data: txRaw,    isLoading: tLoad } = useGetTransactions({ limit: 8 });
 
-  const holdList = ((holdings as unknown as any[]) ?? []);
-  const txList   = ((txRaw   as unknown as any[]) ?? []).slice(0, 8);
+  const holdList = Array.isArray(holdings) ? (holdings as any[]) : [];
+  const txList   = Array.isArray(txRaw)    ? (txRaw    as any[]).slice(0, 8) : [];
 
   const dim = mode === "dark" ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.025)";
 
@@ -509,25 +536,28 @@ function PortfolioPanel() {
             <p style={{ fontSize: 13.5, fontWeight: 600, color: TEXT, margin: "0 0 5px" }}>No positions yet</p>
             <p style={{ fontSize: 12, color: MUTED, margin: "0 0 16px", lineHeight: 1.55 }}>Deposit funds and browse markets<br/>to make your first trade</p>
             <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-              <Link href="/wallet"   style={{ padding: "7px 14px", borderRadius: 8, background: BLUE, color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>Deposit</Link>
-              <Link href="/markets"  style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${BORD}`, color: TEXT, fontSize: 12.5, fontWeight: 500, textDecoration: "none" }}>Browse Markets</Link>
+              <Link href="/wallet"  style={{ padding: "7px 14px", borderRadius: 8, background: BLUE, color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>Deposit</Link>
+              <Link href="/markets" style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${BORD}`, color: TEXT, fontSize: 12.5, fontWeight: 500, textDecoration: "none" }}>Browse Markets</Link>
             </div>
           </div>
         ) : holdList.slice(0, 7).map((h: any) => {
-          const price = h.currentPrice ?? h.avgCost ?? 0;
-          const value = (h.quantity ?? 0) * price;
-          const pnl   = value - (h.quantity ?? 0) * (h.avgCost ?? 0);
+          const price = Number(h?.currentPrice ?? h?.avgCost) || 0;
+          const qty   = Number(h?.quantity) || 0;
+          const avg   = Number(h?.avgCost)  || 0;
+          const value = qty * price;
+          const pnl   = value - qty * avg;
           const pos   = pnl >= 0;
           return (
-            <Link key={h.symbol} href={`/assets/${h.symbol}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 16px", borderBottom: `1px solid ${BORD}`, textDecoration: "none" }}
+            <Link key={h?.symbol ?? Math.random()} href={`/assets/${h?.symbol}`}
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 16px", borderBottom: `1px solid ${BORD}`, textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                <AssetIcon symbol={h.symbol} size={28} borderRadius="50%" />
+                <AssetIcon symbol={h?.symbol ?? ""} size={28} borderRadius="50%" />
                 <div>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>{h.symbol}</p>
-                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{(h.quantity ?? 0).toFixed(4)} units</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>{h?.symbol ?? "—"}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{qty.toFixed(4)} units</p>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -560,24 +590,22 @@ function PortfolioPanel() {
             <Link href="/wallet" style={{ padding: "7px 14px", borderRadius: 8, background: BLUE, color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>Make a Deposit</Link>
           </div>
         ) : txList.map((tx: any, i: number) => {
-          const type     = tx.type ?? "";
-          const isCredit = ["buy","deposit","bank_transfer","crypto_deposit"].includes(type);
+          const type     = String(tx?.type ?? "");
+          const isCredit = ["buy", "deposit", "bank_transfer", "crypto_deposit"].includes(type);
           const label    = TX_LABEL[type] ?? type.toUpperCase();
-          const amount   = tx.total ?? tx.amount ?? 0;
-          const sym      = tx.symbol;
+          const amount   = Number(tx?.total ?? tx?.amount) || 0;
+          const sym      = tx?.symbol as string | undefined;
           return (
-            <div key={tx.id ?? i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 16px", borderBottom: `1px solid ${BORD}` }}>
+            <div key={tx?.id ?? i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 16px", borderBottom: `1px solid ${BORD}` }}>
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <div style={{ width: 30, height: 30, borderRadius: "50%", background: dim, border: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {sym
-                    ? <AssetIcon symbol={sym} size={20} borderRadius="50%" />
-                    : <Clock size={13} style={{ color: MUTED }} strokeWidth={1.5} />}
+                  {sym ? <AssetIcon symbol={sym} size={20} borderRadius="50%" /> : <Clock size={13} style={{ color: MUTED }} strokeWidth={1.5} />}
                 </div>
                 <div>
                   <p style={{ fontSize: 12.5, fontWeight: 600, color: TEXT, margin: 0 }}>
                     {sym ?? (type === "deposit" || type === "bank_transfer" ? "Deposit" : type === "withdraw" ? "Withdraw" : label)}
                   </p>
-                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{tx.createdAt ? timeAgo(tx.createdAt) : ""}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{tx?.createdAt ? timeAgo(String(tx.createdAt)) : ""}</p>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -592,8 +620,16 @@ function PortfolioPanel() {
   );
 }
 
-// ── News Section ──────────────────────────────────────────────────────────────
-const NEWS_CATS = ["All", "Crypto", "Stocks", "Macro", "Commodities", "ETF"];
+function PortfolioPanel() {
+  return (
+    <ErrorBoundary section="Portfolio Panel">
+      <PortfolioPanelInner />
+    </ErrorBoundary>
+  );
+}
+
+// ── News Section ───────────────────────────────────────────────────────────────
+const NEWS_CATS = ["All", "Crypto", "Stocks", "Macro", "Commodities", "ETF"] as const;
 
 type NewsItem = {
   id: number; title: string; summary?: string | null;
@@ -601,34 +637,40 @@ type NewsItem = {
   category?: string | null; publishedAt: string;
 };
 
-const FALLBACK: NewsItem[] = [
-  { id: 1, title: "Bitcoin consolidates above $107K as institutional demand grows",      summary: "Major asset managers continue accumulating BTC positions as macro uncertainty persists.",            source: "CryptoDesk",       url: "#", category: "crypto",      publishedAt: new Date().toISOString() },
-  { id: 2, title: "Ethereum network upgrade set to reduce gas fees by up to 80%",        summary: "The upcoming network upgrade promises significant improvements to transaction throughput.",             source: "ETH Daily",        url: "#", category: "crypto",      publishedAt: new Date().toISOString() },
-  { id: 3, title: "NVDA surges 4.2% after record AI chip revenue beats expectations",    summary: "Nvidia's data center division posts record quarterly earnings on surging AI compute demand.",         source: "MarketWatch",       url: "#", category: "stocks",      publishedAt: new Date().toISOString() },
-  { id: 4, title: "S&P 500 closes at all-time high for third consecutive week",          summary: "Strong earnings season fuels continued equity market momentum across all major sectors.",              source: "Reuters",           url: "#", category: "stocks",      publishedAt: new Date().toISOString() },
-  { id: 5, title: "Gold hits 6-month high at $3,320/oz amid geopolitical tensions",      summary: "Safe-haven demand drives precious metals to multi-month highs as uncertainty mounts.",               source: "Commodities Today", url: "#", category: "commodities", publishedAt: new Date().toISOString() },
-  { id: 6, title: "Federal Reserve signals potential rate pause amid inflation data",     summary: "Markets rally on expectations the Fed may hold rates steady at the next policy meeting.",            source: "Bloomberg",         url: "#", category: "macro",       publishedAt: new Date().toISOString() },
+const FALLBACK_NEWS: NewsItem[] = [
+  { id: 1, title: "Bitcoin consolidates above $107K as institutional demand grows",   summary: "Major asset managers continue accumulating BTC positions as macro uncertainty persists.",           source: "CryptoDesk",       url: "#", category: "crypto",      publishedAt: new Date().toISOString() },
+  { id: 2, title: "Ethereum network upgrade set to reduce gas fees by up to 80%",     summary: "The upcoming network upgrade promises significant improvements to transaction throughput.",            source: "ETH Daily",        url: "#", category: "crypto",      publishedAt: new Date().toISOString() },
+  { id: 3, title: "NVDA surges 4.2% after record AI chip revenue beats expectations", summary: "Nvidia's data center division posts record quarterly earnings on surging AI compute demand.",        source: "MarketWatch",       url: "#", category: "stocks",      publishedAt: new Date().toISOString() },
+  { id: 4, title: "S&P 500 closes at all-time high for third consecutive week",       summary: "Strong earnings season fuels continued equity market momentum across all major sectors.",             source: "Reuters",           url: "#", category: "stocks",      publishedAt: new Date().toISOString() },
+  { id: 5, title: "Gold hits 6-month high at $3,320/oz amid geopolitical tensions",   summary: "Safe-haven demand drives precious metals to multi-month highs as uncertainty mounts.",              source: "Commodities Today", url: "#", category: "commodities", publishedAt: new Date().toISOString() },
+  { id: 6, title: "Federal Reserve signals potential rate pause amid inflation data",  summary: "Markets rally on expectations the Fed may hold rates steady at the next policy meeting.",           source: "Bloomberg",         url: "#", category: "macro",       publishedAt: new Date().toISOString() },
 ];
 
 function timeAgoNews(s: string) {
-  const m = Math.floor((Date.now() - new Date(s).getTime()) / 60000);
-  if (m < 2)    return "Just now";
-  if (m < 60)   return `${m}m ago`;
-  if (m < 1440) return `${Math.floor(m/60)}h ago`;
-  return `${Math.floor(m/1440)}d ago`;
+  try {
+    const m = Math.floor((Date.now() - new Date(s).getTime()) / 60000);
+    if (m < 2)    return "Just now";
+    if (m < 60)   return `${m}m ago`;
+    if (m < 1440) return `${Math.floor(m / 60)}h ago`;
+    return `${Math.floor(m / 1440)}d ago`;
+  } catch { return ""; }
 }
 
-function NewsSection() {
+function NewsSectionInner() {
   const { colors, mode } = useTheme();
   const { card: CARD, bord: BORD, text: TEXT, muted: MUTED, blue: BLUE } = colors;
-  const [cat, setCat] = useState("All");
+  const [cat, setCat] = useState<typeof NEWS_CATS[number]>("All");
 
-  const { data: newsRaw } = useGetMarketNews({ category: cat === "All" ? undefined : cat.toLowerCase() } as any);
-  const news = ((newsRaw as any[]) ?? []);
-  const allNews: NewsItem[] = news.length > 0 ? news : FALLBACK;
-  const shown = cat === "All" ? allNews : allNews.filter((n: NewsItem) =>
-    (n.category ?? "").toLowerCase().includes(cat.toLowerCase())
-  );
+  // API only supports limit — filter by category client-side
+  const { data: newsRaw } = useGetMarketNews({ limit: 20 }, { query: {} as any });
+  const apiNews: NewsItem[] = Array.isArray(newsRaw) ? (newsRaw as any[]) : [];
+  const allNews             = apiNews.length > 0 ? apiNews : FALLBACK_NEWS;
+
+  const shown = cat === "All"
+    ? allNews
+    : allNews.filter((n: NewsItem) => (n.category ?? "").toLowerCase().includes(cat.toLowerCase()));
+
+  const displayed = shown.length > 0 ? shown : allNews;
 
   return (
     <div style={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 16, overflow: "hidden", marginTop: 20 }}>
@@ -640,47 +682,49 @@ function NewsSection() {
               padding: "4px 12px", borderRadius: 20, border: "none", cursor: "pointer",
               background: cat === c ? BLUE : mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
               color: cat === c ? "#fff" : MUTED, fontSize: 11.5, fontWeight: cat === c ? 600 : 400, whiteSpace: "nowrap",
-            }}>
-              {c}
-            </button>
+            }}>{c}</button>
           ))}
         </div>
       </div>
 
-      {shown.length === 0 ? (
-        <div style={{ padding: 28, textAlign: "center", color: MUTED, fontSize: 13 }}>No news in this category</div>
-      ) : (
-        <div className="news-grid">
-          {shown.slice(0, 6).map((a: NewsItem) => (
-            <a key={a.id} href={a.url && a.url !== "#" ? a.url : undefined}
-              target="_blank" rel="noopener noreferrer"
-              style={{ display: "flex", flexDirection: "column", padding: 20, textDecoration: "none", borderRight: `1px solid ${BORD}`, borderBottom: `1px solid ${BORD}`, cursor: a.url && a.url !== "#" ? "pointer" : "default" }}
-              onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-            >
-              {a.imageUrl && (
-                <img src={a.imageUrl} alt="" style={{ width: "100%", height: 118, objectFit: "cover", borderRadius: 8, marginBottom: 12 }}
-                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              )}
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
-                {a.category && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: BLUE, textTransform: "uppercase" }}>{a.category}</span>}
-                <span style={{ fontSize: 11, color: MUTED }}>{timeAgoNews(a.publishedAt)}</span>
-              </div>
-              <h4 style={{ fontSize: 13.5, fontWeight: 600, color: TEXT, margin: "0 0 6px", lineHeight: 1.45 }}>{a.title}</h4>
-              {a.summary && <p style={{ fontSize: 12, color: MUTED, margin: "0 0 10px", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden" }}>{a.summary}</p>}
-              <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 4 }}>
-                <span style={{ fontSize: 11, color: MUTED }}>{a.source}</span>
-                {a.url && a.url !== "#" && <ExternalLink size={10} style={{ color: MUTED }} />}
-              </div>
-            </a>
-          ))}
-        </div>
-      )}
+      <div className="news-grid">
+        {displayed.slice(0, 6).map((a: NewsItem) => (
+          <a key={a.id} href={a.url && a.url !== "#" ? a.url : undefined}
+            target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", flexDirection: "column", padding: 20, textDecoration: "none", borderRight: `1px solid ${BORD}`, borderBottom: `1px solid ${BORD}`, cursor: a.url && a.url !== "#" ? "pointer" : "default" }}
+            onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+          >
+            {a.imageUrl && (
+              <img src={a.imageUrl} alt="" style={{ width: "100%", height: 118, objectFit: "cover", borderRadius: 8, marginBottom: 12 }}
+                onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
+              {a.category && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: BLUE, textTransform: "uppercase" }}>{a.category}</span>}
+              <span style={{ fontSize: 11, color: MUTED }}>{timeAgoNews(a.publishedAt)}</span>
+            </div>
+            <h4 style={{ fontSize: 13.5, fontWeight: 600, color: TEXT, margin: "0 0 6px", lineHeight: 1.45 }}>{a.title}</h4>
+            {a.summary && <p style={{ fontSize: 12, color: MUTED, margin: "0 0 10px", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden" }}>{a.summary}</p>}
+            <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 11, color: MUTED }}>{a.source}</span>
+              {a.url && a.url !== "#" && <ExternalLink size={10} style={{ color: MUTED }} />}
+            </div>
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
+function NewsSection() {
+  return (
+    <ErrorBoundary section="Market News">
+      <NewsSectionInner />
+    </ErrorBoundary>
+  );
+}
+
+// ── Main ───────────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   return (
     <>

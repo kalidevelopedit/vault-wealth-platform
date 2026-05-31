@@ -86,6 +86,7 @@ import RiskDisclosures from "@/pages/marketing/RiskDisclosures";
 // App Pages
 import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Invest from "@/pages/Invest";
 import AssetList from "@/pages/AssetList";
 import AssetDetail from "@/pages/AssetDetail";
@@ -407,7 +408,9 @@ function App() {
             <MarketPreferencesProvider>
               <TooltipProvider>
                 <ScrollToTop />
-                <Router />
+                <ErrorBoundary section="App">
+                  <Router />
+                </ErrorBoundary>
                 <Toaster />
               </TooltipProvider>
             </MarketPreferencesProvider>
