@@ -1,12 +1,15 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
   LayoutDashboard, BarChart2, Wallet, User, ArrowLeftRight,
   LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X,
+  MessageCircle,
 } from "lucide-react";
 import { PwaInstallBanner } from "@/components/PwaInstallBanner";
+
+const WHATSAPP = "https://wa.me/18886555555?text=Hello%2C%20I%20need%20support%20with%20my%20account.";
 
 interface AppLayoutProps { children: ReactNode; }
 
@@ -49,9 +52,17 @@ function NewsTicker({ bord, muted }: { bord: string; muted: string }) {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, logout } = useAuth();
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { mode, colors, toggle } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchVal.trim();
+    if (q) { navigate(`/markets?q=${encodeURIComponent(q)}`); setSearchVal(""); }
+  };
 
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, headerBg: HEADER, sidebarBg: SIDE, active: ACTIVE, hover: HOVER, inputBg: INPUTBG } = colors;
 
@@ -133,17 +144,34 @@ export function AppLayout({ children }: AppLayoutProps) {
           </nav>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{
-            height: 34, width: 180, background: INPUTBG, borderRadius: 999, border: `1px solid ${BORD}`,
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* Search bar */}
+          <form onSubmit={handleSearch} style={{
+            height: 34, width: 200, background: INPUTBG, borderRadius: 999, border: `1px solid ${BORD}`,
             display: "flex", alignItems: "center", padding: "0 12px", gap: 8,
           }}>
-            <Search style={{ width: 13, height: 13, color: MUTED }} strokeWidth={1.5} />
-            <input type="text" placeholder="Search" style={{
-              background: "transparent", border: "none", outline: "none",
-              color: TEXT, fontSize: 13, width: "100%",
-            }} />
-          </div>
+            <Search style={{ width: 13, height: 13, color: MUTED, flexShrink: 0 }} strokeWidth={1.5} />
+            <input
+              ref={searchRef}
+              type="text"
+              value={searchVal}
+              onChange={e => setSearchVal(e.target.value)}
+              placeholder="Search assets..."
+              style={{ background: "transparent", border: "none", outline: "none", color: TEXT, fontSize: 13, width: "100%" }}
+            />
+          </form>
+
+          {/* Live Support */}
+          <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" style={{
+            height: 34, padding: "0 12px", borderRadius: 999,
+            background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.2)",
+            color: "#25D366", fontSize: 12.5, fontWeight: 600, textDecoration: "none",
+            display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+          }}>
+            <MessageCircle style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+            Live Support
+          </a>
+
           <button onClick={toggle} style={{
             width: 34, height: 34, borderRadius: 999, background: INPUTBG,
             border: `1px solid ${BORD}`, cursor: "pointer", display: "flex",
