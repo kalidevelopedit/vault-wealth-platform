@@ -79,10 +79,10 @@ function PortfolioHeroInner() {
   const { mode } = useTheme();
   const { data: summary, isLoading } = useGetPortfolioSummary();
   const s = summary as any;
-  const total    = Number(s?.totalValue)    || 0;
-  const dayPnl   = Number(s?.dayPnl)        || 0;
-  const dayPct   = Number(s?.dayPnlPercent) || 0;
-  const cash     = Number(s?.availableCash) || 0;
+  const total    = Number(s?.totalAssets)          || 0;
+  const dayPnl   = Number(s?.dayChange)            || 0;
+  const dayPct   = Number(s?.dayChangePercentage)  || 0;
+  const cash     = Number(s?.availableCash)        || 0;
   const invested = Math.max(0, total - cash);
   const isGain   = dayPnl >= 0;
 
