@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useState, Component } from "react";
 import { Link, useLocation } from "wouter";
-import { Users, LogOut, LayoutDashboard, Menu, X, Shield } from "lucide-react";
+import { Users, LogOut, LayoutDashboard, Menu, X, Shield, Settings } from "lucide-react";
 
 const NAV = [
-  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/users",     icon: Users,           label: "Users & KYC" },
+  { href: "/admin/dashboard",  icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/users",      icon: Users,           label: "Users & KYC" },
+  { href: "/admin/settings",   icon: Settings,        label: "Settings" },
 ];
 
 const SB_BG   = "#0f1221";

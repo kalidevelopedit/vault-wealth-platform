@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { transactionsTable, usersTable, assetsTable, holdingsTable, activityLogTable } from "@workspace/db/schema";
+import { transactionsTable, usersTable, assetsTable, holdingsTable, activityLogTable, adminSettingsTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { sendDepositConfirmationEmail, sendWithdrawalConfirmationEmail, sendTradeConfirmationEmail } from "../lib/email.js";
 
@@ -310,6 +310,23 @@ router.post("/request", requireAuth, async (req, res) => {
   } catch (err) {
     req.log.error({ err }, "Submit request error");
     res.status(500).json({ error: "server_error", message: "Failed to submit request" });
+  }
+});
+
+/* ── Deposit Address ── */
+router.get("/deposit-address", requireAuth, async (req, res) => {
+  const symbol = ((req.query.symbol as string) || "").toUpperCase().trim();
+  if (!symbol) {
+    res.status(400).json({ error: "validation_error", message: "symbol required" });
+    return;
+  }
+  try {
+    const rows = await db.select().from(adminSettingsTable).where(eq(adminSettingsTable.key, `wallet_address_${symbol}`));
+    const address = rows[0]?.value || null;
+    res.json({ symbol, address });
+  } catch (err) {
+    req.log.error({ err }, "Deposit address error");
+    res.status(500).json({ error: "server_error", message: "Failed to get deposit address" });
   }
 });
 

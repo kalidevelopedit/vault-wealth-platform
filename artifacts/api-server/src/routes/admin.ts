@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { usersTable, holdingsTable, assetsTable, transactionsTable, kycDocumentsTable, activityLogTable } from "@workspace/db/schema";
+import { usersTable, holdingsTable, assetsTable, transactionsTable, kycDocumentsTable, activityLogTable, adminSettingsTable } from "@workspace/db/schema";
 import { eq, and, ilike, or, desc, sql, count } from "drizzle-orm";
 import crypto from "crypto";
 import {
@@ -1002,6 +1002,36 @@ router.get("/email-preview/:template", requireAdminSession, (req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.send(html);
+});
+
+/* ── Admin Settings ── */
+router.get("/settings", requireAdminSession, async (req, res) => {
+  try {
+    const rows = await db.select().from(adminSettingsTable);
+    const obj: Record<string, string> = {};
+    for (const r of rows) {
+      if (r.key && r.value != null) obj[r.key] = r.value;
+    }
+    res.json(obj);
+  } catch (err) {
+    req.log.error({ err }, "Get settings error");
+    res.status(500).json({ error: "server_error", message: "Failed to get settings" });
+  }
+});
+
+router.patch("/settings", requireAdminSession, async (req, res) => {
+  try {
+    const updates = req.body as Record<string, string>;
+    for (const [key, value] of Object.entries(updates)) {
+      await db.insert(adminSettingsTable)
+        .values({ key, value })
+        .onConflictDoUpdate({ target: adminSettingsTable.key, set: { value, updatedAt: new Date() } });
+    }
+    res.json({ message: "Settings updated" });
+  } catch (err) {
+    req.log.error({ err }, "Update settings error");
+    res.status(500).json({ error: "server_error", message: "Failed to update settings" });
+  }
 });
 
 export default router;

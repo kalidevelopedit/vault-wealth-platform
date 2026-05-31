@@ -102,6 +102,7 @@ import AdminLogin from "@/pages/admin/AdminLogin";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminUserDetail from "@/pages/admin/AdminUserDetail";
 import AdminEmailTemplates from "@/pages/admin/AdminEmailTemplates";
+import AdminSettings from "@/pages/admin/AdminSettings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -371,6 +372,9 @@ function Router() {
       </Route>
       <Route path="/admin/email-templates">
         <AdminLayout><AdminEmailTemplates /></AdminLayout>
+      </Route>
+      <Route path="/admin/settings">
+        <AdminLayout><AdminSettings /></AdminLayout>
       </Route>
       
       {/* Protected App Routes */}
