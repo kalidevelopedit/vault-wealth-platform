@@ -56,13 +56,24 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { mode, colors, toggle } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchVal.trim();
     if (q) { navigate(`/markets?q=${encodeURIComponent(q)}`); setSearchVal(""); }
   };
+
+  useEffect(() => {
+    if (!showProfileMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowProfileMenu(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showProfileMenu]);
 
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, headerBg: HEADER, sidebarBg: SIDE, active: ACTIVE, hover: HOVER, inputBg: INPUTBG } = colors;
 
@@ -186,12 +197,69 @@ export function AppLayout({ children }: AppLayoutProps) {
             borderRadius: 999, fontSize: 13, fontWeight: 600, textDecoration: "none",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>Deposit</Link>
-          <Link href="/profile" style={{
-            width: 32, height: 32, borderRadius: "50%",
-            background: "linear-gradient(135deg,#1d4ed8,#2563FF)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", textDecoration: "none", fontSize: 11, fontWeight: 700, flexShrink: 0,
-          }}>{initials}</Link>
+          <div ref={menuRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowProfileMenu(v => !v)}
+              style={{
+                width: 32, height: 32, borderRadius: "50%",
+                background: showProfileMenu
+                  ? "linear-gradient(135deg,#2563FF,#1d4ed8)"
+                  : "linear-gradient(135deg,#1d4ed8,#2563FF)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#fff", border: "2px solid " + (showProfileMenu ? colors.blue : "transparent"),
+                cursor: "pointer", fontSize: 11, fontWeight: 700, flexShrink: 0,
+                outline: "none", transition: "border-color 0.15s",
+              }}
+            >{initials}</button>
+
+            {showProfileMenu && (
+              <div style={{
+                position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 9999,
+                background: CARD, border: `1px solid ${BORD}`, borderRadius: 14,
+                padding: "6px 0", minWidth: 196,
+                boxShadow: "0 8px 40px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)",
+              }}>
+                <div style={{ padding: "10px 16px 12px", borderBottom: `1px solid ${BORD}`, marginBottom: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: TEXT, marginBottom: 2 }}>{user?.fullName || "User"}</div>
+                  <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{uid}</div>
+                </div>
+                {[
+                  { label: "My Profile", href: "/profile", Icon: User },
+                  { label: "Settings",   href: "/settings", Icon: Settings },
+                  { label: "Security",   href: "/account/security", Icon: Shield },
+                ].map(({ label, href, Icon }) => (
+                  <Link key={href} href={href}
+                    onClick={() => setShowProfileMenu(false)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "9px 16px", textDecoration: "none",
+                      color: TEXT, fontSize: 13, transition: "background 0.1s",
+                    }}
+                    onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                    onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.background = "transparent")}
+                  >
+                    <Icon style={{ width: 14, height: 14, color: MUTED }} strokeWidth={1.5} />
+                    {label}
+                  </Link>
+                ))}
+                <div style={{ height: 1, background: BORD, margin: "4px 0" }} />
+                <button
+                  onClick={() => { setShowProfileMenu(false); logout(); }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "9px 16px", background: "none", border: "none",
+                    cursor: "pointer", color: "#ef4444", fontSize: 13,
+                    width: "100%", transition: "background 0.1s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.07)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <LogOut style={{ width: 14, height: 14 }} strokeWidth={1.5} />
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

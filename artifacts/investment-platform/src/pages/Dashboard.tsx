@@ -353,14 +353,21 @@ function PortfolioPanel() {
       <div style={{ background: T.card, border: `1px solid ${T.bord}`, borderRadius: 16, overflow: "hidden" }}>
         <div style={{ padding: "13px 16px", borderBottom: `1px solid ${T.bord}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <h3 style={{ fontSize: 13.5, fontWeight: 600, color: T.text, margin: 0 }}>My Holdings</h3>
-          <Link href="/profile" style={{ fontSize: 12, color: T.blue, textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>All <ChevronRight size={12} /></Link>
+          <Link href="/markets" style={{ fontSize: 12, color: T.blue, textDecoration: "none", display: "flex", alignItems: "center", gap: 2 }}>All <ChevronRight size={12} /></Link>
         </div>
         {hLoad ? (
           <div style={{ padding: 24, display: "flex", justifyContent: "center" }}><Loader2 size={18} style={{ color: T.muted }} className="animate-spin" /></div>
         ) : holdList.length === 0 ? (
-          <div style={{ padding: "18px 16px", textAlign: "center" }}>
-            <p style={{ fontSize: 13, color: T.muted, marginBottom: 10 }}>No positions yet</p>
-            <Link href="/markets" style={{ fontSize: 12.5, color: T.blue, textDecoration: "none", fontWeight: 600 }}>Start trading →</Link>
+          <div style={{ padding: "24px 16px", textAlign: "center" }}>
+            <div style={{ width: 44, height: 44, borderRadius: "50%", border: `1px solid ${T.bord}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+              <BarChart2 size={18} style={{ color: T.muted }} strokeWidth={1.5} />
+            </div>
+            <p style={{ fontSize: 13.5, fontWeight: 600, color: T.text, margin: "0 0 5px" }}>No positions yet</p>
+            <p style={{ fontSize: 12, color: T.muted, margin: "0 0 16px", lineHeight: 1.55 }}>Deposit funds and browse markets<br/>to make your first trade</p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+              <Link href="/wallet" style={{ padding: "7px 14px", borderRadius: 8, background: T.blue, color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>Deposit</Link>
+              <Link href="/markets" style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${T.bord}`, color: T.text, fontSize: 12.5, fontWeight: 500, textDecoration: "none" }}>Browse Markets</Link>
+            </div>
           </div>
         ) : holdList.slice(0, 7).map((h: any) => {
           const price = h.currentPrice ?? h.avgCost ?? 0;
@@ -396,7 +403,14 @@ function PortfolioPanel() {
         {tLoad ? (
           <div style={{ padding: 24, display: "flex", justifyContent: "center" }}><Loader2 size={18} style={{ color: T.muted }} className="animate-spin" /></div>
         ) : txList.length === 0 ? (
-          <div style={{ padding: "18px 16px", textAlign: "center", color: T.muted, fontSize: 13 }}>No transactions yet</div>
+          <div style={{ padding: "24px 16px", textAlign: "center" }}>
+            <div style={{ width: 44, height: 44, borderRadius: "50%", border: `1px solid ${T.bord}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+              <Clock size={18} style={{ color: T.muted }} strokeWidth={1.5} />
+            </div>
+            <p style={{ fontSize: 13.5, fontWeight: 600, color: T.text, margin: "0 0 5px" }}>No activity yet</p>
+            <p style={{ fontSize: 12, color: T.muted, margin: "0 0 16px", lineHeight: 1.55 }}>Your transaction history<br/>will appear here</p>
+            <Link href="/wallet" style={{ padding: "7px 14px", borderRadius: 8, background: T.blue, color: "#fff", fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>Make a Deposit</Link>
+          </div>
         ) : txList.map((tx: any, i: number) => {
           const type = tx.type ?? "";
           const isCredit = ["buy","deposit","bank_transfer","crypto_deposit"].includes(type);
