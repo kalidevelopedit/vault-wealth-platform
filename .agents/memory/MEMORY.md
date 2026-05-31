@@ -1,0 +1,3 @@
+- [ExtendedUser type pattern](extended-user-type.md) — must declare all User fields explicitly, not via `extends User`, due to cross-package module resolution conflict.
+- [Orval queryKey workaround](orval-query-options.md) — generated hooks require `queryKey` in options; use `{ query: { ...opts } as any }` to bypass.
+- [TransactionStatus missing "processing"](transaction-status.md) — generated enum has only pending/completed/failed; cast `tx.status as string` for UI comparisons.

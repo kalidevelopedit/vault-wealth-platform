@@ -174,12 +174,12 @@ export default function Convert() {
     setFromSym(toSym); setToSym(fromSym); setFromAmt("");
   };
 
-  const handleConvert = async () => {
+  const handleConvert = async (): Promise<void> => {
     const amt = parseFloat(fromAmt);
-    if (!amt || amt <= 0) return toast.error("Enter a valid amount");
-    if (!fromAsset || !toAsset) return toast.error("Select assets to convert");
-    if (!convCheck.ok) return toast.error(convCheck.reason || "Invalid conversion pair");
-    if (insufficient) return toast.error(`Insufficient funds — available: $${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}`);
+    if (!amt || amt <= 0) { toast.error("Enter a valid amount"); return; }
+    if (!fromAsset || !toAsset) { toast.error("Select assets to convert"); return; }
+    if (!convCheck.ok) { toast.error(convCheck.reason || "Invalid conversion pair"); return; }
+    if (insufficient) { toast.error(`Insufficient funds — available: $${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}`); return; }
 
     setSubmitting(true);
     try {
@@ -187,9 +187,8 @@ export default function Convert() {
         data: {
           type: "convert" as any,
           amount: usdValue,
-          assetSymbol: fromSym,
-          notes: `Convert ${amt} ${fromSym} → ${toAmt.toFixed(6)} ${toSym}`,
-        },
+          symbol: fromSym,
+        } as any,
       });
       const result = { from: fromSym, to: toSym, fromAmt: amt, toAmt };
       setSuccess(result);

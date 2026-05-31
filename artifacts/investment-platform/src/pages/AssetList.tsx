@@ -62,7 +62,7 @@ function NewsCarousel({ tabId, cats, colors }: { tabId: string; cats: string[]; 
   const [news,    setNews]      = useState<NewsItem[]>([]);
   const [idx,     setIdx]       = useState(0);
   const [loading, setLoading]   = useState(true);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   const applyFilter = (all: NewsItem[], tId: string, tCats: string[]) => {
     const filtered = all.filter(n => newsMatchesTab(n, tId, tCats));
@@ -213,7 +213,7 @@ export default function AssetList() {
 
   const { data: assets, isLoading } = useListAssets(
     { type: activeTab as any },
-    { query: { refetchInterval: 30_000 } }
+    { query: { refetchInterval: 30_000 } as any }
   );
 
   const displayed = assets?.filter(a =>

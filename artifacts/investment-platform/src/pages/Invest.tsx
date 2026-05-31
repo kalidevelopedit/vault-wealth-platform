@@ -20,10 +20,10 @@ export default function Invest() {
   const isMobile = useIsMobile();
   const { bg: BG, card: CARD, bord: BORD, text: TEXT, muted: MUTED, inputBg, green: GREEN, red: RED, blue: BLUE } = colors;
 
-  const { data: assets, isLoading } = useListAssets(filter !== "all" ? { type: filter as any } : undefined);
+  const { data: assets, isLoading } = useListAssets(filter !== "all" ? { type: filter as any } : undefined, { query: {} as any });
   const { data: searchResults, isLoading: sl } = useSearchAssets(
     { q: search, ...(filter !== "all" ? { type: filter as any } : {}) },
-    { query: { enabled: search.length > 1 } }
+    { query: { enabled: search.length > 1 } as any }
   );
 
   const displayed = search.length > 1 ? searchResults : assets;

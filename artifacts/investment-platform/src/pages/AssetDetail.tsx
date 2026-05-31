@@ -178,25 +178,26 @@ export default function AssetDetail() {
   const [infoTab, setInfoTab] = useState<"about" | "stats">("stats");
   const queryClient = useQueryClient();
 
-  const { data: asset, isLoading } = useGetAssetDetail(symbol, { query: { enabled: !!symbol, refetchInterval: 15_000 } });
+  const { data: asset, isLoading } = useGetAssetDetail(symbol, { query: { enabled: !!symbol, refetchInterval: 15_000 } as any });
   const { data: balance } = useGetUserBalance();
   const createTx = useCreateTransaction();
 
   const tvSymbol = useMemo(
-    () => asset ? getTvSymbol(asset.symbol, asset.type || "crypto") : "",
-    [asset?.symbol, asset?.type]
+    () => asset ? getTvSymbol(asset.symbol, (asset as any).assetType || "crypto") : "",
+    [asset?.symbol, (asset as any)?.assetType]
   );
 
   const availableCash = balance?.availableCash || 0;
   const amtNum = parseFloat(amount) || 0;
   const isInsufficientFunds = side === "buy" && amtNum > availableCash && amtNum > 0;
 
-  const handleTrade = async (e: React.FormEvent) => {
+  const handleTrade = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!asset) return;
-    if (!amtNum || amtNum <= 0) return toast.error("Enter a valid amount");
+    if (!amtNum || amtNum <= 0) { toast.error("Enter a valid amount"); return; }
     if (side === "buy" && amtNum > availableCash) {
-      return toast.error(`Insufficient funds — available: $${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}`);
+      toast.error(`Insufficient funds — available: $${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}`);
+      return;
     }
     setSubmitting(true);
     try {
@@ -320,7 +321,7 @@ export default function AssetDetail() {
                     { label: "Market Cap",    value: asset.marketCap ? `$${(asset.marketCap / 1e9).toFixed(2)}B` : "—" },
                     { label: "24h Volume",    value: asset.volume24h ? `$${(asset.volume24h / 1e6).toFixed(1)}M` : "—" },
                     { label: "Symbol",        value: asset.symbol },
-                    { label: "Type",          value: asset.type || "Crypto" },
+                    { label: "Type",          value: (asset as any).assetType || "Crypto" },
                   ].map(s => (
                     <div key={s.label}>
                       <div style={{ fontSize: 11, color: MUTED, marginBottom: 3 }}>{s.label}</div>

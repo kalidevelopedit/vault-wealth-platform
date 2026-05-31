@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from "react";
 import { useGetCurrentUser, getGetCurrentUserQueryKey, useLogoutUser, useLoginUser, useRegisterUser } from "@workspace/api-client-react";
-import type { User, LoginRequest, RegisterRequest } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { LoginRequest, RegisterRequest } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 
