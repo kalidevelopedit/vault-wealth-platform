@@ -8,6 +8,7 @@ import {
   MessageCircle, Gem,
 } from "lucide-react";
 import { PwaInstallBanner } from "@/components/PwaInstallBanner";
+import { Logo } from "@/components/Logo";
 
 const WHATSAPP = "https://wa.me/18886555555?text=Hello%2C%20I%20need%20support%20with%20my%20account.";
 
@@ -137,14 +138,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <div style={{ height: 52, width: 180, overflow: "hidden", position: "relative", flexShrink: 0 }}>
-              <img
-                src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
-                alt="INT Brokers"
-                style={{ height: 220, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
-                onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
-              />
-            </div>
+            <Logo variant={mode === "light" ? "dark" : "white"} height={34} />
           </Link>
           <nav style={{ display: "flex", alignItems: "center", gap: 20 }}>
             {[
@@ -296,14 +290,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Center: Logo */}
         <Link href="/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none", flex: 1 }}>
-          <div style={{ height: 50, width: 180, overflow: "hidden", position: "relative" }}>
-            <img
-              src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"}
-              alt="INT Brokers"
-              style={{ height: 200, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
-              onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }}
-            />
-          </div>
+          <Logo variant={mode === "light" ? "dark" : "white"} height={30} />
         </Link>
 
         {/* Right: avatar with dropdown */}
@@ -475,11 +462,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             }}>
               {/* Drawer header */}
               <div style={{ padding: "0 20px", height: 68, borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ height: 44, width: 150, overflow: "hidden", position: "relative" }}>
-                  <img src={mode === "light" ? "/logo-dark.png" : "/logo-white.png"} alt="INT Brokers"
-                    style={{ height: 150, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)" }}
-                    onError={e => { (e.target as HTMLImageElement).src = "/logo-white.png"; }} />
-                </div>
+                <Logo variant={mode === "light" ? "dark" : "white"} height={28} />
                 <button onClick={() => setSidebarOpen(false)} style={{
                   background: HOVER, border: `1px solid ${BORD}`, color: MUTED, cursor: "pointer",
                   width: 32, height: 32, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",

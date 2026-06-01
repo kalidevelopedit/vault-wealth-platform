@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 // PIN Pages
 import PinSetup from "@/pages/PinSetup";
@@ -124,7 +125,7 @@ function PendingApproval({ user }: { user: any }) {
       {/* Top bar */}
       <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <a href="/">
-          <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, height: "auto", mixBlendMode: "multiply" }} />
+          <Logo variant="dark" height={30} />
         </a>
         <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Application Status</span>
       </div>

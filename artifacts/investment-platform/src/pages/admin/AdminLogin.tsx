@@ -4,6 +4,7 @@ import { useAdminLogin } from "@workspace/api-client-react";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Link } from "wouter";
+import { Logo } from "@/components/Logo";
 
 export default function AdminLogin() {
   const [passcode, setPasscode] = useState("");
@@ -31,7 +32,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#0d1520] flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-xs">
         <div className="flex flex-col items-center mb-10">
-          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen", marginBottom: 24 }} />
+          <Logo variant="white" height={34} style={{ marginBottom: 24 }} />
           <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/25 mb-2">INT Brokers · Restricted Access</div>
           <h1 className="text-lg font-semibold text-white tracking-tight text-center">Administration Portal</h1>
           <p className="text-white/35 text-xs mt-2 text-center">Authorised staff only — enter your secure passcode to continue</p>

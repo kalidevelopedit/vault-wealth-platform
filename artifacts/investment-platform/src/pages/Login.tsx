@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth, saveAuthToken } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, Zap, ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const BG   = "#080c18";
 const CARD = "#0f1624";
@@ -170,7 +171,7 @@ export default function Login() {
         {/* Logo */}
         <div style={{ position: "relative" }}>
           <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 300, height: "auto", display: "block", mixBlendMode: "screen" }} />
+            <Logo variant="white" height={40} />
           </Link>
           <div style={{ marginTop: 12, height: 1, background: BORD }} />
           <p style={{ marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>Institutional Investment Platform</p>
@@ -213,7 +214,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div style={{ marginBottom: 40, display: "none" }} className="login-mobile-logo">
             <Link href="/">
-              <img src="/logo-white.png" alt="INT Brokers" style={{ width: 200, height: "auto", display: "block", mixBlendMode: "screen" }} />
+              <Logo variant="white" height={32} />
             </Link>
           </div>
 

@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState, Component } from "react";
 import { Link, useLocation } from "wouter";
 import { Users, LogOut, LayoutDashboard, Menu, X, Shield, Settings } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/admin/dashboard",  icon: LayoutDashboard, label: "Dashboard" },
@@ -50,8 +51,7 @@ function Sidebar({ location, onClose, onLogout }: { location: string; onClose?: 
     }}>
       {/* Logo */}
       <div style={{ padding: "24px 20px 20px", borderBottom: `1px solid ${SB_BORD}` }}>
-        <img src="/logo-white.png" alt="INT Brokers"
-          style={{ width: 148, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+        <Logo variant="white" height={30} />
       </div>
 
       {/* Admin greeting */}
@@ -171,7 +171,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             style={{ background: "rgba(255,255,255,0.07)", border: "none", borderRadius: 8, padding: 7, cursor: "pointer", color: "rgba(255,255,255,0.6)" }}>
             <Menu size={18} />
           </button>
-          <img src="/logo-white.png" alt="INT Brokers" style={{ width: 120, height: "auto", mixBlendMode: "screen" }} />
+          <Logo variant="white" height={26} />
         </header>
 
         <main style={{ flex: 1, padding: "32px 28px 64px" }} className="sm:px-6 lg:px-10">

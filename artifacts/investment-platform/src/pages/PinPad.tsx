@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Delete } from "lucide-react";
 import { Link } from "wouter";
+import { Logo } from "@/components/Logo";
 
 interface PinPadProps {
   title: string;
@@ -41,11 +42,7 @@ export default function PinPad({ title, subtitle, onComplete, onForgot, error, l
       <div style={{ width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
         <Link href="/">
-          <img
-            src="/logo-dark.png"
-            alt="INT Brokers"
-            style={{ width: 200, height: "auto", display: "block", mixBlendMode: "multiply", marginBottom: 40, cursor: "pointer" }}
-          />
+          <Logo variant="dark" height={30} style={{ marginBottom: 40, cursor: "pointer" }} />
         </Link>
 
         <div style={{ textAlign: "center", marginBottom: 36 }}>

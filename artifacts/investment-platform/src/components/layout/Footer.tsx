@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Shield, Lock, TrendingUp, Star, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E")`;
 
@@ -102,7 +103,7 @@ export function Footer() {
           {/* Brand column */}
           <div>
             <Link href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 16 }}>
-              <img src="/logo-white.png" alt="INT Brokers" style={{ width: 260, height: "auto", display: "block", mixBlendMode: "screen" }} />
+              <Logo variant="white" height={32} />
             </Link>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", lineHeight: 1.75, marginBottom: 20, maxWidth: 200 }}>
               Institutional-grade investment platform. Regulated, secure, and built for serious investors since 1977.

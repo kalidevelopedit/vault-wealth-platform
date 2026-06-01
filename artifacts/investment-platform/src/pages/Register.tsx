@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { Logo } from "@/components/Logo";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Loader2, Check, Eye, EyeOff } from "lucide-react";
@@ -69,7 +70,7 @@ export default function Register() {
         <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.035)'/%3E%3C/svg%3E")`, zIndex: 0, pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers" style={{ width: 300, height: "auto", display: "block", mixBlendMode: "screen" }} />
+            <Logo variant="white" height={36} />
           </Link>
           <div style={{ marginTop: 10, height: 1, background: "rgba(255,255,255,0.06)", width: "100%" }} />
           <p style={{ marginTop: 12, fontSize: 12, color: "rgba(255,255,255,0.2)", fontWeight: 500, letterSpacing: "0.06em" }}>Open Your Account — Free</p>
@@ -105,7 +106,7 @@ export default function Register() {
         <div className="w-full max-w-[380px]">
           <div className="mb-8 lg:hidden flex justify-center">
             <Link href="/">
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 200, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
+              <Logo variant="dark" height={30} />
             </Link>
           </div>
 

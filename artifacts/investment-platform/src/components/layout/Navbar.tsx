@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo";
 
 export function Navbar() {
   const { user } = useAuth();
@@ -9,7 +10,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-10">
           <Link href="/">
-            <img src="/logo-white.png" alt="INT Brokers" style={{ height: 50, width: "auto", objectFit: "contain", display: "block", mixBlendMode: "screen" }} />
+            <Logo variant="white" height={30} />
           </Link>
 
           <nav className="hidden md:flex gap-8">

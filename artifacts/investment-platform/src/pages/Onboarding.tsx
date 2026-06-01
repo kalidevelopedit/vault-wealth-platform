@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo";
 import {
   useSaveInvestmentPreferences, useSaveUserProfile,
   useUploadIdDocument, useSubmitKyc,
@@ -846,7 +847,7 @@ export default function Onboarding() {
       <div style={{ minHeight: "100vh", background: "#F5F6F7", display: "flex", flexDirection: "column" }}>
         {/* Minimal top bar */}
         <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, mixBlendMode: "multiply" }} />
+          <Logo variant="dark" height={28} />
           <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" }}>Application Status</span>
         </div>
 
@@ -956,7 +957,7 @@ export default function Onboarding() {
 
       {/* Top bar */}
       <div style={{ background: "white", borderBottom: "1px solid #E6E8EB", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <img src="/logo-dark.png" alt="INT Brokers" style={{ width: 180, height: "auto", objectFit: "contain", display: "block", mixBlendMode: "multiply" }} />
+        <Logo variant="dark" height={28} />
         <span style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>INT Brokers · Account Application</span>
       </div>
 

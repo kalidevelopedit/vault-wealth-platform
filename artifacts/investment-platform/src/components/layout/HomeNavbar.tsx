@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Search, X, ChevronDown, Zap, Globe, Menu, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   {
@@ -224,14 +225,7 @@ export function HomeNavbar() {
       }}>
         {/* Drawer header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", height: 72, borderBottom: "1px solid #f0f0f0" }}>
-          {/* Logo — overflow-clip to crop the whitespace on the 1536×1024 PNG */}
-          <div style={{ height: 50, width: 180, overflow: "hidden", position: "relative" }}>
-            <img
-              src="/logo-dark.png"
-              alt="INT Brokers"
-              style={{ height: 180, width: "auto", position: "absolute", top: "50%", left: 0, transform: "translateY(-50%)", display: "block" }}
-            />
-          </div>
+          <Logo variant="dark" height={28} />
           <button onClick={() => setMobileOpen(false)} style={{
             background: "#f3f4f6", border: "1px solid #e5e7eb", cursor: "pointer",
             width: 34, height: 34, borderRadius: 8, color: "#6b7280", display: "flex",
@@ -352,7 +346,7 @@ export function HomeNavbar() {
         <div className="home-desktop-only" style={{ borderBottom: "1px solid #f0f0f0" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "160px" }}>
             <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-              <img src="/logo-dark.png" alt="INT Brokers" style={{ height: 200, width: "auto", display: "block" }} />
+              <Logo variant="dark" height={44} />
             </Link>
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -466,21 +460,7 @@ export function HomeNavbar() {
         <div className="home-mobile-only" style={{ borderBottom: "1px solid #efefef" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", height: "80px" }}>
             <Link href="/" style={{ textDecoration: "none", flex: 1, minWidth: 0 }}>
-              <div style={{ height: 52, width: 180, overflow: "hidden", position: "relative" }}>
-                <img
-                  src="/logo-dark.png"
-                  alt="INT Brokers"
-                  style={{
-                    height: 180,
-                    width: "auto",
-                    position: "absolute",
-                    top: "50%",
-                    left: 0,
-                    transform: "translateY(-50%)",
-                    display: "block",
-                  }}
-                />
-              </div>
+              <Logo variant="dark" height={30} />
             </Link>
             <button onClick={() => setMobileOpen(true)} style={{
               background: "none", border: "1px solid #e5e7eb", cursor: "pointer",
