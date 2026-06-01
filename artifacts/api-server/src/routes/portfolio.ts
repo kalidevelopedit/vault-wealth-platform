@@ -33,7 +33,7 @@ router.get("/summary", requireAuth, async (req, res) => {
       totalCurrentValue += qty * price;
     }
 
-    const availableCash = parseFloat(user?.availableCash ?? "10000");
+    const availableCash = parseFloat(user?.availableCash ?? "0");
     const totalAssets = totalCurrentValue + availableCash;
     const totalReturn = totalCurrentValue - totalInvested;
     const returnPercentage = totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
@@ -87,7 +87,7 @@ router.get("/performance", requireAuth, async (req, res) => {
       .innerJoin(assetsTable, eq(holdingsTable.assetId, assetsTable.id))
       .where(eq(holdingsTable.userId, userId));
 
-    let currentValue = parseFloat(user?.availableCash ?? "10000");
+    let currentValue = parseFloat(user?.availableCash ?? "0");
     for (const { h, a } of holdings) {
       currentValue += parseFloat(h.quantity) * parseFloat(a.currentPrice);
     }

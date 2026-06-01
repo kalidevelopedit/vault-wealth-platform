@@ -100,7 +100,7 @@ router.get("/balance", requireAuth, async (req, res) => {
       else if (a.assetType === "commodity") commodityBalance += val;
     }
 
-    const availableCash = parseFloat(user?.availableCash ?? "10000");
+    const availableCash = parseFloat(user?.availableCash ?? "0");
     const totalPortfolioValue = availableCash + cryptoBalance + stockBalance + commodityBalance;
 
     res.json({

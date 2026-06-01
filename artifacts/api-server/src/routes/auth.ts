@@ -118,7 +118,7 @@ router.post("/register", async (req, res) => {
       kycStatus: "not_started",
       onboardingStep: 1,
       onboardingComplete: false,
-      availableCash: "10000.00",
+      availableCash: "0.00",
     }).returning();
 
     await db.insert(activityLogTable).values({
