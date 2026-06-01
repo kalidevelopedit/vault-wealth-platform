@@ -3,6 +3,8 @@ import { Link, useLocation } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AssetIcon } from "@/components/AssetIcon";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { useAuth } from "@/hooks/use-auth";
+import { makeFmt } from "@/lib/currency";
 import {
   useGetPortfolioSummary, useGetHoldings, useGetTransactions,
   useListAssets, useGetWatchlist, useGetMarketNews,
@@ -77,6 +79,8 @@ function SparkBar({ pct }: { pct: number }) {
 // ── Portfolio Hero ─────────────────────────────────────────────────────────────
 function PortfolioHeroInner() {
   const { mode } = useTheme();
+  const { user } = useAuth();
+  const { fmt: fmtLocal } = makeFmt(user?.country);
   const { data: summary, isLoading } = useGetPortfolioSummary();
   const s = summary as any;
   const total    = Number(s?.totalAssets)          || 0;
@@ -114,11 +118,11 @@ function PortfolioHeroInner() {
             </div>
           ) : (
             <>
-              <h1 style={{ fontSize: 38, fontWeight: 700, color: heroText, margin: 0, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{fmtUSD(total)}</h1>
+              <h1 style={{ fontSize: 38, fontWeight: 700, color: heroText, margin: 0, letterSpacing: "-0.03em", lineHeight: 1.1 }}>{fmtLocal(total)}</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 13, fontWeight: 600, color: isGain ? green : red }}>
                   {isGain ? <TrendingUp size={13} strokeWidth={2.5} /> : <TrendingDown size={13} strokeWidth={2.5} />}
-                  {isGain ? "+" : ""}{fmtUSD(dayPnl)} ({isGain ? "+" : ""}{fmt2(dayPct)}%)
+                  {isGain ? "+" : ""}{fmtLocal(dayPnl)} ({isGain ? "+" : ""}{fmt2(dayPct)}%)
                 </span>
                 <span style={{ fontSize: 12, color: heroMuted }}>24h</span>
               </div>
@@ -127,7 +131,7 @@ function PortfolioHeroInner() {
         </div>
 
         <div style={{ display: "flex", gap: "24px 36px", flexWrap: "wrap" }}>
-          {[["Available Cash", fmtUSD(cash)], ["Invested", fmtUSD(invested)]].map(([lbl, val]) => (
+          {[["Available Cash", fmtLocal(cash)], ["Invested", fmtLocal(invested)]].map(([lbl, val]) => (
             <div key={lbl}>
               <p style={{ fontSize: 10.5, color: heroMuted, letterSpacing: "0.1em", fontWeight: 600, marginBottom: 6, textTransform: "uppercase" }}>{lbl}</p>
               <p style={{ fontSize: 20, fontWeight: 600, color: heroText, margin: 0 }}>{val}</p>

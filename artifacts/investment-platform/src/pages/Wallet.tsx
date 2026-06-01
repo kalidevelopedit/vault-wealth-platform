@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AssetIcon } from "@/components/AssetIcon";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/use-auth";
+import { makeFmt } from "@/lib/currency";
 
 const fmt = (n: number) =>
   n?.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00";
@@ -689,7 +691,7 @@ function CryptoDepositFlow({ onBack, colors }: { onBack: () => void; colors: any
   );
 }
 
-function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number; onBack: () => void; colors: any }) {
+function WithdrawFlow({ availableCash, onBack, colors, fmtCash }: { availableCash: number; onBack: () => void; colors: any; fmtCash: (n: number) => string }) {
   const [method, setMethod] = useState<"bank" | "crypto" | null>(null);
   const [cryptoNetwork, setCryptoNetwork] = useState("");
   const [cryptoDropOpen, setCryptoDropOpen] = useState(false);
@@ -1021,7 +1023,7 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 12, color: colors.muted, marginBottom: 8, display: "flex", justifyContent: "space-between" }}>
           <span>AMOUNT (USD)</span>
-          <span style={{ color: insufficient ? colors.red : colors.muted }}>Avail: ${fmt(availableCash)}</span>
+          <span style={{ color: insufficient ? colors.red : colors.muted }}>Avail: {fmtCash(availableCash)}</span>
         </div>
         <div style={{ height: 48, background: colors.inputBg, border: `1px solid ${insufficient ? colors.red : colors.bord}`, borderRadius: 10, display: "flex", alignItems: "center", padding: "0 14px" }}>
           <span style={{ color: colors.muted, marginRight: 8 }}>$</span>
@@ -1041,7 +1043,7 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
         onClick={() => setAmount(fmt(availableCash).replace(/,/g, ""))}
         style={{ fontSize: 12, color: colors.blue, background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: 20 }}
       >
-        Use maximum (${fmt(availableCash)})
+        Use maximum ({fmtCash(availableCash)})
       </button>
 
       <button
@@ -1064,6 +1066,8 @@ function WithdrawFlow({ availableCash, onBack, colors }: { availableCash: number
 export default function Wallet() {
   const { colors } = useTheme();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { fmt: fmtLocal } = makeFmt(user?.country);
   const { data: balance, isLoading: bl, refetch: refetchBalance } = useGetUserBalance();
   const { data: txData, isLoading: txl, refetch: refetchTx } = useGetTransactions({ limit: 20 });
 
@@ -1114,20 +1118,20 @@ export default function Wallet() {
             ) : (
               <>
                 <div style={{ fontSize: 38, fontWeight: 800, color: colors.text, fontFamily: "monospace", letterSpacing: "-1.5px", lineHeight: 1, marginBottom: 20 }}>
-                  ${fmt(balance?.totalPortfolioValue || 0)}
+                  {fmtLocal(balance?.totalPortfolioValue || 0)}
                 </div>
                 <div style={{ display: "flex", gap: 0, borderTop: `1px solid ${colors.bord}`, paddingTop: 18 }}>
                   <div style={{ flex: 1, paddingRight: 20 }}>
                     <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>CASH AVAILABLE</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: colors.green, fontFamily: "monospace" }}>
-                      ${fmt(balance?.availableCash || 0)}
+                      {fmtLocal(balance?.availableCash || 0)}
                     </div>
                   </div>
                   <div style={{ width: 1, background: colors.bord, flexShrink: 0 }} />
                   <div style={{ flex: 1, paddingLeft: 20 }}>
                     <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>INVESTED</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: colors.blue, fontFamily: "monospace" }}>
-                      ${fmt(Math.max(0, (balance?.totalPortfolioValue || 0) - (balance?.availableCash || 0)))}
+                      {fmtLocal(Math.max(0, (balance?.totalPortfolioValue || 0) - (balance?.availableCash || 0)))}
                     </div>
                   </div>
                 </div>
@@ -1169,7 +1173,7 @@ export default function Wallet() {
                         </div>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>${fmt(tx.amount)}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>{fmtLocal(tx.amount)}</div>
                         <div style={{ fontSize: 10, color: statusColor, marginTop: 2, fontWeight: 600, textTransform: "capitalize" }}>{tx.status}</div>
                       </div>
                     </div>
@@ -1203,7 +1207,7 @@ export default function Wallet() {
                           </td>
                           <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 12, color: colors.text }}>{tx.symbol || "USD"}</td>
                           <td style={{ padding: "14px 20px", textAlign: "right", fontSize: 13, fontWeight: 600, color: colors.text, fontFamily: "monospace" }}>
-                            ${fmt(tx.amount)}
+                            {fmtLocal(tx.amount)}
                           </td>
                           <td style={{ padding: "14px 20px", textAlign: "right" }}>
                             <span style={{
@@ -1296,6 +1300,7 @@ export default function Wallet() {
                   availableCash={availableCash}
                   onBack={() => setMode("deposit")}
                   colors={colors}
+                  fmtCash={fmtLocal}
                 />
               )}
             </div>
