@@ -35,6 +35,17 @@ export default function Careers() {
       ]}
       ctaTitle="See All Open Positions"
       ctaText="We're hiring engineers, quants, compliance professionals, and client-facing talent across all major offices."
+      heroImageAlt="Diverse team of finance professionals collaborating in a modern office"
+      breadcrumbs={[
+        { name: "Careers", item: "/careers" },
+      ]}
+      relatedLinks={[
+        { title: "About INT Brokers", href: "/about", desc: "50+ years of financial innovation serving 4.4M clients." },
+        { title: "Press", href: "/press", desc: "Latest news, media coverage, and company announcements." },
+        { title: "Security", href: "/security", desc: "SIPC, FDIC, and institutional-grade security infrastructure." },
+        { title: "Why Vault", href: "/why-vault", desc: "Why millions of investors choose INT Brokers." },
+        { title: "Technology", href: "/why-vault/technology", desc: "Award-winning trading platforms built in-house." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />

@@ -32,6 +32,18 @@ export default function Rollover401k() {
         { value: "3–7 Days", label: "Transfer Time" },
         { value: "25,000+", label: "Investments Available" },
       ]}
+      heroImageAlt="Retirement account rollover transfer documents and investment planning tools"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "401(k) Rollover", item: "/accounts/401k" },
+      ]}
+      relatedLinks={[
+        { title: "IRA", href: "/accounts/ira", desc: "Traditional and Roth IRAs with no annual fees." },
+        { title: "SEP-IRA", href: "/accounts/sep-ira", desc: "High-limit retirement for self-employed professionals." },
+        { title: "Retirement Planning", href: "/retirement", desc: "Retirement-focused tools and dedicated advisor support." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero account fees, no inactivity charges — ever." },
+        { title: "Security", href: "/security", desc: "SIPC + FDIC protection and institutional account security." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

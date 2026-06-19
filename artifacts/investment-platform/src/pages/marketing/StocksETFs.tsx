@@ -38,6 +38,7 @@ export default function StocksETFs() {
       title={<>Access 170+ Global<br /><span style={{ color: "#fff" }}>Stock Markets</span></>}
       subtitle="Trade equities and ETFs across every major exchange worldwide — commission-free on US stocks, with fractional shares from $1 and pre/post-market access every trading day."
       heroImage={IMG}
+      heroImageAlt="Real-time stock market data feed showing global equity prices across multiple exchanges"
       stats={[
         { value: "$0", label: "US Stock Commissions" },
         { value: "170+", label: "Market Centres" },
@@ -47,6 +48,18 @@ export default function StocksETFs() {
       ]}
       ctaTitle="Start Building Your Portfolio"
       ctaText="Commission-free US stocks, global market access, and fractional shares — all in one account."
+      breadcrumbs={[
+        { name: "Products", item: "/products" },
+        { name: "Stocks & ETFs", item: "/products/stocks" },
+      ]}
+      relatedLinks={[
+        { title: "Options Trading", href: "/products/options", desc: "Add leverage to your equity positions with $0.65/contract options." },
+        { title: "Futures Trading", href: "/products/futures", desc: "Trade E-mini S&P 500 and Nasdaq-100 index futures alongside stocks." },
+        { title: "Forex Trading", href: "/products/forex", desc: "Diversify into 27 currency pairs at near-interbank rates." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Full pricing for US and international equities and ETFs." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "See the full list of 170+ market centres and 33+ countries." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "$0 commissions, no PFOF, no hidden spreads on US stocks." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
@@ -92,7 +105,13 @@ export default function StocksETFs() {
         </div>
       </section>
 
-      <div style={{ height: 340, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 340, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Financial market data screen displaying live stock prices, ETF performance, and trading volume across global exchanges"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

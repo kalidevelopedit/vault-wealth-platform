@@ -42,6 +42,19 @@ export default function InterestOnCash() {
         { value: "Daily", label: "Interest Paid" },
         { value: "$0", label: "Minimum Balance" },
       ]}
+      heroImageAlt="Cash savings earning interest in a brokerage account with growth indicators"
+      breadcrumbs={[
+        { name: "Pricing", item: "/pricing" },
+        { name: "Interest on Cash", item: "/pricing/interest-on-cash" },
+      ]}
+      relatedLinks={[
+        { title: "Pricing Overview", href: "/pricing", desc: "All rates across stocks, options, futures, and more." },
+        { title: "Commissions", href: "/pricing/commissions", desc: "Full commission schedule across every asset class." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Borrow at rates up to 55% below industry average." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero account fees, no inactivity charges." },
+        { title: "Individual Account", href: "/accounts/individual", desc: "Open a full-featured account with no minimum balance." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "How INT Brokers keeps costs lower than any major broker." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

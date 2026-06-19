@@ -2,9 +2,11 @@ import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { Check, ArrowUpRight, ChevronRight } from "lucide-react";
+import { JsonLd, organizationSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
+const INNER = { maxWidth: 1000, margin: "0 auto" };
 
 const COMMISSION_ROWS = [
   { asset: "US Stocks & ETFs", tiered: "Starting at $0", fixed: "$0.005/share", min: "$0", max: "1% of trade value" },
@@ -34,9 +36,21 @@ const CASH_ROWS = [
   { currency: "CAD", rate: "Up to 2.75%", note: "Above CAD 10,000 balance" },
 ];
 
+const RELATED = [
+  { title: "Commission Schedule", href: "/pricing/commissions", desc: "Full per-asset-class commission rates for every market." },
+  { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Borrow at up to 55% less than the industry average." },
+  { title: "Interest on Cash", href: "/pricing/interest-on-cash", desc: "Earn up to 3.14% APY on uninvested cash balances." },
+  { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "The complete list of fees we don't charge." },
+  { title: "Crypto Spreads", href: "/pricing/crypto-spreads", desc: "Transparent spread pricing for 60+ cryptocurrencies." },
+  { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "Why our pricing beats every major competitor." },
+];
+
 export default function Pricing() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter',system-ui,sans-serif", overflowX: "hidden" }}>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={breadcrumbSchema([{ name: "Pricing", item: "/pricing" }])} />
+
       <HomeNavbar />
 
       {/* Hero */}
@@ -66,7 +80,7 @@ export default function Pricing() {
       {/* Commission Table */}
       <section style={{ background: "#F5F6F7", padding: "80px 24px", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
+        <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Commissions</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em" }}>Trade Every Asset Class</h2>
@@ -101,7 +115,7 @@ export default function Pricing() {
       {/* Margin Rates */}
       <section style={{ background: "#080a0f", padding: "80px 24px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOT }} />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 1000, margin: "0 auto" }}>
+        <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>Margin Rates</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.025em" }}>Industry-Low Margin Rates</h2>
@@ -134,7 +148,7 @@ export default function Pricing() {
 
       {/* Cash Yields */}
       <section style={{ background: "#fff", padding: "80px 24px", borderTop: "1px solid #E6E8EB" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+        <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Interest on Cash</p>
             <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em" }}>Earn More on Uninvested Cash</h2>
@@ -169,6 +183,26 @@ export default function Pricing() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Related pricing pages */}
+      <section style={{ background: "#fff", padding: "72px 24px", borderTop: "1px solid #E6E8EB" }}>
+        <div style={{ ...INNER }}>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 8 }}>Explore Pricing Details</p>
+            <h2 style={{ fontSize: "clamp(18px,3vw,28px)", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>Dive deeper into our pricing</h2>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {RELATED.map(l => (
+              <li key={l.href}>
+                <Link href={l.href} style={{ display: "block", background: "#F5F6F7", border: "1px solid #E6E8EB", borderRadius: 12, padding: "18px 20px", textDecoration: "none" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "block", marginBottom: 4 }}>{l.title}</span>
+                  <span style={{ fontSize: 12.5, color: "#6B7280", lineHeight: 1.6 }}>{l.desc}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

@@ -35,6 +35,19 @@ export default function Bonds() {
         { value: "6", label: "Bond Categories" },
         { value: "4.2%+", label: "Current Treasury Yield" },
       ]}
+      heroImageAlt="Financial charts and bond certificates representing fixed-income investing"
+      breadcrumbs={[
+        { name: "Products", item: "/products/stocks" },
+        { name: "Bonds", item: "/products/bonds" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US stock and ETF trading from $0." },
+        { title: "Options", href: "/products/options", desc: "Low-cost options contracts at $0.65 per contract." },
+        { title: "Futures", href: "/products/futures", desc: "Trade global futures from $0.85 per contract." },
+        { title: "Forex", href: "/products/forex", desc: "100+ currency pairs with near-interbank spreads." },
+        { title: "Precious Metals", href: "/products/precious-metals", desc: "Gold, silver, and platinum at institutional spreads." },
+        { title: "Commissions", href: "/pricing/commissions", desc: "Full transparent rate schedule across all asset classes." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

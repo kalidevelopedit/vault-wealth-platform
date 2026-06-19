@@ -2,9 +2,11 @@ import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { Shield, Lock, Eye, Server, AlertTriangle, CheckCircle, ArrowUpRight } from "lucide-react";
+import { JsonLd, organizationSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
+const INNER = { maxWidth: 1100, margin: "0 auto" };
 
 const LAYERS = [
   { icon: Shield, color: "rgba(255,255,255,0.85)", title: "SIPC & FDIC Protection", desc: "Your securities are protected up to $500,000 (including $250,000 for cash) under SIPC membership. Cash balances are FDIC-insured up to $2.5M through our bank sweep program." },
@@ -15,9 +17,21 @@ const LAYERS = [
   { icon: CheckCircle, color: "#34d399", title: "Regulatory Compliance", desc: "Vault Wealth is registered with the SEC, FINRA, and NFA, and is a member of SIPC. We operate under the full regulatory framework of US financial law." },
 ];
 
+const RELATED = [
+  { title: "About INT Brokers", href: "/about", desc: "Our 50-year history, leadership, and mission." },
+  { title: "Why Vault", href: "/why-vault", desc: "Four pillars that make INT Brokers the benchmark." },
+  { title: "Pricing", href: "/pricing", desc: "Transparent fee schedule — no surprises, no hidden costs." },
+  { title: "Press Centre", href: "/press", desc: "Latest news and regulatory milestones." },
+  { title: "Risk Disclosures", href: "/risk-disclosures", desc: "Material risks associated with trading and investing." },
+  { title: "Terms of Service", href: "/terms", desc: "Legal terms governing your account and usage." },
+];
+
 export default function Security() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter',system-ui,sans-serif", overflowX: "hidden" }}>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={breadcrumbSchema([{ name: "Security", item: "/security" }])} />
+
       <HomeNavbar />
 
       {/* Hero */}
@@ -47,7 +61,7 @@ export default function Security() {
       {/* Security Layers */}
       <section style={{ background: "#F5F6F7", padding: "96px 24px", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Defense in Depth</p>
             <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Six Layers of Security</h2>
@@ -94,6 +108,26 @@ export default function Security() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Related pages */}
+      <section style={{ background: "#F5F6F7", padding: "72px 24px", borderTop: "1px solid #E6E8EB" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 8 }}>Related Resources</p>
+            <h2 style={{ fontSize: "clamp(18px,3vw,28px)", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>Explore more from INT Brokers</h2>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {RELATED.map(l => (
+              <li key={l.href}>
+                <Link href={l.href} style={{ display: "block", background: "#fff", border: "1px solid #E6E8EB", borderRadius: 12, padding: "18px 20px", textDecoration: "none" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "block", marginBottom: 4 }}>{l.title}</span>
+                  <span style={{ fontSize: 12.5, color: "#6B7280", lineHeight: 1.6 }}>{l.desc}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

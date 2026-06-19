@@ -2,15 +2,17 @@ import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { ChevronRight, Shield, Zap, Globe2, DollarSign, TrendingUp, Award, Users, Lock, BarChart3, ArrowUpRight } from "lucide-react";
+import { JsonLd, organizationSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
+const INNER = { maxWidth: 1100, margin: "0 auto" };
 
 const PILLARS = [
-  { icon: DollarSign, color: "#60a5fa", title: "Lower Costs", sub: "Professional Pricing", desc: "Commissions starting at $0 on US stocks and ETFs. Margin rates up to 55% lower than the industry average. No added spreads, ticket charges, or platform fees.", stats: [{ v: "$0", l: "Min Commission" }, { v: "55%", l: "Less on Margin" }, { v: "3.14%", l: "Cash Yield" }] },
-  { icon: Globe2, color: "#4ade80", title: "Global Access", sub: "170+ Markets Worldwide", desc: "Trade stocks, options, futures, currencies, bonds, funds and crypto across 170+ market centers in 33 countries from a single unified platform.", stats: [{ v: "170+", l: "Markets" }, { v: "33+", l: "Countries" }, { v: "27", l: "Currencies" }] },
-  { icon: Zap, color: "#fbbf24", title: "Premier Technology", sub: "Award-Winning Platforms", desc: "Vault's powerful technology suite helps you optimize trading speed, efficiency and portfolio analysis. From mobile to desktop, our platforms work for every investor.", stats: [{ v: "100+", l: "Order Types" }, { v: "<1ms", l: "Execution" }, { v: "99.98%", l: "Uptime" }] },
-  { icon: Shield, color: "#f87171", title: "Strength & Security", sub: "$19.5B Equity Capital", desc: "One of the largest and most financially secure brokerages in the world. Our conservative balance sheet and automated risk controls protect you through any market cycle.", stats: [{ v: "$19.5B", l: "Equity Capital" }, { v: "50+", l: "Years" }, { v: "SIPC", l: "Protected" }] },
+  { icon: DollarSign, color: "#60a5fa", title: "Lower Costs", sub: "Professional Pricing", desc: "Commissions starting at $0 on US stocks and ETFs. Margin rates up to 55% lower than the industry average. No added spreads, ticket charges, or platform fees.", stats: [{ v: "$0", l: "Min Commission" }, { v: "55%", l: "Less on Margin" }, { v: "3.14%", l: "Cash Yield" }], href: "/why-vault/lower-costs" },
+  { icon: Globe2, color: "#4ade80", title: "Global Access", sub: "170+ Markets Worldwide", desc: "Trade stocks, options, futures, currencies, bonds, funds and crypto across 170+ market centers in 33 countries from a single unified platform.", stats: [{ v: "170+", l: "Markets" }, { v: "33+", l: "Countries" }, { v: "27", l: "Currencies" }], href: "/why-vault/global-access" },
+  { icon: Zap, color: "#fbbf24", title: "Premier Technology", sub: "Award-Winning Platforms", desc: "Vault's powerful technology suite helps you optimize trading speed, efficiency and portfolio analysis. From mobile to desktop, our platforms work for every investor.", stats: [{ v: "100+", l: "Order Types" }, { v: "<1ms", l: "Execution" }, { v: "99.98%", l: "Uptime" }], href: "/why-vault/technology" },
+  { icon: Shield, color: "#f87171", title: "Strength & Security", sub: "$19.5B Equity Capital", desc: "One of the largest and most financially secure brokerages in the world. Our conservative balance sheet and automated risk controls protect you through any market cycle.", stats: [{ v: "$19.5B", l: "Equity Capital" }, { v: "50+", l: "Years" }, { v: "SIPC", l: "Protected" }], href: "/security" },
 ];
 
 const AWARDS = [
@@ -22,9 +24,21 @@ const AWARDS = [
   { rank: "Best", label: "Online Broker", src: "BrokerChooser 2026" },
 ];
 
+const RELATED = [
+  { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "$0 commissions, 55% lower margin rates, 3.14% cash yield." },
+  { title: "Global Access", href: "/why-vault/global-access", desc: "Trade 170+ markets across 33 countries from one account." },
+  { title: "Premier Technology", href: "/why-vault/technology", desc: "Sub-ms execution, 100+ order types, 4.9/5 App Store rating." },
+  { title: "Industry Awards", href: "/why-vault/awards", desc: "Ranked #1 six consecutive years by every major publication." },
+  { title: "About INT Brokers", href: "/about", desc: "50-year company history, leadership, and mission." },
+  { title: "Pricing", href: "/pricing", desc: "Full commission schedule and margin rates." },
+];
+
 export default function WhyVault() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter',system-ui,sans-serif", overflowX: "hidden" }}>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={breadcrumbSchema([{ name: "Why Vault", item: "/why-vault" }])} />
+
       <HomeNavbar />
 
       {/* Hero */}
@@ -61,35 +75,37 @@ export default function WhyVault() {
       {/* Four Pillars */}
       <section style={{ background: "#F5F6F7", padding: "96px 24px", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ position: "relative", zIndex: 1, ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 60 }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Our Advantages</p>
             <h2 style={{ fontSize: "clamp(26px,4vw,42px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em" }}>Four Reasons to Choose Vault</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(480px,1fr))", gap: 20 }}>
-            {PILLARS.map(({ icon: Icon, color, title, sub, desc, stats }) => (
-              <div key={title} style={{ background: "#fff", borderRadius: 20, border: "1px solid #E6E8EB", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", overflow: "hidden" }}>
-                <div style={{ background: "linear-gradient(135deg,#080a0f,#0f1320)", padding: "32px 36px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-                    <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(8px)" }}>
-                      <Icon size={22} color={color} strokeWidth={1.5} />
+            {PILLARS.map(({ icon: Icon, color, title, sub, desc, stats, href }) => (
+              <Link key={title} href={href} style={{ textDecoration: "none" }}>
+                <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #E6E8EB", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", overflow: "hidden" }}>
+                  <div style={{ background: "linear-gradient(135deg,#080a0f,#0f1320)", padding: "32px 36px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(8px)" }}>
+                        <Icon size={22} color={color} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 11, color: color, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 2 }}>{sub}</div>
+                        <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>{title}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div style={{ fontSize: 11, color: color, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 2 }}>{sub}</div>
-                      <div style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>{title}</div>
-                    </div>
+                    <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.75 }}>{desc}</p>
                   </div>
-                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.75 }}>{desc}</p>
+                  <div style={{ padding: "20px 36px", display: "flex", gap: 32 }}>
+                    {stats.map(s => (
+                      <div key={s.l}>
+                        <div style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em" }}>{s.v}</div>
+                        <div style={{ fontSize: 11, color: "#9CA3AF", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{s.l}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ padding: "20px 36px", display: "flex", gap: 32 }}>
-                  {stats.map(s => (
-                    <div key={s.l}>
-                      <div style={{ fontSize: 22, fontWeight: 900, color: "#0F172A", letterSpacing: "-0.02em" }}>{s.v}</div>
-                      <div style={{ fontSize: 11, color: "#9CA3AF", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: 2 }}>{s.l}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -106,8 +122,8 @@ export default function WhyVault() {
               <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, color: "#fff", letterSpacing: "-0.03em", marginBottom: 20, lineHeight: 1.1 }}>50+ Years of Financial Innovation</h2>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 20 }}>Founded in 1977, Vault Wealth was built on a simple belief: that every investor — regardless of account size — deserves access to the best prices, broadest range of products, and most powerful tools.</p>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.4)", lineHeight: 1.8, marginBottom: 36 }}>Today, Vault Wealth is one of the largest electronic brokerage firms in the world by volume, serving clients in over 200 countries with a platform used by professional traders, retirees, and institutions alike.</p>
-              <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: 14, textDecoration: "none" }}>
-                Get Started Today <ChevronRight size={15} />
+              <Link href="/about" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)", fontWeight: 600, fontSize: 14, textDecoration: "none" }}>
+                Read our full story <ChevronRight size={15} />
               </Link>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -134,7 +150,10 @@ export default function WhyVault() {
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Industry Recognition</p>
           <h2 style={{ fontSize: "clamp(24px,4vw,38px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.025em", marginBottom: 8 }}>Award-Winning, Year After Year</h2>
-          <p style={{ color: "#6B7280", fontSize: 15, marginBottom: 52 }}>Recognized by the world's most respected financial publications</p>
+          <p style={{ color: "#6B7280", fontSize: 15, marginBottom: 16 }}>Recognized by the world's most respected financial publications</p>
+          <Link href="/why-vault/awards" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#0F172A", textDecoration: "none", marginBottom: 48, borderBottom: "1px solid #E6E8EB", paddingBottom: 2 }}>
+            See all 25+ awards <ChevronRight size={14} />
+          </Link>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
             {AWARDS.map((a, i) => (
               <div key={i} style={{ background: "#fff", border: "1px solid #E6E8EB", borderRadius: 16, padding: "28px 28px", minWidth: 160, boxShadow: "0 2px 8px rgba(0,0,0,0.04)", textAlign: "center" }}>
@@ -144,6 +163,26 @@ export default function WhyVault() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Related pages */}
+      <section style={{ background: "#F5F6F7", padding: "72px 24px", borderTop: "1px solid #E6E8EB" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 8 }}>Related Resources</p>
+            <h2 style={{ fontSize: "clamp(18px,3vw,28px)", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>Explore more from INT Brokers</h2>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {RELATED.map(l => (
+              <li key={l.href}>
+                <Link href={l.href} style={{ display: "block", background: "#fff", border: "1px solid #E6E8EB", borderRadius: 12, padding: "18px 20px", textDecoration: "none" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "block", marginBottom: 4 }}>{l.title}</span>
+                  <span style={{ fontSize: 12.5, color: "#6B7280", lineHeight: 1.6 }}>{l.desc}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

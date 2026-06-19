@@ -2,6 +2,7 @@ import { HomeNavbar } from "@/components/layout/HomeNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { Check, ArrowUpRight, ChevronRight, Shield, TrendingUp, Phone, Clock } from "lucide-react";
+import { JsonLd, organizationSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
@@ -20,9 +21,20 @@ const FEATURES = [
   { icon: Clock, title: "Automatic Rebalancing", desc: "Set your target allocation once. Our system automatically rebalances your portfolio as markets move." },
 ];
 
+const RELATED_RETIREMENT = [
+  { title: "IRA Accounts", href: "/accounts/ira", desc: "Traditional and Roth IRAs with no annual fees and 401(k) rollover support." },
+  { title: "SEP-IRA", href: "/accounts/sep-ira", desc: "Contribute up to $69,000 annually if you're self-employed or own a small business." },
+  { title: "401(k) Rollover", href: "/accounts/401k", desc: "Roll your old 401(k) to an INT Brokers IRA — tax-free, in 3–7 days." },
+  { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero account maintenance fees, inactivity charges, or platform costs." },
+  { title: "Why Vault", href: "/why-vault", desc: "50+ years of financial innovation behind every investment decision." },
+  { title: "Security", href: "/security", desc: "SIPC + FDIC protection and institutional-grade security for your retirement savings." },
+];
+
 export default function RetirementPage() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter',system-ui,sans-serif", overflowX: "hidden" }}>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={breadcrumbSchema([{ name: "Retirement", item: "/retirement" }])} />
       <HomeNavbar />
 
       {/* Hero */}
@@ -139,6 +151,26 @@ export default function RetirementPage() {
           <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "#0d1520", color: "#fff", fontWeight: 700, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 16px rgba(13,21,32,0.2)" }}>
             Open Retirement Account <ArrowUpRight size={16} />
           </Link>
+        </div>
+      </section>
+
+      {/* Related Resources */}
+      <section style={{ background: "#F5F6F7", padding: "72px 24px", borderTop: "1px solid #E6E8EB" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 8 }}>Related Resources</p>
+            <h2 style={{ fontSize: "clamp(18px,3vw,28px)", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>Explore more from INT Brokers</h2>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {RELATED_RETIREMENT.map(l => (
+              <li key={l.href}>
+                <Link href={l.href} style={{ display: "block", background: "#fff", border: "1px solid #E6E8EB", borderRadius: 12, padding: "18px 20px", textDecoration: "none" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "block", marginBottom: 4 }}>{l.title}</span>
+                  <span style={{ fontSize: 12.5, color: "#6B7280", lineHeight: 1.6 }}>{l.desc}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

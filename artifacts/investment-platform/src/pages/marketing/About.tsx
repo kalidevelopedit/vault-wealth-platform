@@ -34,6 +34,7 @@ export default function About() {
       title={<>Built for Investors<br /><span style={{ color: "#fff" }}>Since 1977</span></>}
       subtitle="INT Brokers (Vault Wealth Management LLC) is a registered broker-dealer with over 50 years of innovation, $19.5 billion in equity capital, and 4.4 million clients in 200+ countries. We exist to give every investor access to the best tools and lowest costs on the planet."
       heroImage={IMG}
+      heroImageAlt="Modern corporate headquarters of INT Brokers — a global financial services firm"
       stats={[
         { value: "50+", label: "Years of Innovation" },
         { value: "4.4M+", label: "Client Accounts" },
@@ -43,6 +44,14 @@ export default function About() {
       ]}
       ctaTitle="Join the INT Brokers Community"
       ctaText="4.4 million investors worldwide have chosen INT Brokers for lower costs, global access, and institutional-grade tools."
+      relatedLinks={[
+        { title: "Security & Trust", href: "/security", desc: "SIPC-protected, FDIC-insured, 256-bit encryption, and six layers of institutional security." },
+        { title: "Press Centre", href: "/press", desc: "Latest news, announcements, and media resources from INT Brokers." },
+        { title: "Careers", href: "/careers", desc: "Join our team and help shape the future of investing." },
+        { title: "Why Vault", href: "/why-vault", desc: "Four reasons investors choose INT Brokers over every competitor." },
+        { title: "Industry Awards", href: "/why-vault/awards", desc: "Ranked #1 by StockBrokers.com, NerdWallet, Investopedia, and more." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "Commission schedules, margin rates, and our fee-free promise." },
+      ]}
     >
       {/* Values */}
       <section style={{ background: "#F5F6F7", padding: "88px 24px", position: "relative" }}>
@@ -64,8 +73,13 @@ export default function About() {
         </div>
       </section>
 
-      {/* Image strip */}
-      <div style={{ height: 340, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 340, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="INT Brokers headquarters — a landmark of global financial innovation since 1977"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

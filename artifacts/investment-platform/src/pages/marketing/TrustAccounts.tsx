@@ -34,6 +34,18 @@ export default function TrustAccounts() {
         { value: "170+", label: "Markets Available" },
         { value: "SIPC", label: "Protected" },
       ]}
+      heroImageAlt="Legal trust documents and estate planning materials for wealth management"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "Trust Accounts", item: "/accounts/trust" },
+      ]}
+      relatedLinks={[
+        { title: "Individual Account", href: "/accounts/individual", desc: "Personal brokerage account with full market access." },
+        { title: "Joint Accounts", href: "/accounts/joint", desc: "Invest together with up to four account holders." },
+        { title: "Institutional", href: "/accounts/institutional", desc: "Institutional solutions for RIAs, funds, and family offices." },
+        { title: "Security", href: "/security", desc: "SIPC protection and institutional-grade account custody." },
+        { title: "About INT Brokers", href: "/about", desc: "50+ years serving individual and institutional investors." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

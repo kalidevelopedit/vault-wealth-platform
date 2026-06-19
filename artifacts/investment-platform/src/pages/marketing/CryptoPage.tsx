@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Link } from "wouter";
 import { Check, ArrowUpRight, ChevronRight, Shield, Zap, TrendingUp, Lock } from "lucide-react";
 import { AssetIcon } from "@/components/AssetIcon";
+import { JsonLd, organizationSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 
 const DOT = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E")`;
 const DOTL = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(0,0,0,0.04)'/%3E%3C/svg%3E")`;
@@ -29,9 +30,20 @@ const WHY_VAULT_CRYPTO = [
   { icon: Lock, color: "#f87171", title: "No Wallet Needed", desc: "We handle custody, security and private keys. You just trade and earn — we handle the complexity." },
 ];
 
+const RELATED_CRYPTO = [
+  { title: "Crypto Spreads", href: "/pricing/crypto-spreads", desc: "0.12–0.18% all-in spread — no hidden markups, no maker/taker complexity." },
+  { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free stock trading alongside crypto in one unified account." },
+  { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero wallet fees, no account charges, full fee transparency." },
+  { title: "Security", href: "/security", desc: "95% of crypto in cold storage. Multi-sig wallets and institutional custody." },
+  { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "INT Brokers passes institutional savings directly to every client." },
+  { title: "Global Access", href: "/why-vault/global-access", desc: "Trade crypto alongside 170+ global markets from one account." },
+];
+
 export default function CryptoPage() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter',system-ui,sans-serif", overflowX: "hidden" }}>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={breadcrumbSchema([{ name: "Cryptocurrency", item: "/crypto" }])} />
       <HomeNavbar />
 
       {/* Hero */}
@@ -140,6 +152,26 @@ export default function CryptoPage() {
           <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 44px", borderRadius: 12, background: "linear-gradient(135deg,#f59e0b,#d97706)", color: "#0F172A", fontWeight: 800, fontSize: 15, textDecoration: "none", boxShadow: "0 4px 24px rgba(245,158,11,0.35)" }}>
             Buy Your First Crypto <ArrowUpRight size={16} />
           </Link>
+        </div>
+      </section>
+
+      {/* Related Resources */}
+      <section style={{ background: "#F5F6F7", padding: "72px 24px", borderTop: "1px solid #E6E8EB" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6B7280", marginBottom: 8 }}>Related Resources</p>
+            <h2 style={{ fontSize: "clamp(18px,3vw,28px)", fontWeight: 800, color: "#0F172A", letterSpacing: "-0.02em" }}>Explore more from INT Brokers</h2>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {RELATED_CRYPTO.map(l => (
+              <li key={l.href}>
+                <Link href={l.href} style={{ display: "block", background: "#fff", border: "1px solid #E6E8EB", borderRadius: 12, padding: "18px 20px", textDecoration: "none" }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", display: "block", marginBottom: 4 }}>{l.title}</span>
+                  <span style={{ fontSize: 12.5, color: "#6B7280", lineHeight: 1.6 }}>{l.desc}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

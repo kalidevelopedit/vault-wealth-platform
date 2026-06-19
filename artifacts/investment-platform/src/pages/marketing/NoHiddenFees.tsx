@@ -43,6 +43,19 @@ export default function NoHiddenFees() {
         { value: "$0", label: "Platform Fees" },
         { value: "$0", label: "Exercise Fees" },
       ]}
+      heroImageAlt="Transparent fee schedule showing zero hidden charges for brokerage accounts"
+      breadcrumbs={[
+        { name: "Pricing", item: "/pricing" },
+        { name: "No Hidden Fees", item: "/pricing/no-hidden-fees" },
+      ]}
+      relatedLinks={[
+        { title: "Pricing Overview", href: "/pricing", desc: "Full rate schedule across every asset class." },
+        { title: "Commissions", href: "/pricing/commissions", desc: "Commission schedule: $0 stocks, $0.65 options, and more." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Borrow at rates up to 55% below industry average." },
+        { title: "Interest on Cash", href: "/pricing/interest-on-cash", desc: "Earn up to 3.14% APY on uninvested cash balances." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "How INT Brokers keeps your total costs lower." },
+        { title: "Individual Account", href: "/accounts/individual", desc: "Open an account with no minimum and no fees." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

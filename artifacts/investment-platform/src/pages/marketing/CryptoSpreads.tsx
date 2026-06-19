@@ -36,6 +36,18 @@ export default function CryptoSpreads() {
         { value: "24/7", label: "Trading" },
         { value: "$0", label: "Wallet Required" },
       ]}
+      heroImageAlt="Cryptocurrency trading charts showing Bitcoin and Ethereum price movements"
+      breadcrumbs={[
+        { name: "Pricing", item: "/pricing" },
+        { name: "Crypto Spreads", item: "/pricing/crypto-spreads" },
+      ]}
+      relatedLinks={[
+        { title: "Pricing Overview", href: "/pricing", desc: "All rates across stocks, options, futures, crypto, and more." },
+        { title: "Crypto", href: "/crypto", desc: "Trade 60+ cryptocurrencies with institutional cold storage." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero wallet fees, no account charges." },
+        { title: "Commissions", href: "/pricing/commissions", desc: "Full commission schedule across every asset class." },
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US stock trading alongside crypto." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

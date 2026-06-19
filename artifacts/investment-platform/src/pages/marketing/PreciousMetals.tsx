@@ -29,11 +29,24 @@ export default function PreciousMetals() {
       title={<>Invest in Gold, Silver,<br /><span style={{ color: "#fff" }}>and Beyond</span></>}
       subtitle="Trade 7 precious and industrial metals at spot prices or via futures — with 0.15% commissions, secure custody, and 24/7 price monitoring. One of the widest metals selections of any online broker."
       heroImage={IMG}
+      heroImageAlt="Stacked gold bars in a professional vault — representing precious metal storage and investment"
       stats={[
         { value: "7", label: "Metals Available" },
         { value: "0.15%", label: "Commission Rate" },
         { value: "24/7", label: "Price Monitoring" },
         { value: "$3,324", label: "Gold Spot /oz" },
+      ]}
+      breadcrumbs={[
+        { name: "Products", item: "/products" },
+        { name: "Precious Metals", item: "/products/precious-metals" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Trade GLD, SLV, IAU and other metals ETFs commission-free." },
+        { title: "Futures Trading", href: "/products/futures", desc: "Access COMEX gold and silver futures with $0.85/contract." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Precious metals are priced at 0.15% with a $2 minimum." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "Trade metals across COMEX, LME, and Asian exchanges." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "Transparent pricing with no hidden spreads on metals." },
+        { title: "Security & Trust", href: "/security", desc: "Your vaulted metal holdings are held with institutional-grade custody." },
       ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
@@ -81,7 +94,13 @@ export default function PreciousMetals() {
         </div>
       </section>
 
-      <div style={{ height: 320, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 320, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Gold bars stacked in a secure vault — gold returned +28% in the last 12 months"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

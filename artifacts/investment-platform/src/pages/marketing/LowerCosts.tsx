@@ -39,6 +39,7 @@ export default function LowerCosts() {
       title={<>Professional Pricing.<br /><span style={{ color: "#fff" }}>Zero Compromise.</span></>}
       subtitle="INT Brokers passes more of the savings of scale directly to you than any other broker. From $0 commissions on US stocks to the industry's lowest margin rates — your money works harder here."
       heroImage={IMG}
+      heroImageAlt="Financial advisor reviewing portfolio cost and performance data"
       stats={[
         { value: "$0", label: "US Stock Commissions" },
         { value: "$0.65", label: "Per Options Contract" },
@@ -48,6 +49,18 @@ export default function LowerCosts() {
       ]}
       ctaTitle="Start Saving Today"
       ctaText="Commission-free US stock trading, industry-low margin rates, and cash interest — all in one account."
+      breadcrumbs={[
+        { name: "Why Vault", item: "/why-vault" },
+        { name: "Lower Costs", item: "/why-vault/lower-costs" },
+      ]}
+      relatedLinks={[
+        { title: "Full Pricing Overview", href: "/pricing", desc: "All commissions, margin rates, and cash yields in one place." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Detailed commission rates for every asset class." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Industry-low margin rates — up to 55% below average." },
+        { title: "Interest on Cash", href: "/pricing/interest-on-cash", desc: "Earn up to 3.14% APY on uninvested cash balances." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "See every fee we don't charge." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "Trade 170+ markets across 33 countries from one account." },
+      ]}
     >
       {/* Why it matters */}
       <section style={{ background: "#F5F6F7", padding: "88px 24px", position: "relative" }}>
@@ -105,8 +118,13 @@ export default function LowerCosts() {
         </div>
       </section>
 
-      {/* Image strip */}
-      <div style={{ height: 380, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 380, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Professional investor working at a trading desk, reviewing cost analysis"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(8,10,15,0.88) 40%,rgba(8,10,15,0.55))" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", padding: "0 64px", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ maxWidth: 500 }}>

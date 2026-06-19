@@ -59,6 +59,7 @@ export default function AwardsPage() {
       title={<>Ranked #1 by Every<br /><span style={{ color: "#fff" }}>Major Publication</span></>}
       subtitle="INT Brokers has been recognised by the world's leading financial publications as the best broker for professional trading, international access, options, futures, and margin rates — for six consecutive years."
       heroImage={IMG}
+      heroImageAlt="INT Brokers corporate building — home of an award-winning global brokerage"
       stats={[
         { value: "25+", label: "Industry Awards" },
         { value: "6", label: "Consecutive Years #1" },
@@ -67,6 +68,18 @@ export default function AwardsPage() {
       ]}
       ctaTitle="Trade with the Best-Rated Broker"
       ctaText="Join 4.4 million investors who chose the platform that every major industry publication ranks #1."
+      breadcrumbs={[
+        { name: "Why Vault", item: "/why-vault" },
+        { name: "Awards", item: "/why-vault/awards" },
+      ]}
+      relatedLinks={[
+        { title: "Why Vault", href: "/why-vault", desc: "The four pillars that make INT Brokers the industry leader." },
+        { title: "About INT Brokers", href: "/about", desc: "Our 50-year story, leadership team, and company values." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "See exactly why our pricing wins #1 in every comparison." },
+        { title: "Premier Technology", href: "/why-vault/technology", desc: "Award-winning platforms behind our six-year #1 ranking." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "Trade 170+ markets — the breadth that earns top marks." },
+        { title: "Press Centre", href: "/press", desc: "Latest company news and industry coverage." },
+      ]}
     >
       {/* Awards grid */}
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
@@ -115,8 +128,13 @@ export default function AwardsPage() {
         </div>
       </section>
 
-      {/* Image strip */}
-      <div style={{ height: 320, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 320, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="INT Brokers — 50 years of industry-leading financial innovation and award-winning service"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

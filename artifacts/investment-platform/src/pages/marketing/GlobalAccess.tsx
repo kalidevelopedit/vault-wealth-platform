@@ -38,6 +38,7 @@ export default function GlobalAccess() {
       title={<>Trade Anywhere.<br /><span style={{ color: "#fff" }}>In Any Market.</span></>}
       subtitle="Access 170+ market centres across 33 countries — stocks, options, futures, forex, bonds, and crypto — all from a single INT Brokers account. No international brokerage accounts required."
       heroImage={IMG}
+      heroImageAlt="Satellite view of the Earth at night, showing global financial market connectivity"
       stats={[
         { value: "170+", label: "Market Centres" },
         { value: "33+", label: "Countries" },
@@ -47,6 +48,18 @@ export default function GlobalAccess() {
       ]}
       ctaTitle="Access Every Market on Earth"
       ctaText="Open one account and trade stocks in Tokyo, bonds in London, and crypto around the clock — all under one roof."
+      breadcrumbs={[
+        { name: "Why Vault", item: "/why-vault" },
+        { name: "Global Access", item: "/why-vault/global-access" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "25,000+ equities across 170+ market centres, commission-free on US stocks." },
+        { title: "Forex Trading", href: "/products/forex", desc: "Trade 27 currency pairs at near-interbank rates." },
+        { title: "Futures Trading", href: "/products/futures", desc: "Access 30+ futures exchanges globally from one account." },
+        { title: "Premier Technology", href: "/why-vault/technology", desc: "The platform powering seamless global market access." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "Transparent pricing for every global market and asset class." },
+        { title: "Why Vault", href: "/why-vault", desc: "Four reasons investors choose INT Brokers over every competitor." },
+      ]}
     >
       {/* Features */}
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
@@ -98,8 +111,13 @@ export default function GlobalAccess() {
         </div>
       </section>
 
-      {/* Image strip */}
-      <div style={{ height: 360, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 360, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Earth from space at night — illustrating INT Brokers' global market coverage across all continents"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.82)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div style={{ maxWidth: 640 }}>

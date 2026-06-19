@@ -57,6 +57,7 @@ export default function Technology() {
       title={<>Award-Winning Platforms<br /><span style={{ color: "#fff" }}>Built for Every Investor</span></>}
       subtitle="From ultra-low latency desktop trading to seamless mobile apps and algorithmic APIs — INT Brokers technology has been recognised as the best in the industry for six consecutive years."
       heroImage={IMG}
+      heroImageAlt="Programmer writing algorithmic trading code on a high-resolution monitor"
       stats={[
         { value: "<1ms", label: "Order Execution" },
         { value: "100+", label: "Order Types" },
@@ -66,6 +67,18 @@ export default function Technology() {
       ]}
       ctaTitle="Experience the Platform"
       ctaText="Open a free account and explore award-winning platforms — desktop, web, mobile, and API."
+      breadcrumbs={[
+        { name: "Why Vault", item: "/why-vault" },
+        { name: "Technology", item: "/why-vault/technology" },
+      ]}
+      relatedLinks={[
+        { title: "Industry Awards", href: "/why-vault/awards", desc: "Six consecutive years ranked #1 — including for technology." },
+        { title: "Options Trading", href: "/products/options", desc: "Institutional options analytics powered by our award-winning platform." },
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US equities with extended-hours access." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "Technology connecting you to 170+ markets in 33 countries." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "SmartRouting saves you more than commissions cost." },
+        { title: "Why Vault", href: "/why-vault", desc: "See the full case for choosing INT Brokers." },
+      ]}
     >
       {/* Platforms */}
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
@@ -101,8 +114,13 @@ export default function Technology() {
         </div>
       </section>
 
-      {/* Image strip */}
-      <div style={{ height: 360, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 360, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Developer coding SmartRouting algorithms that scan 70+ execution venues for the best fill price"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right,rgba(8,10,15,0.9) 50%,rgba(8,10,15,0.5))" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", padding: "0 64px", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ maxWidth: 480 }}>

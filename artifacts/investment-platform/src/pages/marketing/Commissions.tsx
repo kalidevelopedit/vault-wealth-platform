@@ -31,11 +31,24 @@ export default function Commissions() {
       title={<>Transparent, Competitive<br /><span style={{ color: "#fff" }}>Commissions</span></>}
       subtitle="Our complete commission schedule for every asset class, every market. No hidden markups, no payment for order flow, no tricks. What you see is exactly what you pay."
       heroImage={IMG}
+      heroImageAlt="Financial professional reviewing trade commission reports on a laptop"
       stats={[
         { value: "$0", label: "US Stock Commissions" },
         { value: "$0.65", label: "Options Per Contract" },
         { value: "$0.85", label: "Futures Per Contract" },
         { value: "0.12%", label: "Min Crypto Spread" },
+      ]}
+      breadcrumbs={[
+        { name: "Pricing", item: "/pricing" },
+        { name: "Commissions", item: "/pricing/commissions" },
+      ]}
+      relatedLinks={[
+        { title: "Pricing Overview", href: "/pricing", desc: "All rates in one place — commissions, margin, cash yield." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Industry-low margin rates — up to 55% below average." },
+        { title: "Interest on Cash", href: "/pricing/interest-on-cash", desc: "Earn up to 3.14% APY on uninvested cash." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "The complete list of fees we don't charge." },
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US equities — see the product details." },
+        { title: "Options Trading", href: "/products/options", desc: "$0.65/contract with no exercise or assignment fees." },
       ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>

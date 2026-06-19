@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useListAssets } from "@workspace/api-client-react";
 import { AssetIcon } from "@/components/AssetIcon";
+import { JsonLd, organizationSchema } from "@/components/seo/JsonLd";
 
 /* ─── CSS ──────────────────────────────────────────────────────────────── */
 const css = `
@@ -871,6 +872,7 @@ function InvestmentCalculator() {
 export default function Home() {
   return (
     <div style={{background:"#fff",fontFamily:"'Inter',system-ui,sans-serif",overflowX:"hidden"}}>
+      <JsonLd data={organizationSchema()} />
       <style>{css}</style>
       <HomeNavbar />
 

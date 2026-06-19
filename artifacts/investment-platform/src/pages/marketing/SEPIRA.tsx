@@ -32,6 +32,18 @@ export default function SEPIRA() {
         { value: "100%", label: "Tax Deductible" },
         { value: "$0", label: "Annual Account Fees" },
       ]}
+      heroImageAlt="Self-employed professional reviewing SEP-IRA retirement savings strategy"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "SEP-IRA", item: "/accounts/sep-ira" },
+      ]}
+      relatedLinks={[
+        { title: "IRA", href: "/accounts/ira", desc: "Traditional and Roth IRAs with no annual fees." },
+        { title: "401(k) Rollover", href: "/accounts/401k", desc: "Roll an old 401(k) to INT Brokers — tax-free." },
+        { title: "Retirement Planning", href: "/retirement", desc: "Retirement tools and dedicated specialist support." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero account fees, no inactivity charges — ever." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "How INT Brokers passes institutional savings to you." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

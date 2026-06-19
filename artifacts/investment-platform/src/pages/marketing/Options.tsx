@@ -37,6 +37,7 @@ export default function Options() {
       title={<>Trade Options<br /><span style={{ color: "#fff" }}>with Precision</span></>}
       subtitle="Options are one of the most versatile investment tools available. INT Brokers gives you institutional-grade options analytics, the industry's widest strategy library, and $0.65/contract pricing."
       heroImage={IMG}
+      heroImageAlt="Trader analysing options chain data and Greeks on a professional multi-screen workstation"
       stats={[
         { value: "$0.65", label: "Per Contract" },
         { value: "100+", label: "Strategy Types" },
@@ -45,6 +46,18 @@ export default function Options() {
       ]}
       ctaTitle="Start Trading Options"
       ctaText="The most advanced options platform available to retail investors — at $0.65 per contract."
+      breadcrumbs={[
+        { name: "Products", item: "/products" },
+        { name: "Options", item: "/products/options" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Trade the underlying equities behind your options strategies." },
+        { title: "Futures Trading", href: "/products/futures", desc: "Expand into futures — another leveraged instrument with defined risk parameters." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Full pricing details for options contracts across all exchanges." },
+        { title: "Premier Technology", href: "/why-vault/technology", desc: "OptionTrader, Probability Lab, and Risk Navigator — all built in." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "Exercise and assignment are always free. Only $0.65 to enter." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Options margin requirements and portfolio margin accounts." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
@@ -84,7 +97,13 @@ export default function Options() {
         </div>
       </section>
 
-      <div style={{ height: 320, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 320, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Options trading dashboard showing live options chains, Greeks, and P&L visualisation"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

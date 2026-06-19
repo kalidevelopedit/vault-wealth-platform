@@ -37,6 +37,19 @@ export default function Forex() {
         { value: "17+", label: "Liquidity Providers" },
         { value: "27", label: "Currency Balances" },
       ]}
+      heroImageAlt="Currency exchange rates display showing global forex market data"
+      breadcrumbs={[
+        { name: "Products", item: "/products/stocks" },
+        { name: "Forex", item: "/products/forex" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US stock and ETF trading from $0." },
+        { title: "Futures", href: "/products/futures", desc: "Trade global index and commodity futures contracts." },
+        { title: "Options", href: "/products/options", desc: "Low-cost options at $0.65 per contract, no exercise fees." },
+        { title: "Bonds", href: "/products/bonds", desc: "1M+ bonds across 30 countries at $1 per bond." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Borrow at rates up to 55% lower than the industry average." },
+        { title: "Individual Account", href: "/accounts/individual", desc: "Open a personal brokerage account with no minimum." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

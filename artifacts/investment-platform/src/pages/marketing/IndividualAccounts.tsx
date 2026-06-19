@@ -36,6 +36,19 @@ export default function IndividualAccounts() {
         { value: "170+", label: "Markets" },
         { value: "SIPC", label: "Protected" },
       ]}
+      heroImageAlt="Individual investor monitoring personal investment portfolio on digital platform"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "Individual Account", item: "/accounts/individual" },
+      ]}
+      relatedLinks={[
+        { title: "Joint Accounts", href: "/accounts/joint", desc: "Invest together with up to four people in a shared account." },
+        { title: "IRA", href: "/accounts/ira", desc: "Tax-advantaged retirement savings with no annual fees." },
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free US stock and ETF trading." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "See how INT Brokers passes savings directly to you." },
+        { title: "Pricing", href: "/pricing", desc: "Transparent rates across all markets and asset classes." },
+        { title: "Security", href: "/security", desc: "SIPC protection and institutional-grade account security." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

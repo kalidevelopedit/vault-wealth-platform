@@ -28,11 +28,24 @@ export default function Futures() {
       title={<>Global Futures Markets,<br /><span style={{ color: "#fff" }}>One Account</span></>}
       subtitle="Trade equity index, energy, metal, agricultural, interest rate, and currency futures from a single INT Brokers account. $0.85 per contract, direct market access to 30+ futures exchanges globally."
       heroImage={IMG}
+      heroImageAlt="Trading floor activity showing futures contracts being executed across global commodity and index markets"
       stats={[
         { value: "$0.85", label: "Per Contract" },
         { value: "30+", label: "Futures Exchanges" },
         { value: "24h", label: "Nearly 24-Hour Trading" },
         { value: "$50", label: "Min Micro Contract" },
+      ]}
+      breadcrumbs={[
+        { name: "Products", item: "/products" },
+        { name: "Futures", item: "/products/futures" },
+      ]}
+      relatedLinks={[
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Trade the equities underlying your equity index futures strategies." },
+        { title: "Options Trading", href: "/products/options", desc: "Options on futures provide additional ways to manage risk." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Detailed futures commission rates for every exchange." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "30+ futures exchanges across Americas, Europe, and Asia-Pacific." },
+        { title: "Precious Metals", href: "/products/precious-metals", desc: "Trade gold, silver, and other metals via COMEX futures." },
+        { title: "Margin Rates", href: "/pricing/margin-rates", desc: "Futures portfolio margin and intraday margin requirements." },
       ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
@@ -74,7 +87,13 @@ export default function Futures() {
         </div>
       </section>
 
-      <div style={{ height: 320, backgroundImage: `url(${IMG})`, backgroundSize: "cover", backgroundPosition: "center", position: "relative" }}>
+      {/* Image strip — semantic img */}
+      <div style={{ height: 320, position: "relative", overflow: "hidden" }}>
+        <img
+          src={IMG}
+          alt="Futures market data showing E-mini S&P 500 contracts with real-time price movement"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
         <div style={{ position: "absolute", inset: 0, background: "rgba(8,10,15,0.85)" }} />
         <div style={{ position: "relative", zIndex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 24px" }}>
           <div>

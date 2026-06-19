@@ -1,5 +1,6 @@
 import { MarketingPage, INNER } from "@/components/marketing/MarketingPage";
 import { FileText, ExternalLink } from "lucide-react";
+import { JsonLd, pressReleasesSchema } from "@/components/seo/JsonLd";
 
 const IMG = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&auto=format&fit=crop";
 
@@ -28,13 +29,24 @@ export default function Press() {
       title={<>INT Brokers<br /><span style={{ color: "#fff" }}>Press Centre</span></>}
       subtitle="News, announcements, and media resources for journalists, analysts, and partners. For urgent press inquiries, contact our media relations team at press@intbrokers.com."
       heroImage={IMG}
+      heroImageAlt="Financial data screens in a modern newsroom — representing INT Brokers press and media coverage"
       stats={[
         { value: "4.4M+", label: "Client Accounts" },
         { value: "$19.5B", label: "Equity Capital" },
         { value: "$2.4T+", label: "Assets Under Custody" },
         { value: "50+", label: "Years in Business" },
       ]}
+      relatedLinks={[
+        { title: "About INT Brokers", href: "/about", desc: "Our history, leadership team, and company values since 1977." },
+        { title: "Security & Trust", href: "/security", desc: "SIPC, FDIC, SEC-registered — how we protect client assets." },
+        { title: "Careers", href: "/careers", desc: "Join the team behind the world's top-rated brokerage." },
+        { title: "Why Vault", href: "/why-vault", desc: "Four pillars that make INT Brokers the industry benchmark." },
+        { title: "Industry Awards", href: "/why-vault/awards", desc: "Every award earned across six consecutive years at #1." },
+        { title: "Global Access", href: "/why-vault/global-access", desc: "Our 170+ market footprint — the story behind the reach." },
+      ]}
     >
+      <JsonLd data={pressReleasesSchema(RELEASES)} />
+
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>

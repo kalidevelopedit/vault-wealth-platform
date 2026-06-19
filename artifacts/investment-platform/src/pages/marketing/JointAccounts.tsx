@@ -30,6 +30,19 @@ export default function JointAccounts() {
         { value: "170+", label: "Markets Available" },
         { value: "SIPC", label: "Protected" },
       ]}
+      heroImageAlt="Couple reviewing shared investment account and joint portfolio strategy"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "Joint Accounts", item: "/accounts/joint" },
+      ]}
+      relatedLinks={[
+        { title: "Individual Account", href: "/accounts/individual", desc: "Personal brokerage account with full market access." },
+        { title: "Trust Accounts", href: "/accounts/trust", desc: "Protect and manage assets across multiple trust types." },
+        { title: "IRA", href: "/accounts/ira", desc: "Tax-advantaged retirement savings for individuals." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero maintenance fees, no inactivity charges." },
+        { title: "Security", href: "/security", desc: "SIPC protection and institutional-grade account custody." },
+        { title: "Stocks & ETFs", href: "/products/stocks", desc: "Commission-free stock and ETF trading for all account types." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

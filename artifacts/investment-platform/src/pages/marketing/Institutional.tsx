@@ -36,6 +36,19 @@ export default function Institutional() {
       ]}
       ctaTitle="Speak with Our Institutional Team"
       ctaText="Our dedicated institutional coverage team will help you evaluate INT Brokers for your firm's specific needs."
+      heroImageAlt="Institutional trading floor with professional investors and market data screens"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "Institutional", item: "/accounts/institutional" },
+      ]}
+      relatedLinks={[
+        { title: "Individual Account", href: "/accounts/individual", desc: "Personal brokerage account for retail investors." },
+        { title: "Trust Accounts", href: "/accounts/trust", desc: "Revocable, irrevocable, and institutional trust structures." },
+        { title: "Security", href: "/security", desc: "$19.5B equity capital and institutional-grade custody." },
+        { title: "Technology", href: "/why-vault/technology", desc: "Award-winning platforms with FIX API and co-location." },
+        { title: "Futures", href: "/products/futures", desc: "Global futures on indices, commodities, and FX." },
+        { title: "Pricing", href: "/pricing", desc: "Full institutional rate schedule across all asset classes." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>

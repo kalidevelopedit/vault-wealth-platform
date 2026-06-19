@@ -26,11 +26,24 @@ export default function MarginRates() {
       title={<>The Industry's Lowest<br /><span style={{ color: "#fff" }}>Margin Rates</span></>}
       subtitle="Borrow against your securities at rates up to 55% lower than the industry average — starting from 4.14% on balances above $3M. Interest accrues daily and is charged monthly."
       heroImage={IMG}
+      heroImageAlt="Financial market data screen showing borrowing rates and margin rate comparisons"
       stats={[
         { value: "4.14%", label: "Blended Rate ($3M+)" },
         { value: "55%", label: "Below Industry Average" },
         { value: "Daily", label: "Interest Accrual" },
         { value: "$2,000", label: "Min Margin Account" },
+      ]}
+      breadcrumbs={[
+        { name: "Pricing", item: "/pricing" },
+        { name: "Margin Rates", item: "/pricing/margin-rates" },
+      ]}
+      relatedLinks={[
+        { title: "Pricing Overview", href: "/pricing", desc: "All rates — commissions, margin, and cash yield — at a glance." },
+        { title: "Commission Schedule", href: "/pricing/commissions", desc: "Detailed commissions for every asset class and market." },
+        { title: "Interest on Cash", href: "/pricing/interest-on-cash", desc: "Earn up to 3.14% APY on uninvested cash balances." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "No platform fees, no inactivity fees, no transfer-in fees." },
+        { title: "Lower Costs", href: "/why-vault/lower-costs", desc: "How our cost structure compares to every major competitor." },
+        { title: "Options Trading", href: "/products/options", desc: "Use portfolio margin to hold options alongside your other positions." },
       ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>

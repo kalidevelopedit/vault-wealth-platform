@@ -36,6 +36,18 @@ export default function IRA() {
         { value: "$0", label: "Annual Fees" },
         { value: "Tax-Free", label: "Roth IRA Growth" },
       ]}
+      heroImageAlt="Retirement planning with IRA investment documents and financial growth charts"
+      breadcrumbs={[
+        { name: "Accounts", item: "/accounts/individual" },
+        { name: "IRA", item: "/accounts/ira" },
+      ]}
+      relatedLinks={[
+        { title: "SEP-IRA", href: "/accounts/sep-ira", desc: "High-limit retirement account for self-employed professionals." },
+        { title: "401(k) Rollover", href: "/accounts/401k", desc: "Transfer your old 401(k) to INT Brokers — tax-free." },
+        { title: "Individual Account", href: "/accounts/individual", desc: "Full-featured brokerage account with no minimum balance." },
+        { title: "Retirement Planning", href: "/retirement", desc: "Retirement-focused tools, resources, and account types." },
+        { title: "No Hidden Fees", href: "/pricing/no-hidden-fees", desc: "Zero account fees, no inactivity charges — ever." },
+      ]}
     >
       <section style={{ background: "#F5F6F7", padding: "88px 24px" }}>
         <div style={{ ...INNER }}>
