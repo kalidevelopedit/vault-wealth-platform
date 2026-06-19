@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /invest
+Disallow: /wallet
+Disallow: /profile
+Disallow: /onboarding
+Disallow: /admin
+Disallow: /assets/
+
+Sitemap: https://vaultwealth.com/sitemap.xml

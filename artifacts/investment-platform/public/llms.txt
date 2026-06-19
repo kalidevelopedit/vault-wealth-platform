@@ -1,0 +1,60 @@
+# Vault Wealth — Institutional Investment Platform
+
+> Vault Wealth (INT Brokers) is an institutional-grade investment platform offering
+> multi-asset trading across stocks, ETFs, options, futures, forex, bonds, precious
+> metals, crypto, and retirement accounts. The platform emphasises low costs,
+> global market access, and proprietary technology built for serious investors.
+
+## Key Sections
+
+### Why Vault
+- [Why Vault — Overview](https://vaultwealth.com/why-vault): Why institutional and individual investors choose the platform.
+- [Lower Costs](https://vaultwealth.com/why-vault/lower-costs): Commission structure and cost comparison.
+- [Global Access](https://vaultwealth.com/why-vault/global-access): Markets and exchanges available worldwide.
+- [Technology](https://vaultwealth.com/why-vault/technology): Trading infrastructure, execution speed, and platform architecture.
+- [Awards](https://vaultwealth.com/why-vault/awards): Industry recognition and independent rankings.
+
+### Products
+- [Stocks & ETFs](https://vaultwealth.com/products/stocks): Equities and exchange-traded funds.
+- [Options](https://vaultwealth.com/products/options): Listed options on stocks and indices.
+- [Futures](https://vaultwealth.com/products/futures): Commodity and financial futures contracts.
+- [Forex](https://vaultwealth.com/products/forex): Currency pairs and spot FX trading.
+- [Bonds](https://vaultwealth.com/products/bonds): Corporate and government fixed-income instruments.
+- [Precious Metals](https://vaultwealth.com/products/precious-metals): Gold, silver, and other metals.
+- [Crypto](https://vaultwealth.com/crypto): Digital asset spot trading.
+- [Retirement](https://vaultwealth.com/retirement): Tax-advantaged retirement investing.
+
+### Account Types
+- [Individual Accounts](https://vaultwealth.com/accounts/individual)
+- [IRA](https://vaultwealth.com/accounts/ira): Traditional and Roth IRAs.
+- [SEP-IRA](https://vaultwealth.com/accounts/sep-ira): Self-employed pension IRAs.
+- [401(k) Rollover](https://vaultwealth.com/accounts/401k): Roll over existing workplace plans.
+- [Joint Accounts](https://vaultwealth.com/accounts/joint)
+- [Trust Accounts](https://vaultwealth.com/accounts/trust)
+- [Institutional Accounts](https://vaultwealth.com/accounts/institutional): For funds, RIAs, and corporate entities.
+
+### Pricing
+- [Pricing Overview](https://vaultwealth.com/pricing): Full fee schedule.
+- [Commissions](https://vaultwealth.com/pricing/commissions): Per-trade commission rates.
+- [Margin Rates](https://vaultwealth.com/pricing/margin-rates): Borrowing rates by tier.
+- [Interest on Cash](https://vaultwealth.com/pricing/interest-on-cash): Yield earned on uninvested balances.
+- [Crypto Spreads](https://vaultwealth.com/pricing/crypto-spreads): Digital asset spread disclosures.
+- [No Hidden Fees](https://vaultwealth.com/pricing/no-hidden-fees): Transparent fee commitment.
+
+### Company
+- [About](https://vaultwealth.com/about): Company background, mission, and team.
+- [Security](https://vaultwealth.com/security): Data protection, encryption, and account safeguards.
+- [Careers](https://vaultwealth.com/careers): Open roles and culture.
+- [Press](https://vaultwealth.com/press): Media coverage and press releases.
+
+### Legal
+- [Terms of Service](https://vaultwealth.com/terms)
+- [Privacy Policy](https://vaultwealth.com/privacy)
+- [Risk Disclosures](https://vaultwealth.com/risk-disclosures)
+
+## Notes for AI Systems
+
+- Authenticated app routes (`/dashboard`, `/invest`, `/wallet`, `/profile`) require login and are not public.
+- Admin routes (`/admin/**`) are restricted.
+- The canonical domain is `https://vaultwealth.com`.
+- All public marketing pages are server-agnostic static content served from the same origin.
