@@ -1080,6 +1080,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── HOW YOU EARN ───────────────────────────────────────────── */}
+      <HowYouEarn />
+
       {/* ─── INVESTMENT CALCULATOR ─────────────────────────────────── */}
       <InvestmentCalculator />
 
@@ -1096,19 +1099,20 @@ export default function Home() {
           </div>
           <div className="feat-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:20}}>
             {[
-              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions starting at $0, low margin rates, high interest paid, and Stock Yield Enhancement.",gradient:"linear-gradient(135deg,#1e3a5f,#0f2040)",href:"/pricing"},
-              {Icon:Globe2,title:"Global Access",desc:"Invest globally in stocks, options, futures, currencies, bonds and funds from a single unified platform.",gradient:"linear-gradient(135deg,#0a2920,#052015)",href:"/why-vault/global-access"},
-              {Icon:Zap,title:"Premier Technology",desc:"Vault's powerful suite of technology helps you optimize trading speed, efficiency and portfolio analysis.",gradient:"linear-gradient(135deg,#2d1f0a,#1e1505)",href:"/why-vault/technology"},
-              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5 billion in equity capital, automated risk controls, all assets marked to market daily.",gradient:"linear-gradient(135deg,#1f0a0a,#150505)",href:"/security"},
-            ].map(({Icon,title,desc,gradient,href})=>(
-              <div key={title} className="feat-card" style={{background:gradient,borderRadius:20,padding:"32px 28px 28px",cursor:"pointer",transition:"transform .22s ease,box-shadow .22s ease",boxShadow:"0 4px 20px rgba(0,0,0,0.08)",border:"1px solid rgba(255,255,255,0.04)",position:"relative",overflow:"hidden"}}>
-                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
-                <div style={{marginBottom:20}}>
-                  <Icon size={26} color="rgba(255,255,255,0.55)" strokeWidth={1.5} />
+              {Icon:DollarSign,title:"Professional Pricing",desc:"Commissions from $0. Margin rates 55% below industry average. Earn 3.14% APY on idle cash.",gradient:"linear-gradient(160deg,#0a1e3a,#071428)",accent:"#4ade80",glow:"rgba(74,222,128,0.12)",href:"/pricing"},
+              {Icon:Globe2,title:"Global Access",desc:"170+ markets across 33 countries. Trade stocks, options, futures, currencies, bonds from one account.",gradient:"linear-gradient(160deg,#05201a,#031410)",accent:"#60a5fa",glow:"rgba(96,165,250,0.12)",href:"/why-vault/global-access"},
+              {Icon:Zap,title:"Premier Technology",desc:"Institutional-grade order routing, portfolio analytics, risk management tools and real-time data.",gradient:"linear-gradient(160deg,#1a1008,#0e0a05)",accent:"#fbbf24",glow:"rgba(251,191,36,0.12)",href:"/why-vault/technology"},
+              {Icon:ShieldCheck,title:"Strength & Security",desc:"$19.5B equity capital. SIPC & FDIC insured. Automated risk controls. All assets marked to market daily.",gradient:"linear-gradient(160deg,#1a0505,#0e0303)",accent:"#f87171",glow:"rgba(248,113,113,0.12)",href:"/security"},
+            ].map(({Icon,title,desc,gradient,accent,glow,href})=>(
+              <div key={title} className="feat-card" style={{background:gradient,borderRadius:20,padding:"32px 28px 28px",cursor:"pointer",transition:"transform .22s ease,box-shadow .22s ease",boxShadow:"0 4px 20px rgba(0,0,0,0.08)",border:`1px solid ${accent}18`,position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accent}40,transparent)`}} />
+                <div style={{position:"absolute",top:-40,right:-40,width:140,height:140,background:`radial-gradient(ellipse,${glow},transparent 70%)`,pointerEvents:"none"}} />
+                <div style={{marginBottom:20,width:46,height:46,borderRadius:13,background:`linear-gradient(135deg,${glow},rgba(255,255,255,0.03))`,border:`1px solid ${accent}30`,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 4px 16px ${glow}`}}>
+                  <Icon size={22} color={accent} strokeWidth={1.75} />
                 </div>
                 <h3 style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:10,letterSpacing:"-0.01em"}}>{title}</h3>
                 <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",lineHeight:1.75,marginBottom:20}}>{desc}</p>
-                <a href={href} style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:"rgba(255,255,255,0.5)",textDecoration:"none"}}>
+                <a href={href} style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:12,fontWeight:600,color:accent,textDecoration:"none",opacity:0.7}}>
                   Learn More <ChevronRight size={13} />
                 </a>
               </div>
