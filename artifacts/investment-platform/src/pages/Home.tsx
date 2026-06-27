@@ -77,6 +77,11 @@ const css = `
     .section-two-col-img { display: none !important; }
     .rate-cards-grid { grid-template-columns: 1fr !important; }
     .calc-grid { grid-template-columns: 1fr !important; }
+    .calc-panel-inner { padding: 28px 20px 24px !important; }
+    .calc-result-grid { gap: 8px !important; }
+    .calc-result-grid > div { padding: 16px 12px !important; }
+    .earn-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+    .earn-grid > div { padding: 18px 14px !important; }
     .feat-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
     .stats-grid { grid-template-columns: 1fr 1fr !important; }
     .steps-grid { grid-template-columns: 1fr !important; }
@@ -95,8 +100,8 @@ const css = `
     .acct-types-row > a { width: calc(50% - 5px) !important; padding: 18px 10px !important; }
 
     /* Trust badges */
-    .trust-badges { gap: 10px !important; }
-    .trust-badges > div { padding: 10px 14px !important; }
+    .trust-badges { gap: 10px !important; flex-direction: column !important; }
+    .trust-badges > div { padding: 10px 14px !important; width: 100% !important; box-sizing: border-box !important; }
 
     /* Testimonials */
     .testi-track { gap: 16px !important; }
@@ -124,6 +129,10 @@ const css = `
 
     /* Account feature cards */
     .acct-types-row > a { min-width: 0 !important; }
+
+    /* Stat chips dark section */
+    .stat-chips-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+    .stat-chip { padding: 14px 14px !important; }
   }
 `;
 
@@ -533,7 +542,7 @@ function RetirementSection() {
   return (
     <section style={{background:"#fff",padding:"96px 0",borderTop:"1px solid #E6E8EB"}}>
       <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(420px,100%),1fr))",gap:72,alignItems:"center"}}>
           <div>
             <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"#6B7280",marginBottom:12}}>For Retirees & Seniors</p>
             <h2 style={{fontSize:"clamp(28px,4vw,42px)",fontWeight:900,color:"#0F172A",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>
@@ -610,7 +619,7 @@ function CryptoSection() {
       <div style={{position:"absolute",bottom:-80,left:-80,width:400,height:400,background:"radial-gradient(ellipse,rgba(255,255,255,0.02) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
 
       <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+        <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(420px,100%),1fr))",gap:72,alignItems:"center"}}>
           {/* Image */}
           <div className="section-two-col-img" style={{position:"relative"}}>
             <div style={{borderRadius:24,overflow:"hidden",boxShadow:"0 24px 80px rgba(0,0,0,0.4)",border:"1px solid rgba(255,255,255,0.06)"}}>
@@ -688,6 +697,68 @@ function CryptoSection() {
   );
 }
 
+/* ─── How You Earn ──────────────────────────────────────────────────────── */
+function HowYouEarn() {
+  const streams = [
+    {
+      accent:"#4ade80", glow:"rgba(74,222,128,0.15)",
+      label:"Cash Yield",
+      value:"3.14% APY",
+      desc:"Earn on idle cash held in your account — instantly available, no lock-up period.",
+      detail:"Swept daily to program banks. Available in USD, EUR, GBP.",
+    },
+    {
+      accent:"#60a5fa", glow:"rgba(96,165,250,0.15)",
+      label:"Dividend Income",
+      value:"Quarterly",
+      desc:"Collect regular dividend payments from stocks, REITs, bond ETFs and income funds.",
+      detail:"Auto-reinvest or withdraw to your bank account.",
+    },
+    {
+      accent:"#fbbf24", glow:"rgba(251,191,36,0.15)",
+      label:"Capital Appreciation",
+      value:"Long-term",
+      desc:"Grow your net worth as your diversified portfolio compounds over time.",
+      detail:"170+ markets. Stocks, crypto, commodities and bonds.",
+    },
+    {
+      accent:"#a78bfa", glow:"rgba(167,139,250,0.15)",
+      label:"Stock Lending",
+      value:"Passive",
+      desc:"Earn extra income by lending your fully-paid shares through Stock Yield Enhancement.",
+      detail:"No risk to your shares. Opt in any time.",
+    },
+  ];
+  return (
+    <section style={{background:"#080a0f",padding:"80px 0 72px",position:"relative",overflow:"hidden",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+      <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
+      <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
+        <div style={{textAlign:"center",marginBottom:48}}>
+          <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.2em",textTransform:"uppercase" as const,color:"rgba(255,255,255,0.35)",marginBottom:10}}>Your Earnings</p>
+          <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,margin:"0 0 10px"}}>4 Ways Your Money Grows</h2>
+          <p style={{color:"rgba(255,255,255,0.3)",fontSize:15,maxWidth:480,margin:"0 auto"}}>Every dollar in your account has multiple opportunities to earn — simultaneously.</p>
+        </div>
+        <div className="earn-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+          {streams.map(({accent,glow,label,value,desc,detail})=>(
+            <div key={label} style={{background:`linear-gradient(160deg,${glow},rgba(255,255,255,0.02))`,border:`1px solid ${accent}25`,borderRadius:20,padding:"28px 24px",position:"relative" as const,overflow:"hidden",cursor:"default"}}>
+              <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accent}50,transparent)`}} />
+              <div style={{fontSize:11,fontWeight:700,color:accent,textTransform:"uppercase" as const,letterSpacing:"0.12em",marginBottom:8}}>{label}</div>
+              <div style={{fontSize:"clamp(20px,2.5vw,28px)",fontWeight:900,color:"#fff",letterSpacing:"-0.025em",marginBottom:12}}>{value}</div>
+              <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",lineHeight:1.65,marginBottom:12}}>{desc}</p>
+              <div style={{fontSize:11,color:`${accent}80`,fontWeight:500,borderTop:`1px solid ${accent}15`,paddingTop:10,marginTop:4}}>{detail}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{marginTop:32,textAlign:"center" as const}}>
+          <Link href="/register" style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.14)",color:"rgba(255,255,255,0.8)",fontSize:14,fontWeight:600,padding:"12px 32px",textDecoration:"none",borderRadius:12,backdropFilter:"blur(8px)"}}>
+            Start Earning Today <ArrowUpRight size={15} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── Investment Calculator ─────────────────────────────────────────────── */
 const fmt = (n: number) =>
   n >= 1_000_000
@@ -753,10 +824,10 @@ function InvestmentCalculator() {
           </p>
         </div>
 
-        <div className="calc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(440px,1fr))", gap: 32, alignItems: "start" }}>
+        <div className="calc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(440px,100%),1fr))", gap: 32, alignItems: "start" }}>
 
           {/* ── Left: controls ── */}
-          <div style={{ background: "linear-gradient(140deg,#0d1520,#141e2e)", borderRadius: 24, padding: "40px 40px 36px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.18)", position: "relative", overflow: "hidden" }}>
+          <div className="calc-panel-inner" style={{ background: "linear-gradient(140deg,#0d1520,#141e2e)", borderRadius: 24, padding: "40px 40px 36px", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 24px 80px rgba(0,0,0,0.18)", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 1, background: "rgba(255,255,255,0.08)" }} />
 
             {/* Slider: initial investment */}
@@ -800,7 +871,7 @@ function InvestmentCalculator() {
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
             {/* Result cards */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div className="calc-result-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {[
                 { icon: PiggyBank, label: "Estimated Monthly Income", value: fmt(monthlyEarning), note: "After " + years + " years" },
                 { icon: Target, label: "Projected Portfolio Value", value: fmt(total), note: "Total estimated value" },
@@ -906,16 +977,16 @@ export default function Home() {
               {/* Asset class icon grid */}
               <div className="hero-icon-grid" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,maxWidth:400}}>
                 {[
-                  {icon:BarChart3,   label:"Equities",    sub:"170+ Markets"},
-                  {icon:Bitcoin,     label:"Crypto",      sub:"60+ Coins"},
-                  {icon:Globe2,      label:"Forex",       sub:"100+ Pairs"},
-                  {icon:Wheat,       label:"Commodities", sub:"Futures & Spot"},
-                  {icon:TrendingUp,  label:"Bonds",       sub:"1M+ Securities"},
-                  {icon:Calculator,  label:"Options",     sub:"$0.65/contract"},
-                ].map(({icon:Icon,label,sub})=>(
+                  {icon:BarChart3,  label:"Equities",    sub:"170+ Markets",    accent:"#3b82f6", glow:"rgba(59,130,246,0.18)"},
+                  {icon:Bitcoin,    label:"Crypto",      sub:"60+ Coins",       accent:"#f59e0b", glow:"rgba(245,158,11,0.18)"},
+                  {icon:Globe2,     label:"Forex",       sub:"100+ Pairs",      accent:"#10b981", glow:"rgba(16,185,129,0.18)"},
+                  {icon:Wheat,      label:"Commodities", sub:"Futures & Spot",  accent:"#fbbf24", glow:"rgba(251,191,36,0.18)"},
+                  {icon:TrendingUp, label:"Bonds",       sub:"1M+ Securities",  accent:"#818cf8", glow:"rgba(129,140,248,0.18)"},
+                  {icon:Calculator, label:"Options",     sub:"$0.65/contract",  accent:"#f87171", glow:"rgba(248,113,113,0.18)"},
+                ].map(({icon:Icon,label,sub,accent,glow})=>(
                   <div key={label} style={{
-                    background:"rgba(255,255,255,0.03)",
-                    border:"1px solid rgba(255,255,255,0.08)",
+                    background:`linear-gradient(135deg,${glow},rgba(255,255,255,0.02))`,
+                    border:`1px solid ${accent}30`,
                     borderRadius:14,
                     padding:"16px 14px",
                     display:"flex",
@@ -923,19 +994,22 @@ export default function Home() {
                     gap:10,
                     position:"relative" as const,
                     overflow:"hidden",
+                    cursor:"default",
+                    transition:"border-color .2s",
                   }}>
-                    <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"rgba(255,255,255,0.06)"}} />
+                    <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${accent}40,transparent)`}} />
                     <div style={{
                       width:36,height:36,borderRadius:10,
-                      background:"rgba(255,255,255,0.06)",
-                      border:"1px solid rgba(255,255,255,0.1)",
+                      background:`linear-gradient(135deg,${accent}25,${accent}10)`,
+                      border:`1px solid ${accent}40`,
                       display:"flex",alignItems:"center",justifyContent:"center",
+                      boxShadow:`0 4px 12px ${glow}`,
                     }}>
-                      <Icon size={18} color="rgba(255,255,255,0.6)" strokeWidth={1.5} />
+                      <Icon size={18} color={accent} strokeWidth={1.75} />
                     </div>
                     <div>
-                      <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.8)",lineHeight:1,letterSpacing:"-0.005em"}}>{label}</div>
-                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:4,lineHeight:1}}>{sub}</div>
+                      <div style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.88)",lineHeight:1,letterSpacing:"-0.005em"}}>{label}</div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:4,lineHeight:1}}>{sub}</div>
                     </div>
                   </div>
                 ))}
@@ -1089,7 +1163,7 @@ export default function Home() {
       {/* ─── PROFESSIONAL PRICING SPLIT ────────────────────────────── */}
       <section style={{background:"#fff",padding:"96px 0",borderTop:"1px solid #E6E8EB"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"center"}}>
+          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(420px,100%),1fr))",gap:72,alignItems:"center"}}>
             <div className="section-two-col-img" style={{borderRadius:20,overflow:"hidden",position:"relative",boxShadow:"0 20px 60px rgba(0,0,0,0.12)"}}>
               <img src="/platform-mockup.png" alt="Professional pricing dashboard" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} />
               <div style={{position:"absolute",bottom:20,left:20,background:"rgba(255,255,255,0.97)",backdropFilter:"blur(12px)",borderRadius:14,padding:"12px 18px",boxShadow:"0 8px 24px rgba(0,0,0,0.1)",border:"1px solid rgba(0,0,0,0.06)"}}>
@@ -1133,7 +1207,7 @@ export default function Home() {
         <div style={{position:"absolute",top:-100,right:-100,width:600,height:600,background:"radial-gradient(ellipse,rgba(37,99,235,0.06) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"absolute",bottom:-100,left:-100,width:500,height:500,background:"radial-gradient(ellipse,rgba(255,255,255,0.015) 0%,transparent 70%)",zIndex:0,pointerEvents:"none"}} />
         <div style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"0 24px"}}>
-          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(420px,1fr))",gap:72,alignItems:"start"}}>
+          <div className="section-two-col" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(420px,100%),1fr))",gap:72,alignItems:"start"}}>
             <div>
               <p style={{fontSize:11,fontWeight:700,letterSpacing:"0.18em",textTransform:"uppercase",color:"rgba(255,255,255,0.35)",marginBottom:12}}>Strength &amp; Security</p>
               <h2 style={{fontSize:"clamp(26px,4vw,40px)",fontWeight:900,color:"#fff",letterSpacing:"-0.03em",marginBottom:20,lineHeight:1.1}}>A Broker You Can Trust</h2>
@@ -1144,7 +1218,7 @@ export default function Home() {
                 Vault Financial Protection <ChevronRight size={16} />
               </a>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <div className="stat-chips-grid" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
               {[
                 {label:"Member of the",val:"S&P 500"},
                 {label:"Nasdaq Listed",val:"VWT"},
