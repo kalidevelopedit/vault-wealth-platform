@@ -344,9 +344,9 @@ export function HomeNavbar() {
 
         {/* ── Desktop: Top row + Logo ── */}
         <div className="home-desktop-only" style={{ borderBottom: "1px solid #f0f0f0" }}>
-          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "160px" }}>
+          <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "68px" }}>
             <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-              <Logo variant="dark" height={44} />
+              <Logo variant="dark" height={36} />
             </Link>
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
