@@ -1,7 +1,23 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { usersTable, holdingsTable, assetsTable, transactionsTable } from "@workspace/db/schema";
+import { usersTable, holdingsTable, assetsTable, transactionsTable, wealthBuilderInvestmentsTable } from "@workspace/db/schema";
 import { eq, and, sql, gte, desc } from "drizzle-orm";
+import { wealthBuilderCurrentValue } from "../lib/wealth-sim";
+
+/** Active (not withdrawn) wealth builder positions with live simulated values. */
+async function getWealthBuilderPositions(userId: number) {
+  const invs = await db.select()
+    .from(wealthBuilderInvestmentsTable)
+    .where(eq(wealthBuilderInvestmentsTable.userId, userId));
+  const now = new Date();
+  return invs
+    .filter(inv => inv.status !== "withdrawn")
+    .map(inv => {
+      const principal = parseFloat(inv.amount);
+      const currentValue = wealthBuilderCurrentValue(inv, now);
+      return { inv, principal, currentValue };
+    });
+}
 
 const router: IRouter = Router();
 
@@ -33,6 +49,17 @@ router.get("/summary", requireAuth, async (req, res) => {
       totalCurrentValue += qty * price;
     }
 
+    // Wealth Builder positions count as invested/staked capital.
+    const wbPositions = await getWealthBuilderPositions(userId);
+    let wealthBuilderStaked = 0;
+    let wealthBuilderValue = 0;
+    for (const p of wbPositions) {
+      wealthBuilderStaked += p.principal;
+      wealthBuilderValue += p.currentValue;
+    }
+    totalInvested += wealthBuilderStaked;
+    totalCurrentValue += wealthBuilderValue;
+
     const availableCash = parseFloat(user?.availableCash ?? "0");
     const totalAssets = totalCurrentValue + availableCash;
     const totalReturn = totalCurrentValue - totalInvested;
@@ -41,6 +68,8 @@ router.get("/summary", requireAuth, async (req, res) => {
     const dayChangePercentage = 0.43;
 
     res.json({
+      wealthBuilderStaked: Math.round(wealthBuilderStaked * 100) / 100,
+      wealthBuilderValue: Math.round(wealthBuilderValue * 100) / 100,
       totalAssets: Math.round(totalAssets * 100) / 100,
       availableCash: Math.round(availableCash * 100) / 100,
       totalReturn: Math.round(totalReturn * 100) / 100,
@@ -90,6 +119,9 @@ router.get("/performance", requireAuth, async (req, res) => {
     let currentValue = parseFloat(user?.availableCash ?? "0");
     for (const { h, a } of holdings) {
       currentValue += parseFloat(h.quantity) * parseFloat(a.currentPrice);
+    }
+    for (const { currentValue: wbValue } of await getWealthBuilderPositions(userId)) {
+      currentValue += wbValue;
     }
 
     const data = [];
@@ -152,6 +184,26 @@ router.get("/holdings", requireAuth, async (req, res) => {
       };
     });
 
+    // Append active Wealth Builder plans as staked positions.
+    const wbPositions = await getWealthBuilderPositions(userId);
+    const tierLabel = (lvl: string) => lvl.charAt(0).toUpperCase() + lvl.slice(1);
+    for (const { inv, principal, currentValue } of wbPositions) {
+      const gainLoss = currentValue - principal;
+      result.push({
+        id: 1000000 + inv.id,
+        symbol: `WB-${inv.level.toUpperCase()}`,
+        name: `Wealth Builder ${tierLabel(inv.level)} (${inv.durationDays === 1 ? "24h" : `${inv.durationDays}d`})`,
+        assetType: "wealth_builder" as any,
+        quantity: 1,
+        averageCost: principal,
+        currentPrice: Math.round(currentValue * 100) / 100,
+        currentValue: Math.round(currentValue * 100) / 100,
+        gainLoss: Math.round(gainLoss * 100) / 100,
+        gainLossPercentage: principal > 0 ? Math.round((gainLoss / principal) * 10000) / 100 : 0,
+        logoUrl: null,
+      });
+    }
+
     res.json(result);
   } catch (err) {
     req.log.error({ err }, "Holdings error");
@@ -168,7 +220,7 @@ router.get("/asset-mix", requireAuth, async (req, res) => {
       .innerJoin(assetsTable, eq(holdingsTable.assetId, assetsTable.id))
       .where(eq(holdingsTable.userId, userId));
 
-    const byType: Record<string, number> = { crypto: 0, stock: 0, commodity: 0 };
+    const byType: Record<string, number> = { crypto: 0, stock: 0, commodity: 0, wealth_builder: 0 };
     let total = 0;
     for (const { h, a } of holdings) {
       const val = parseFloat(h.quantity) * parseFloat(a.currentPrice);
@@ -176,10 +228,17 @@ router.get("/asset-mix", requireAuth, async (req, res) => {
       total += val;
     }
 
+    const wbPositions = await getWealthBuilderPositions(userId);
+    for (const { currentValue } of wbPositions) {
+      byType.wealth_builder += currentValue;
+      total += currentValue;
+    }
+
     const colors: Record<string, string> = {
       crypto: "#1e3a5f",
       stock: "#f59e0b",
       commodity: "#8b5cf6",
+      wealth_builder: "#22c55e",
     };
 
     const allocations = Object.entries(byType)

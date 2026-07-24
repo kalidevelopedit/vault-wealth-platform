@@ -515,7 +515,11 @@ function PortfolioPanelInner() {
   const { data: txRaw,    isLoading: tLoad } = useGetTransactions({ limit: 8 });
 
   const holdList = Array.isArray(holdings) ? (holdings as any[]) : [];
-  const txList   = Array.isArray(txRaw)    ? (txRaw    as any[]).slice(0, 8) : [];
+  const txList   = Array.isArray(txRaw)
+    ? (txRaw as any[]).slice(0, 8)
+    : Array.isArray((txRaw as any)?.transactions)
+      ? ((txRaw as any).transactions as any[]).slice(0, 8)
+      : [];
 
   const dim = mode === "dark" ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.025)";
 
@@ -545,23 +549,30 @@ function PortfolioPanelInner() {
             </div>
           </div>
         ) : holdList.slice(0, 7).map((h: any) => {
-          const price = Number(h?.currentPrice ?? h?.avgCost) || 0;
+          const isWb  = String(h?.assetType ?? "") === "wealth_builder" || String(h?.symbol ?? "").startsWith("WB-");
+          const price = Number(h?.currentPrice ?? h?.avgCost ?? h?.averageCost) || 0;
           const qty   = Number(h?.quantity) || 0;
-          const avg   = Number(h?.avgCost)  || 0;
+          const avg   = Number(h?.avgCost ?? h?.averageCost) || 0;
           const value = qty * price;
-          const pnl   = value - qty * avg;
+          const pnl   = isWb ? Number(h?.gainLoss) || value - qty * avg : value - qty * avg;
           const pos   = pnl >= 0;
           return (
-            <Link key={h?.symbol ?? Math.random()} href={`/assets/${h?.symbol}`}
+            <Link key={h?.id ?? h?.symbol ?? Math.random()} href={isWb ? "/wealth-builder" : `/assets/${h?.symbol}`}
               style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 16px", borderBottom: `1px solid ${BORD}`, textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                <AssetIcon symbol={h?.symbol ?? ""} size={28} borderRadius="50%" />
+                {isWb ? (
+                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <TrendingUp size={13} style={{ color: GREEN }} strokeWidth={2.25} />
+                  </div>
+                ) : (
+                  <AssetIcon symbol={h?.symbol ?? ""} size={28} borderRadius="50%" />
+                )}
                 <div>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>{h?.symbol ?? "—"}</p>
-                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{qty.toFixed(4)} units</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: TEXT, margin: 0 }}>{isWb ? (h?.name ?? "Wealth Builder") : (h?.symbol ?? "—")}</p>
+                  <p style={{ fontSize: 11, color: MUTED, margin: 0 }}>{isWb ? "Staked · Wealth Builder" : `${qty.toFixed(4)} units`}</p>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>

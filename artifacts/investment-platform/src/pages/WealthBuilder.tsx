@@ -1,17 +1,20 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGetUserBalance, getGetUserBalanceQueryKey } from "@workspace/api-client-react";
-import { TrendingUp, Clock, DollarSign, Loader2, CheckCircle, AlertCircle, ChevronRight, Zap } from "lucide-react";
+import { TrendingUp, Clock, DollarSign, Loader2, CheckCircle, AlertCircle, ChevronRight, Zap, X, TrendingDown, BarChart2 } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const TIERS = [
-  { level: "bronze",   label: "Bronze",   minAmount: 500,    maxAmount: 2500,   apy7d: 3,  apy14d: 7,  color: "#cd7f32", glow: "rgba(205,127,50,0.2)",  icon: "🥉", desc: "Entry-level wealth building" },
-  { level: "silver",   label: "Silver",   minAmount: 2500,   maxAmount: 10000,  apy7d: 5,  apy14d: 11, color: "#c0c0c0", glow: "rgba(192,192,192,0.2)", icon: "🥈", desc: "Accelerated growth tier" },
-  { level: "gold",     label: "Gold",     minAmount: 10000,  maxAmount: 50000,  apy7d: 7,  apy14d: 16, color: "#ffd700", glow: "rgba(255,215,0,0.2)",   icon: "🥇", desc: "Premium yield generation" },
-  { level: "platinum", label: "Platinum", minAmount: 50000,  maxAmount: 250000, apy7d: 10, apy14d: 22, color: "#e5e4e2", glow: "rgba(229,228,226,0.2)", icon: "💎", desc: "Institutional-grade returns" },
-  { level: "titanium", label: "Titanium", minAmount: 250000, maxAmount: null,   apy7d: 14, apy14d: 30, color: "#a8d8ea", glow: "rgba(168,216,234,0.2)", icon: "🚀", desc: "Elite performance tier" },
+  { level: "bronze",   label: "Bronze",   minAmount: 500,    maxAmount: 2500,   apy24h: 1,   apy7d: 3,  apy14d: 7,  color: "#cd7f32", glow: "rgba(205,127,50,0.2)",  icon: "🥉", desc: "Entry-level wealth building" },
+  { level: "silver",   label: "Silver",   minAmount: 2500,   maxAmount: 10000,  apy24h: 1.5, apy7d: 5,  apy14d: 11, color: "#c0c0c0", glow: "rgba(192,192,192,0.2)", icon: "🥈", desc: "Accelerated growth tier" },
+  { level: "gold",     label: "Gold",     minAmount: 10000,  maxAmount: 50000,  apy24h: 2,   apy7d: 7,  apy14d: 16, color: "#ffd700", glow: "rgba(255,215,0,0.2)",   icon: "🥇", desc: "Premium yield generation" },
+  { level: "platinum", label: "Platinum", minAmount: 50000,  maxAmount: 250000, apy24h: 3,   apy7d: 10, apy14d: 22, color: "#e5e4e2", glow: "rgba(229,228,226,0.2)", icon: "💎", desc: "Institutional-grade returns" },
+  { level: "titanium", label: "Titanium", minAmount: 250000, maxAmount: null,   apy24h: 4,   apy7d: 14, apy14d: 30, color: "#a8d8ea", glow: "rgba(168,216,234,0.2)", icon: "🚀", desc: "Elite performance tier" },
 ];
+
+const durLabel = (d: number) => (d === 1 ? "24 Hours" : `${d} Days`);
 
 const fmt2 = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmt0 = (n: number) => n.toLocaleString("en-US", { maximumFractionDigits: 0 });
@@ -44,7 +47,8 @@ export default function WealthBuilder() {
   const availableCash = Number(balance?.availableCash) || 0;
 
   const [selectedTier, setSelectedTier]       = useState<string | null>(null);
-  const [duration, setDuration]               = useState<7 | 14>(14);
+  const [duration, setDuration]               = useState<1 | 7 | 14>(14);
+  const [detailId, setDetailId]               = useState<number | null>(null);
   const [amount, setAmount]                   = useState("");
   const [showKraken, setShowKraken]           = useState(false);
   const [investing, setInvesting]             = useState(false);
@@ -52,7 +56,7 @@ export default function WealthBuilder() {
 
   const tier = TIERS.find(t => t.level === selectedTier);
   const amtNum = parseFloat(amount) || 0;
-  const apy = tier ? (duration === 7 ? tier.apy7d : tier.apy14d) : 0;
+  const apy = tier ? (duration === 1 ? tier.apy24h : duration === 7 ? tier.apy7d : tier.apy14d) : 0;
   const expectedReturn = (amtNum * apy) / 100;
   const totalPayout = amtNum + expectedReturn;
 
@@ -95,7 +99,7 @@ export default function WealthBuilder() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Investment failed");
-      toast.success(`${tier.label} plan activated! $${fmt0(amtNum)} invested for ${duration} days.`);
+      toast.success(`${tier.label} plan activated! $${fmt0(amtNum)} invested for ${duration === 1 ? "24 hours" : `${duration} days`}.`);
       setAmount("");
       setSelectedTier(null);
       qc.invalidateQueries({ queryKey: ["wealth-builder", "investments"] });
@@ -167,7 +171,7 @@ export default function WealthBuilder() {
           </div>
         </div>
         <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", maxWidth: 520, lineHeight: 1.65, margin: "0 0 24px" }}>
-          Grow your capital with structured yield plans. Choose a tier that matches your portfolio size and lock in returns for 7 or 14 days.
+          Grow your capital with structured yield plans. Choose a tier that matches your portfolio size and lock in returns for 24 hours, 7 or 14 days.
         </p>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <div>
@@ -219,12 +223,16 @@ export default function WealthBuilder() {
                 {t.maxAmount ? ` – $${t.maxAmount >= 1000 ? `${t.maxAmount / 1000}K` : t.maxAmount}` : "+"}
               </div>
               <div style={{ display: "flex", gap: 6 }}>
-                <div style={{ flex: 1, padding: "6px 8px", borderRadius: 8, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: GREEN }}>{t.apy7d}%</div>
+                <div style={{ flex: 1, padding: "6px 6px", borderRadius: 8, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: GREEN }}>{t.apy24h}%</div>
+                  <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em" }}>24H</div>
+                </div>
+                <div style={{ flex: 1, padding: "6px 6px", borderRadius: 8, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: GREEN }}>{t.apy7d}%</div>
                   <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em" }}>7-Day</div>
                 </div>
-                <div style={{ flex: 1, padding: "6px 8px", borderRadius: 8, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: GREEN }}>{d14apy}%</div>
+                <div style={{ flex: 1, padding: "6px 6px", borderRadius: 8, background: "rgba(255,255,255,0.04)", textAlign: "center" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: GREEN }}>{d14apy}%</div>
                   <div style={{ fontSize: 9, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em" }}>14-Day</div>
                 </div>
               </div>
@@ -259,19 +267,19 @@ export default function WealthBuilder() {
               <div style={{ fontSize: 11.5, color: MUTED, marginBottom: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 Investment Period
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {[7, 14].map(d => {
-                  const a = d === 7 ? tier.apy7d : tier.apy14d;
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8 }}>
+                {[1, 7, 14].map(d => {
+                  const a = d === 1 ? tier.apy24h : d === 7 ? tier.apy7d : tier.apy14d;
                   const sel = duration === d;
                   return (
-                    <button key={d} type="button" onClick={() => setDuration(d as 7 | 14)} style={{
+                    <button key={d} type="button" onClick={() => setDuration(d as 1 | 7 | 14)} style={{
                       padding: "14px 16px", borderRadius: 12, cursor: "pointer", textAlign: "left",
                       background: sel ? `rgba(${tier.color === "#ffd700" ? "255,215,0" : "37,99,255"},0.07)` : inputBg,
                       border: `1.5px solid ${sel ? tier.color : BORD}`,
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                     }}>
                       <div>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>{d} Days</div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: TEXT }}>{durLabel(d)}</div>
                         <div style={{ fontSize: 11, color: MUTED, marginTop: 2 }}>Fixed lock period</div>
                       </div>
                       <div style={{ textAlign: "right" }}>
@@ -337,7 +345,7 @@ export default function WealthBuilder() {
                   <span style={{ fontSize: 13, color: TEXT, fontFamily: "monospace", fontWeight: 600 }}>${fmt2(amtNum)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, color: MUTED }}>Yield ({apy}% over {duration}d)</span>
+                  <span style={{ fontSize: 13, color: MUTED }}>Yield ({apy}% over {duration === 1 ? "24h" : `${duration}d`})</span>
                   <span style={{ fontSize: 13, color: GREEN, fontFamily: "monospace", fontWeight: 700 }}>+${fmt2(expectedReturn)}</span>
                 </div>
                 <div style={{ height: 1, background: BORD, margin: "8px 0" }} />
@@ -346,7 +354,7 @@ export default function WealthBuilder() {
                   <span style={{ fontSize: 16, color: GREEN, fontFamily: "monospace", fontWeight: 800 }}>${fmt2(totalPayout)}</span>
                 </div>
                 <div style={{ marginTop: 10, fontSize: 11, color: MUTED }}>
-                  Matures in <strong style={{ color: TEXT }}>{duration} days</strong> from activation
+                  Matures in <strong style={{ color: TEXT }}>{duration === 1 ? "24 hours" : `${duration} days`}</strong> from activation
                 </div>
               </div>
             )}
@@ -455,14 +463,16 @@ export default function WealthBuilder() {
               const t = TIERS.find(x => x.level === inv.level)!;
               const isMatured = inv.status === "matured" || new Date(inv.maturesAt) <= new Date();
               return (
-                <div key={inv.id} style={{
-                  borderRadius: 16, background: CARD,
-                  border: `1.5px solid ${isMatured ? GREEN : BORD}`,
-                  padding: "18px 20px",
-                  boxShadow: isMatured ? "0 0 20px rgba(14,203,129,0.12)" : "none",
-                  display: "grid", gridTemplateColumns: "1fr auto",
-                  gap: 16, alignItems: "center",
-                }}>
+                <div key={inv.id}
+                  onClick={() => setDetailId(inv.id)}
+                  style={{
+                    borderRadius: 16, background: CARD,
+                    border: `1.5px solid ${isMatured ? GREEN : BORD}`,
+                    padding: "18px 20px",
+                    boxShadow: isMatured ? "0 0 20px rgba(14,203,129,0.12)" : "none",
+                    display: "grid", gridTemplateColumns: "1fr auto",
+                    gap: 16, alignItems: "center", cursor: "pointer",
+                  }}>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                       <span style={{ fontSize: 18 }}>{t?.icon}</span>
@@ -483,12 +493,18 @@ export default function WealthBuilder() {
                         <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: "monospace" }}>${fmt2(inv.amount)}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>RETURN</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: GREEN, fontFamily: "monospace" }}>+${fmt2(inv.expectedReturn)}</div>
+                        <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>CURRENT VALUE</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: "monospace" }}>${fmt2(inv.currentValue ?? inv.amount)}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>TOTAL</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: "monospace" }}>${fmt2(inv.amount + inv.expectedReturn)}</div>
+                        <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>LIVE P/L</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: (inv.pnl ?? 0) >= 0 ? GREEN : RED, fontFamily: "monospace" }}>
+                          {(inv.pnl ?? 0) >= 0 ? "+" : ""}${fmt2(inv.pnl ?? 0)}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>AT MATURITY</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: GREEN, fontFamily: "monospace" }}>${fmt2(inv.amount + inv.expectedReturn)}</div>
                       </div>
                       <div>
                         <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>{isMatured ? "MATURED" : "MATURES IN"}</div>
@@ -500,7 +516,7 @@ export default function WealthBuilder() {
                   </div>
                   {isMatured ? (
                     <button
-                      onClick={() => handleCashout(inv.id)}
+                      onClick={(e) => { e.stopPropagation(); handleCashout(inv.id); }}
                       disabled={cashingOut === inv.id}
                       style={{
                         padding: "12px 20px", borderRadius: 12, border: "none",
@@ -519,8 +535,8 @@ export default function WealthBuilder() {
                     </button>
                   ) : (
                     <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>{inv.durationDays}d plan</div>
-                      <Clock size={20} style={{ color: MUTED }} strokeWidth={1.5} />
+                      <div style={{ fontSize: 10, color: MUTED, marginBottom: 4 }}>{inv.durationDays === 1 ? "24h" : `${inv.durationDays}d`} plan</div>
+                      <ChevronRight size={20} style={{ color: MUTED }} strokeWidth={1.5} />
                     </div>
                   )}
                 </div>
@@ -569,12 +585,173 @@ export default function WealthBuilder() {
           <div style={{ fontSize: 40, marginBottom: 16 }}>📈</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: TEXT, marginBottom: 8 }}>Start Building Wealth</div>
           <div style={{ fontSize: 13, color: MUTED, maxWidth: 340, margin: "0 auto" }}>
-            Select a tier above to activate your first Wealth Builder plan and start earning returns in 7 or 14 days.
+            Select a tier above to activate your first Wealth Builder plan and start earning returns in as little as 24 hours.
           </div>
         </div>
       )}
 
+      {detailId !== null && (
+        <PlanDetailModal invId={detailId} onClose={() => setDetailId(null)} />
+      )}
+
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
+/* ─── Plan detail modal: growth chart + simulated trade log ────────────── */
+function PlanDetailModal({ invId, onClose }: { invId: number; onClose: () => void }) {
+  const { colors } = useTheme();
+  const { card: CARD, bord: BORD, text: TEXT, muted: MUTED, green: GREEN, red: RED, bg: BG } = colors;
+
+  const perfQuery = useQuery({
+    queryKey: ["wealth-builder", "performance", invId],
+    queryFn: async () => {
+      const res = await fetch(`/api/wealth-builder/investments/${invId}/performance`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to load plan performance");
+      return res.json();
+    },
+    refetchInterval: 60000,
+  });
+
+  const d = perfQuery.data;
+  const t = d ? TIERS.find(x => x.level === d.level) : null;
+  const pnlPos = (d?.pnl ?? 0) >= 0;
+
+  const chartData = (d?.series ?? []).map((p: any) => ({
+    time: new Date(p.time).getTime(),
+    value: p.value,
+  }));
+
+  const fmtTick = (ts: number) => {
+    const dt = new Date(ts);
+    return d?.durationDays === 1
+      ? dt.toLocaleTimeString("en-US", { hour: "numeric" })
+      : dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.65)",
+      backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: CARD, border: `1px solid ${BORD}`, borderRadius: 20,
+        maxWidth: 640, width: "100%", maxHeight: "88vh", overflowY: "auto",
+        boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "18px 22px", borderBottom: `1px solid ${BORD}`, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, background: CARD, zIndex: 2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 20 }}>{t?.icon ?? "📈"}</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: t?.color ?? TEXT }}>
+                {t?.label ?? "Plan"} Plan
+              </div>
+              {d && (
+                <div style={{ fontSize: 11, color: MUTED }}>
+                  {d.durationDays === 1 ? "24-hour" : `${d.durationDays}-day`} plan · {d.apyPercent}% target return
+                </div>
+              )}
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: `1px solid ${BORD}`, borderRadius: 9, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: MUTED }}>
+            <X size={15} />
+          </button>
+        </div>
+
+        {perfQuery.isLoading || !d ? (
+          <div style={{ padding: 48, display: "flex", justifyContent: "center" }}>
+            <Loader2 size={22} style={{ color: MUTED, animation: "spin 1s linear infinite" }} />
+          </div>
+        ) : (
+          <div style={{ padding: "18px 22px" }}>
+            {/* Stats row */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, marginBottom: 18 }}>
+              {[
+                ["Invested", `$${fmt2(d.amount)}`, TEXT],
+                ["Current Value", `$${fmt2(d.currentValue)}`, TEXT],
+                ["Live P/L", `${pnlPos ? "+" : ""}$${fmt2(d.pnl)} (${pnlPos ? "+" : ""}${fmt2(d.pnlPercent)}%)`, pnlPos ? GREEN : RED],
+                ["At Maturity", `$${fmt2(d.amount + d.expectedReturn)}`, GREEN],
+              ].map(([lbl, val, col]) => (
+                <div key={lbl as string} style={{ padding: "10px 12px", borderRadius: 12, background: BG, border: `1px solid ${BORD}` }}>
+                  <div style={{ fontSize: 9.5, color: MUTED, textTransform: "uppercase", letterSpacing: "0.09em", fontWeight: 700, marginBottom: 4 }}>{lbl}</div>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: col as string, fontFamily: "monospace" }}>{val}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Growth chart */}
+            <div style={{ fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+              Plan Growth
+            </div>
+            <div style={{ height: 220, marginBottom: 20, borderRadius: 12, border: `1px solid ${BORD}`, background: BG, padding: "12px 8px 4px 0" }}>
+              {chartData.length > 1 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="wbGrowth" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={GREEN} stopOpacity={0.28} />
+                        <stop offset="100%" stopColor={GREEN} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="time" type="number" domain={["dataMin", "dataMax"]} tickFormatter={fmtTick} tick={{ fontSize: 10, fill: MUTED }} axisLine={false} tickLine={false} minTickGap={40} />
+                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: MUTED }} axisLine={false} tickLine={false} width={62} tickFormatter={(v: number) => `$${v.toLocaleString("en-US", { maximumFractionDigits: 0 })}`} />
+                    <Tooltip
+                      formatter={(v: any) => [`$${fmt2(Number(v))}`, "Value"]}
+                      labelFormatter={(ts: any) => new Date(Number(ts)).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                      contentStyle={{ background: CARD, border: `1px solid ${BORD}`, borderRadius: 10, fontSize: 12 }}
+                    />
+                    <Area type="monotone" dataKey="value" stroke={GREEN} strokeWidth={2} fill="url(#wbGrowth)" dot={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
+                  <BarChart2 size={20} style={{ color: MUTED }} />
+                  <div style={{ fontSize: 12, color: MUTED }}>First trades execute within a few hours of activation</div>
+                </div>
+              )}
+            </div>
+
+            {/* Trades */}
+            <div style={{ fontSize: 11, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+              Automated Trades ({(d.trades ?? []).length})
+            </div>
+            {(d.trades ?? []).length === 0 ? (
+              <div style={{ padding: "20px 16px", borderRadius: 12, border: `1px dashed ${BORD}`, textAlign: "center", fontSize: 12, color: MUTED }}>
+                No trades executed yet — the strategy engine places its first trade within a few hours.
+              </div>
+            ) : (
+              <div style={{ borderRadius: 12, border: `1px solid ${BORD}`, overflow: "hidden" }}>
+                {(d.trades ?? []).slice(0, 40).map((tr: any, i: number) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px", borderBottom: i < Math.min((d.trades ?? []).length, 40) - 1 ? `1px solid ${BORD}` : "none" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                        background: tr.win ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                        border: `1px solid ${tr.win ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
+                      }}>
+                        {tr.win ? <TrendingUp size={12} style={{ color: GREEN }} /> : <TrendingDown size={12} style={{ color: RED }} />}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12.5, fontWeight: 700, color: TEXT }}>{tr.symbol} <span style={{ fontSize: 10, fontWeight: 600, color: MUTED, textTransform: "uppercase" }}>{tr.side}</span></div>
+                        <div style={{ fontSize: 10.5, color: MUTED }}>{new Date(tr.time).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, fontFamily: "monospace", color: tr.win ? GREEN : RED }}>
+                      {tr.win ? "+" : ""}${fmt2(tr.pnl)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ marginTop: 14, fontSize: 11, color: MUTED, lineHeight: 1.6 }}>
+              Trades are executed automatically by the strategy engine roughly every 3–4 hours. Individual trades may win or lose, but the plan is engineered to hit its daily growth target of {fmt2(d.apyPercent / d.durationDays)}% per day.
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
