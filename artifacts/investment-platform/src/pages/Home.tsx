@@ -138,6 +138,12 @@ const css = `
     /* Stat chips dark section */
     .stat-chips-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
     .stat-chip { padding: 14px 14px !important; }
+
+    /* Intro video section */
+    .intro-video-section { padding: 48px 0 56px !important; }
+    .intro-video-inner { padding: 0 16px !important; }
+    .intro-video-header { margin-bottom: 24px !important; }
+    .intro-video-title br { display: none; }
   }
 `;
 
@@ -1035,6 +1041,34 @@ export default function Home() {
                 <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase" as const,marginTop:2}}>{s.l}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── INTRO VIDEO ────────────────────────────────────────────── */}
+      <section className="intro-video-section" style={{background:"#080a0f",padding:"72px 0 88px",position:"relative",borderTop:"1px solid rgba(255,255,255,0.05)"}}>
+        <div style={{position:"absolute",inset:0,backgroundImage:DOT,zIndex:0}} />
+        <div className="intro-video-inner" style={{position:"relative",zIndex:1,maxWidth:960,margin:"0 auto",padding:"0 24px",boxSizing:"border-box" as const}}>
+          <div className="intro-video-header" style={{textAlign:"center",marginBottom:36}}>
+            <div style={{fontSize:12,fontWeight:600,letterSpacing:"0.16em",textTransform:"uppercase" as const,color:"rgba(255,255,255,0.4)",marginBottom:14}}>Hear It From Our Clients</div>
+            <h2 className="intro-video-title" style={{fontSize:"clamp(28px,3.4vw,42px)",fontWeight:800,color:"#fff",letterSpacing:"-0.03em",lineHeight:1.1,margin:"0 0 14px"}}>
+              Investing Made Simple,<br/>No Experience Needed
+            </h2>
+            <p style={{fontSize:15,color:"rgba(255,255,255,0.45)",lineHeight:1.65,maxWidth:520,margin:"0 auto"}}>
+              Watch how INT Brokers helps everyday people, with no investing background, build wealth with confidence.
+            </p>
+          </div>
+          <div style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(255,255,255,0.09)",boxShadow:"0 30px 80px rgba(0,0,0,0.5)",background:"#000",lineHeight:0}}>
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              poster="/intro-video-poster.jpg"
+              style={{width:"100%",height:"auto",display:"block"}}
+            >
+              <source src="/intro-video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </section>
