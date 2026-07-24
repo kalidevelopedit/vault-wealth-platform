@@ -219,18 +219,30 @@ html {
 .gain { color: hsl(var(--success)); }
 .loss { color: hsl(var(--destructive)); }
 
-/* ── Mobile responsive overrides ── */
+/* ── Global mobile responsive overrides ── */
 @media (max-width: 767px) {
-  /* Reduce table cell padding on mobile */
+  /* Tables */
   td, th {
     padding-left: 12px !important;
     padding-right: 12px !important;
   }
 
-  /* Reduce page-level padding */
-  .page-container {
+  /* App page wrappers (Settings, Profile, Security, Convert, WealthBuilder,
+     AssetList): clamp horizontal padding to a consistent 16px safe-area.
+     !important overrides the inline shorthand left/right longhands. */
+  .app-page-inner {
     padding-left: 16px !important;
     padding-right: 16px !important;
+  }
+
+  /* AppLayout desktop sidebar must never show on mobile */
+  .app-sidebar {
+    display: none !important;
+  }
+
+  /* Prevent any fixed-width container from overflowing the viewport */
+  [style*="minWidth"] {
+    min-width: 0 !important;
   }
 }
 
@@ -238,6 +250,14 @@ html {
 .page-root {
   max-width: 100%;
   overflow-x: hidden;
+}
+
+/* Global safe-zone: all page wrappers get at least 16px side padding on mobile */
+@media (max-width: 767px) {
+  main, [role="main"] {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
 }
 
 @layer utilities {

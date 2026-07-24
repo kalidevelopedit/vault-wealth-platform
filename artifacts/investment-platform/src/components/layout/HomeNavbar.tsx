@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "wouter";
-import { Search, X, ChevronDown, Zap, Globe, Menu, ArrowRight } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { Link } from "wouter";
+import { Search, X, ChevronDown, Globe, Menu, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 const NAV = [
@@ -157,24 +156,10 @@ export function HomeNavbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [demoLoading, setDemoLoading] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  const { login } = useAuth();
-  const [, setLocation] = useLocation();
-
-  const handleDemo = async () => {
-    setDemoLoading(true);
-    setMobileOpen(false);
-    try {
-      await login({ email: "demo@vestplatform.com", password: "demo1234" });
-      setLocation("/dashboard");
-    } catch {
-      setDemoLoading(false);
-    }
-  };
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -248,15 +233,11 @@ export function HomeNavbar() {
             height: 44, fontSize: "14px", fontWeight: 600, color: "#0d1520",
             border: "1.5px solid #d1d5db", borderRadius: 10, textDecoration: "none", background: "#fff",
           }}>Log In</Link>
-          <button onClick={handleDemo} disabled={demoLoading} style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+          <Link href="/demo" onClick={() => setMobileOpen(false)} style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
             height: 40, fontSize: "13px", fontWeight: 600, color: "#6b7280",
-            background: "none", border: "none", cursor: demoLoading ? "wait" : "pointer",
-            borderRadius: 10,
-          }}>
-            <Zap size={13} color="#9ca3af" strokeWidth={1.5} />
-            {demoLoading ? "Loading demo…" : "Try Demo Account"}
-          </button>
+            textDecoration: "none", borderRadius: 10,
+          }}>Try Demo Account</Link>
         </div>
 
         {/* Drawer nav */}
@@ -377,19 +358,15 @@ export function HomeNavbar() {
                 </button>
               )}
 
-              <button onClick={handleDemo} disabled={demoLoading} style={{
-                display: "flex", alignItems: "center", gap: 6,
-                fontSize: "12px", fontWeight: 600, color: "#374151",
-                background: "#f3f4f6",
-                border: "1px solid #e5e7eb", padding: "7px 16px", borderRadius: 10,
-                cursor: demoLoading ? "wait" : "pointer", letterSpacing: "0.02em",
-                transition: "all 0.14s",
+              <Link href="/demo" style={{
+                fontSize: "13px", fontWeight: 600, color: "#6b7280",
+                textDecoration: "none", padding: "7px 14px", borderRadius: 10,
+                transition: "color 0.12s, background 0.12s",
               }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#e9eaec"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "#f3f4f6"; }}>
-                <Zap size={12} color="#6b7280" strokeWidth={1.5} />
-                {demoLoading ? "Loading…" : "Demo"}
-              </button>
+                onMouseEnter={e => { e.currentTarget.style.color = "#374151"; e.currentTarget.style.background = "#f3f4f6"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = "#6b7280"; e.currentTarget.style.background = "transparent"; }}>
+                Demo
+              </Link>
 
               <Link href="/login" style={{
                 fontSize: "14px", fontWeight: 600, color: "#374151",

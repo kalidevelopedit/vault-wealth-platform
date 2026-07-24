@@ -210,7 +210,7 @@ export default function Convert() {
 
   if (success) {
     return (
-      <div style={{ padding: "32px 24px", maxWidth: 560, margin: "0 auto", background: colors.bg, minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+      <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 560, margin: "0 auto", background: colors.bg, minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
         <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(14,203,129,0.1)", border: "1.5px solid #0ecb81", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0ecb81" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
@@ -226,7 +226,7 @@ export default function Convert() {
   }
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 1100, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 1100, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: colors.text, marginBottom: 8 }}>Convert</h1>
       <p style={{ fontSize: 14, color: colors.muted, marginBottom: 32 }}>Swap between supported asset pairs at live market rates.</p>
 

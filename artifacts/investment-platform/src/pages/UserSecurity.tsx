@@ -221,7 +221,7 @@ export default function UserSecurity() {
   ];
 
   return (
-    <div style={{ padding: "32px 24px", maxWidth: 1000, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 1000, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: colors.text, marginBottom: 32 }}>Security</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

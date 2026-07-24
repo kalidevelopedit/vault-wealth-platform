@@ -133,7 +133,7 @@ export default function WealthBuilder() {
   };
 
   return (
-    <div style={{ background: BG, minHeight: "100vh", padding: "28px 24px", maxWidth: 980, margin: "0 auto" }}>
+    <div className="app-page-inner" style={{ background: BG, minHeight: "100vh", padding: "28px 24px", maxWidth: 980, margin: "0 auto" }}>
 
       {/* Hero */}
       <div style={{

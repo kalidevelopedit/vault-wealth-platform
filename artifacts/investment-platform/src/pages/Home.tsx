@@ -76,10 +76,15 @@ const css = `
     .section-two-col { grid-template-columns: 1fr !important; gap: 24px !important; }
     .section-two-col-img { display: none !important; }
     .rate-cards-grid { grid-template-columns: 1fr !important; }
-    .calc-grid { grid-template-columns: 1fr !important; }
-    .calc-panel-inner { padding: 28px 20px 24px !important; }
-    .calc-result-grid { gap: 8px !important; }
-    .calc-result-grid > div { padding: 16px 12px !important; }
+    .calc-section { padding: 52px 0 !important; }
+    .calc-section-inner { padding: 0 16px !important; max-width: 100% !important; box-sizing: border-box !important; }
+    .calc-header { margin-bottom: 32px !important; }
+    .calc-grid { grid-template-columns: 1fr !important; gap: 16px !important; width: 100% !important; }
+    .calc-grid > * { min-width: 0 !important; max-width: 100% !important; }
+    .calc-panel-inner { padding: 28px 20px 24px !important; min-width: 0 !important; max-width: 100% !important; box-sizing: border-box !important; }
+    .calc-result-grid { gap: 10px !important; min-width: 0 !important; }
+    .calc-result-grid > div { padding: 18px 14px !important; min-width: 0 !important; }
+    .calc-result-grid > div .val-animate { font-size: 19px !important; word-break: break-word; }
     .earn-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
     .earn-grid > div { padding: 18px 14px !important; }
     .feat-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
@@ -809,12 +814,12 @@ function InvestmentCalculator() {
   }));
 
   return (
-    <section style={{ background: "#F5F6F7", padding: "96px 0", borderTop: "1px solid #E6E8EB", position: "relative" }}>
+    <section className="calc-section" style={{ background: "#F5F6F7", padding: "96px 0", borderTop: "1px solid #E6E8EB", position: "relative" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: DOTL }} />
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+      <div className="calc-section-inner" style={{ position: "relative", zIndex: 1, maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
 
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <div className="calc-header" style={{ textAlign: "center", marginBottom: 56 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B7280", marginBottom: 10 }}>Investment Calculator</p>
           <h2 style={{ fontSize: "clamp(28px,4vw,44px)", fontWeight: 900, color: "#0F172A", letterSpacing: "-0.03em", lineHeight: 1.1, marginBottom: 12 }}>
             See How Your Money Can Grow

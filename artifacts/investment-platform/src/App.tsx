@@ -30,6 +30,7 @@ function ScrollToTop() {
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import DemoLogin from "@/pages/DemoLogin";
 
 function HomeOrRedirect() {
   const isPWA = typeof window !== "undefined" && (
@@ -314,6 +315,7 @@ function Router() {
     <Switch>
       {/* Public Routes */}
       <Route path="/" component={HomeOrRedirect} />
+      <Route path="/demo" component={DemoLogin} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
 

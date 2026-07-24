@@ -36,6 +36,12 @@ uri = "file://artifacts/investment-platform/public/testimonial-james.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "yCP6Ui5ScsUpaytKenUEY"
+uri = "file://artifacts/investment-platform/public/og-image.png"
+type = "image"
+title = "int brokers og preview"
+
 [[outputs]]
 id = "-yrvEYUDpT1nyt6yV3mpS"
 uri = "file://attached_assets/stock_images/diverse_investors.jpg"
@@ -65,3 +71,9 @@ id = "HU5eN5t6VPrIebu6Eo8Gu"
 uri = "file://attached_assets/stock_images/market_charts.jpg"
 type = "image"
 title = "stock market trading charts graphs investment growth success"
+
+[[outputs]]
+id = "lgARy9QurHQGr5QvVOAnV"
+uri = "file://artifacts/investment-platform/public/og-image.png"
+type = "image"
+title = "INT Brokers — Link Preview Image"

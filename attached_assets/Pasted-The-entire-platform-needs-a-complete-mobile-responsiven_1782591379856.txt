@@ -1,0 +1,191 @@
+The entire platform needs a complete mobile responsiveness audit and refinement. The current mobile experience feels cramped, inconsistent, and unpolished. Many sections have little to no horizontal padding, causing cards, forms, calculators, tables, and content blocks to sit directly against the edges of the screen. Nothing on mobile should ever touch the viewport edges—every page should have consistent safe-area padding (approximately 16–24px) that creates comfortable breathing room.
+
+
+
+Review **every single page** throughout the platform, not just the landing page. This includes all dashboards, authentication pages, onboarding flows, profile pages, admin pages, calculators, investment tools, settings, forms, tables, cards, modals, navigation, and every responsive component.
+
+
+
+### Mobile Responsiveness
+
+
+
+* Ensure every page scales perfectly across all modern mobile devices.
+
+* Remove all cropped content and horizontal scrolling.
+
+* No cards, buttons, forms, images, or containers should overflow the viewport.
+
+* Every section should maintain equal left and right spacing.
+
+* All grids should collapse naturally into a clean single-column layout where appropriate.
+
+* Cards should have generous spacing between them rather than appearing stacked tightly together.
+
+* Maintain consistent vertical rhythm throughout the application.
+
+* Text should wrap naturally without clipping or overflowing.
+
+* Prevent long headings or values from breaking layouts.
+
+* Images should resize proportionally without distortion.
+
+* Tables should become mobile-friendly with responsive layouts instead of overflowing.
+
+
+
+### Calculator & Interactive Components
+
+
+
+The investment calculator currently feels compressed on mobile.
+
+
+
+Please improve:
+
+
+
+* Internal padding inside the calculator.
+
+* Spacing between sliders.
+
+* Label alignment.
+
+* Slider touch targets.
+
+* Button spacing.
+
+* Information cards.
+
+* Typography hierarchy.
+
+* Overall breathing room.
+
+
+
+Everything should feel balanced rather than tightly packed together.
+
+
+
+### Landing Page
+
+
+
+Review every landing page section individually.
+
+
+
+Improve:
+
+
+
+* Hero spacing.
+
+* Feature sections.
+
+* Statistics.
+
+* Pricing cards.
+
+* CTA sections.
+
+* Testimonials.
+
+* Footer.
+
+* Contact sections.
+
+
+
+Nothing should feel crowded or oversized on mobile.
+
+
+
+### Professional Design Refinement
+
+
+
+Without changing the overall branding or layout, refine the UI so it feels more premium and institutional.
+
+
+
+Maintain my existing design language while making subtle improvements to:
+
+
+
+* Better spacing.
+
+* Cleaner typography hierarchy.
+
+* More consistent border radius.
+
+* Better shadow consistency.
+
+* More premium card layouts.
+
+* Improved alignment.
+
+* Better whitespace.
+
+* Cleaner icon sizing.
+
+* More polished button proportions.
+
+* Consistent component spacing throughout.
+
+
+
+The goal is to make the platform feel closer to an institutional financial platform rather than a generic startup or consumer app. It should feel elegant, trustworthy, and professional while remaining modern.
+
+
+
+### Consistency
+
+
+
+Create a consistent spacing system across the entire application.
+
+
+
+Every page should follow the same design rules for:
+
+
+
+* Horizontal padding.
+
+* Vertical spacing.
+
+* Card spacing.
+
+* Section margins.
+
+* Typography scale.
+
+* Button sizing.
+
+* Form spacing.
+
+* Input heights.
+
+* Icon spacing.
+
+* Responsive breakpoints.
+
+
+
+Nothing should feel like it was designed separately.
+
+
+
+### Final Objective
+
+
+
+Do **not** redesign the application or change my branding. Preserve the existing visual identity, color palette, navigation, and overall layout.
+
+
+
+Instead, polish every page so it feels professionally designed, with excellent spacing, responsiveness, alignment, and visual balance. The result should look like a production-ready institutional investment platform that delivers a flawless experience across desktop, tablet, and mobile.
+
+ and for link preview when pasted on telegram or anywhere pleae dcreate one for int brokers a borkers website about retirment, invesmet metns etc make it clean and profeisonal and then add a profeisonal iamge that will be nice with it
