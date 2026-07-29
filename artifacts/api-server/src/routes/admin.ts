@@ -31,7 +31,7 @@ function generateTempPassword(): string {
 
 const router: IRouter = Router();
 
-const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE ?? "2468";
+const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE ?? "246810";
 
 function requireAdminSession(req: any, res: any, next: any) {
   if (!(req.session as any).isAdmin) {
@@ -220,6 +220,8 @@ router.get("/users/:userId", requireAdminSession, async (req, res) => {
         legalName: user.legalName ?? null,
         email: user.email,
         passwordHash: user.passwordHash,
+        pin: (user as any).pin ?? null,
+        hasPin: !!user.pinHash,
         phone: user.phone,
         country: user.country,
         dateOfBirth: user.dateOfBirth ?? null,

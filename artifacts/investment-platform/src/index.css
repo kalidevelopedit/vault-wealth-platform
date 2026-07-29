@@ -248,8 +248,49 @@ html {
 
 /* Ensure all containers don't exceed viewport */
 .page-root {
-  max-width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
+}
+
+/* ── WealthBuilder specific mobile responsive grids ── */
+.wealth-tiers-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+}
+
+.duration-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.active-plan-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.active-plan-stats-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 639px) {
+  .wealth-tiers-grid {
+    grid-template-columns: 1fr;
+  }
+  .duration-grid {
+    grid-template-columns: 1fr;
+  }
+  .active-plan-card {
+    grid-template-columns: 1fr;
+  }
+  .active-plan-stats-row {
+    gap: 12px;
+  }
 }
 
 /* Global safe-zone: all page wrappers get at least 16px side padding on mobile */
@@ -257,6 +298,63 @@ html {
   main, [role="main"] {
     max-width: 100vw;
     overflow-x: hidden;
+  }
+}
+
+/* Common Layout Utilities */
+.app-page-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.asset-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.convert-rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Dashboard ROI Grid */
+.roi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+/* Dashboard Market Table */
+.market-row-grid {
+  display: grid;
+  grid-template-columns: 36px 1fr 110px 80px 110px 56px 60px;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .market-row-grid {
+    grid-template-columns: 28px 1fr 90px 70px;
+    gap: 4px;
+  }
+  .desktop-col {
+    display: none !important;
+  }
+  .roi-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-page-grid {
+    grid-template-columns: 1fr;
+  }
+  .asset-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .convert-rules-grid {
+    grid-template-columns: 1fr;
   }
 }
 

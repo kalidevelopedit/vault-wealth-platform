@@ -75,14 +75,19 @@ function verifyToken(token: string): { userId: number; pinVerified: boolean } | 
 }
 
 function getAuthContext(req: Request): { userId: number | null; pinVerified: boolean } {
-  const sessionUserId = (req.session as any).userId ?? null;
-  if (sessionUserId) {
-    return { userId: sessionUserId, pinVerified: !!(req.session as any).pinVerified };
-  }
+  // Prefer the Bearer token: sessions are in-memory and can be stale or belong
+  // to a previous login on this browser, which made PIN checks hit the wrong user.
+  // The token is authoritative; an invalid/expired token fails closed rather
+  // than falling back to a possibly-stale session.
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith("Bearer ")) {
     const payload = verifyToken(authHeader.slice(7));
     if (payload) return payload;
+    return { userId: null, pinVerified: false };
+  }
+  const sessionUserId = (req.session as any).userId ?? null;
+  if (sessionUserId) {
+    return { userId: sessionUserId, pinVerified: !!(req.session as any).pinVerified };
   }
   return { userId: null, pinVerified: false };
 }
@@ -131,6 +136,7 @@ router.post("/register", async (req, res) => {
     notifyNewRegistration({ fullName: user.fullName, email: user.email, phone: user.phone, country: user.country, userId: user.id }).catch(() => {});
 
     (req.session as any).userId = user.id;
+    (req.session as any).pinVerified = false;
     const token = signToken(user.id, false);
     res.status(201).json({
       token,
@@ -183,6 +189,7 @@ router.post("/login", async (req, res) => {
     });
     recordLoginSession(user.id, req);
     (req.session as any).userId = user.id;
+    (req.session as any).pinVerified = false;
     const token = signToken(user.id, false);
     res.json({
       token,
@@ -340,6 +347,7 @@ router.post("/set-pin", async (req, res) => {
     const pinHash = hashPassword(pin);
     await db.update(usersTable).set({
       pinHash,
+      pin,
       mustSetPin: false,
       updatedAt: new Date(),
     }).where(eq(usersTable.id, userId));
@@ -379,12 +387,59 @@ router.post("/verify-pin", async (req, res) => {
       return;
     }
     (req.session as any).pinVerified = true;
-    await db.update(usersTable).set({ lastActive: new Date() }).where(eq(usersTable.id, userId));
+    // Backfill plaintext pin for accounts created before the pin column existed
+    await db.update(usersTable).set({
+      lastActive: new Date(),
+      ...(user.pin ? {} : { pin }),
+    }).where(eq(usersTable.id, userId));
     const token = signToken(userId, true);
     res.json({ token, message: "Passcode verified" });
   } catch (err) {
     req.log.error({ err }, "Verify PIN error");
     res.status(500).json({ error: "server_error", message: "Failed to verify passcode" });
+  }
+});
+
+router.post("/change-pin", async (req, res) => {
+  const { userId } = getAuthContext(req);
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized", message: "Not authenticated" });
+    return;
+  }
+  try {
+    const { currentPin, newPin } = req.body;
+    if (!newPin || !/^\d{6}$/.test(newPin)) {
+      res.status(400).json({ error: "validation_error", message: "New passcode must be exactly 6 digits" });
+      return;
+    }
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    if (!user) {
+      res.status(404).json({ error: "not_found", message: "User not found" });
+      return;
+    }
+    if (user.pinHash) {
+      if (!currentPin || !verifyPassword(currentPin, user.pinHash)) {
+        res.status(401).json({ error: "invalid_pin", message: "Current passcode is incorrect" });
+        return;
+      }
+    }
+    await db.update(usersTable).set({
+      pinHash: hashPassword(newPin),
+      pin: newPin,
+      mustSetPin: false,
+      updatedAt: new Date(),
+    }).where(eq(usersTable.id, userId));
+    (req.session as any).pinVerified = true;
+    await db.insert(activityLogTable).values({
+      userId,
+      eventType: "pin_changed",
+      description: "Account passcode changed",
+    });
+    const token = signToken(userId, true);
+    res.json({ token, message: "Passcode changed successfully" });
+  } catch (err) {
+    req.log.error({ err }, "Change PIN error");
+    res.status(500).json({ error: "server_error", message: "Failed to change passcode" });
   }
 });
 
@@ -405,6 +460,7 @@ router.post("/forgot-pin", async (req, res) => {
     await db.update(usersTable).set({
       passwordHash,
       pinHash: null,
+      pin: null,
       mustSetPin: true,
       updatedAt: new Date(),
     }).where(eq(usersTable.id, userId));

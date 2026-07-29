@@ -10,12 +10,13 @@ import { logger } from "./lib/logger";
 const JWT_SECRET = process.env.SESSION_SECRET ?? "investment-platform-secret-key";
 
 function jwtSessionMiddleware(req: Request, _res: Response, next: NextFunction): void {
-  if ((req.session as any).userId) { next(); return; }
   const auth = req.headers.authorization;
   if (auth?.startsWith("Bearer ")) {
     try {
       const payload = jwt.verify(auth.slice(7), JWT_SECRET) as any;
       if (payload?.userId) {
+        // The token is the source of truth: always mirror it into the session
+        // (both userId and pinVerified) so stale session state can never win.
         (req.session as any).userId = payload.userId;
         (req.session as any).pinVerified = !!payload.pinVerified;
       }

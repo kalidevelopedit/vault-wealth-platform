@@ -70,6 +70,7 @@ const TOTAL_STEPS = 6;
 const INPUT = "w-full bg-white border border-[#E6E8EB] text-[#0F172A] text-[13px] px-3.5 py-2.5 rounded-xl placeholder:text-[#bbb] focus:outline-none focus:border-[#0d1520] transition-colors";
 const LABEL = "block text-[10px] font-semibold text-[#6B7280] uppercase tracking-widest mb-1.5";
 const CARD = "bg-white border border-[#E6E8EB] rounded-xl";
+const TWO_COL_GRID = "grid grid-cols-1 md:grid-cols-2 gap-3";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function uploadFileToStorage(file: File): Promise<string> {
@@ -1186,8 +1187,8 @@ export default function Onboarding() {
                     )}
                   </div>
 
-                  {/* City + Postal */}
-                  <div className="grid grid-cols-2 gap-3">
+                    {/* City + Postal */}
+                  <div className={TWO_COL_GRID}>
                     <div>
                       <label className={LABEL}>City / Town</label>
                       <input value={profile.city} placeholder="City" onChange={e => setProfile({ ...profile, city: e.target.value })} className={INPUT} />
@@ -1270,7 +1271,7 @@ export default function Onboarding() {
 
                 {/* ── Driver's license: front + back ── */}
                 {idType === "drivers_license" ? (
-                  <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className={`${TWO_COL_GRID} mb-4`}>
                     {/* Front */}
                     <div>
                       <p className={LABEL + " mb-2"}>Front side</p>

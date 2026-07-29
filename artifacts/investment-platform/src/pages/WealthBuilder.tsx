@@ -137,7 +137,7 @@ export default function WealthBuilder() {
   };
 
   return (
-    <div className="app-page-inner" style={{ background: BG, minHeight: "100vh", padding: "28px 24px", maxWidth: 980, margin: "0 auto" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 md:py-7 mx-auto" style={{ background: BG, minHeight: "100vh", maxWidth: 980 }}>
 
       {/* Hero */}
       <div style={{
@@ -173,7 +173,7 @@ export default function WealthBuilder() {
         <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", maxWidth: 520, lineHeight: 1.65, margin: "0 0 24px" }}>
           Grow your capital with structured yield plans. Choose a tier that matches your portfolio size and lock in returns for 24 hours, 7 or 14 days.
         </p>
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+        <div className="flex flex-wrap gap-4 md:gap-6 mt-4">
           <div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>Available Balance</div>
             <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", fontFamily: "monospace" }}>${fmt2(availableCash)}</div>
@@ -193,11 +193,7 @@ export default function WealthBuilder() {
       <h2 style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.12em" }}>
         Investment Tiers
       </h2>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))",
-        gap: 12, marginBottom: 32,
-      }}>
+      <div className="wealth-tiers-grid" style={{ marginBottom: 32 }}>
         {TIERS.map(t => {
           const sel = selectedTier === t.level;
           const d14apy = t.apy14d;
@@ -267,7 +263,7 @@ export default function WealthBuilder() {
               <div style={{ fontSize: 11.5, color: MUTED, marginBottom: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 Investment Period
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8 }}>
+              <div className="duration-grid">
                 {[1, 7, 14].map(d => {
                   const a = d === 1 ? tier.apy24h : d === 7 ? tier.apy7d : tier.apy14d;
                   const sel = duration === d;
@@ -465,16 +461,16 @@ export default function WealthBuilder() {
               return (
                 <div key={inv.id}
                   onClick={() => setDetailId(inv.id)}
+                  className="active-plan-card"
                   style={{
                     borderRadius: 16, background: CARD,
                     border: `1.5px solid ${isMatured ? GREEN : BORD}`,
                     padding: "18px 20px",
                     boxShadow: isMatured ? "0 0 20px rgba(14,203,129,0.12)" : "none",
-                    display: "grid", gridTemplateColumns: "1fr auto",
-                    gap: 16, alignItems: "center", cursor: "pointer",
+                    cursor: "pointer",
                   }}>
                   <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
                       <span style={{ fontSize: 18 }}>{t?.icon}</span>
                       <span style={{ fontSize: 15, fontWeight: 800, color: t?.color }}>{t?.label}</span>
                       <span style={{
@@ -487,7 +483,7 @@ export default function WealthBuilder() {
                         {isMatured ? "Matured" : "Active"}
                       </span>
                     </div>
-                    <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+                    <div className="active-plan-stats-row">
                       <div>
                         <div style={{ fontSize: 10, color: MUTED, marginBottom: 2 }}>INVESTED</div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, fontFamily: "monospace" }}>${fmt2(inv.amount)}</div>
@@ -522,7 +518,7 @@ export default function WealthBuilder() {
                         padding: "12px 20px", borderRadius: 12, border: "none",
                         background: GREEN, color: "#fff", fontSize: 13, fontWeight: 700,
                         cursor: "pointer", whiteSpace: "nowrap",
-                        display: "flex", alignItems: "center", gap: 6,
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                         boxShadow: "0 4px 16px rgba(14,203,129,0.35)",
                         opacity: cashingOut === inv.id ? 0.6 : 1,
                       }}
@@ -559,16 +555,21 @@ export default function WealthBuilder() {
                 <div key={inv.id} style={{
                   borderRadius: 12, background: CARD, border: `1px solid ${BORD}`,
                   padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, opacity: 0.7,
+                  flexWrap: "wrap"
                 }}>
-                  <span style={{ fontSize: 16 }}>{t?.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: MUTED }}>{t?.label}</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>{inv.durationDays}d · ${fmt2(inv.amount)} + ${fmt2(inv.expectedReturn)} return</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 200 }}>
+                    <span style={{ fontSize: 16 }}>{t?.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: MUTED }}>{t?.label}</div>
+                      <div style={{ fontSize: 11, color: MUTED }}>{inv.durationDays}d · ${fmt2(inv.amount)} + ${fmt2(inv.expectedReturn)} return</div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: MUTED, fontFamily: "monospace" }}>
-                    ${fmt2(inv.amount + inv.expectedReturn)}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end", flexShrink: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: MUTED, fontFamily: "monospace" }}>
+                      ${fmt2(inv.amount + inv.expectedReturn)}
+                    </div>
+                    <CheckCircle size={14} style={{ color: GREEN, opacity: 0.6 }} />
                   </div>
-                  <CheckCircle size={14} style={{ color: GREEN, opacity: 0.6 }} />
                 </div>
               );
             })}

@@ -241,7 +241,7 @@ export default function AssetList() {
   };
 
   return (
-    <div className="app-page-inner" style={{ padding: "24px 20px", maxWidth: 1440, margin: "0 auto", background: BG, minHeight: "100%" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 mx-auto" style={{ maxWidth: 1440, background: BG, minHeight: "100%" }}>
       <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}`}</style>
 
       {tradeAsset && (
@@ -255,14 +255,14 @@ export default function AssetList() {
 
       {/* Tabs + Search */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: `1px solid ${BORD}`, marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div style={{ display: "flex", gap: 24 }}>
+        <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 4 }}>
           {TABS.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
               background: "none", border: "none", cursor: "pointer",
               fontSize: 14, fontWeight: activeTab === t.id ? 600 : 500,
               color: activeTab === t.id ? TEXT : MUTED,
               borderBottom: activeTab === t.id ? `2px solid ${BLUE}` : "2px solid transparent",
-              paddingBottom: 12, transition: "all 0.12s", padding: "0 0 12px",
+              paddingBottom: 12, transition: "all 0.12s", padding: "0 0 12px", whiteSpace: "nowrap"
             }}>{t.label}</button>
           ))}
         </div>

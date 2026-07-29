@@ -226,14 +226,14 @@ export default function Convert() {
   }
 
   return (
-    <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 1100, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 mx-auto" style={{ maxWidth: 1100, background: colors.bg, minHeight: "100%" }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: colors.text, marginBottom: 8 }}>Convert</h1>
       <p style={{ fontSize: 14, color: colors.muted, marginBottom: 32 }}>Swap between supported asset pairs at live market rates.</p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="app-page-grid">
         {/* Converter Card */}
-        <div className="lg:col-span-2">
-          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 20, padding: 32 }}>
+        <div>
+          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 20, padding: "24px 20px" }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 24 }}>Swap Assets</div>
 
             {/* From selector */}
@@ -335,9 +335,9 @@ export default function Convert() {
           </div>
 
           {/* Conversion Rules */}
-          <div style={{ marginTop: 16, background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 24px" }}>
+          <div style={{ marginTop: 16, background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 20px" }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: 14 }}>Supported Conversions</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div className="convert-rules-grid">
               {[
                 { label: "Crypto → Crypto", desc: "BTC, ETH, SOL, etc.", allowed: true },
                 { label: "Crypto → USD", desc: "Sell crypto to cash", allowed: true },
@@ -365,7 +365,7 @@ export default function Convert() {
         {/* Right Panel */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Available Balance */}
-          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 24px" }}>
+          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 20px" }}>
             <div style={{ fontSize: 13, color: colors.muted, marginBottom: 8 }}>Available Cash</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: colors.text, fontFamily: "monospace" }}>
               ${availableCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}
@@ -373,7 +373,7 @@ export default function Convert() {
           </div>
 
           {/* Quick Pairs */}
-          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 24px" }}>
+          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 20px" }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: 16 }}>Quick Pairs</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {QUICK_PAIRS.map(p => {
@@ -405,7 +405,7 @@ export default function Convert() {
           </div>
 
           {/* Fee Info */}
-          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 24px" }}>
+          <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, padding: "20px 20px" }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: 12 }}>Conversion Details</div>
             {[
               { label: "Conversion Fee", value: "0.10%" },

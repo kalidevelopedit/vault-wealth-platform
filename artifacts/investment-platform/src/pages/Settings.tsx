@@ -78,7 +78,7 @@ export default function Settings() {
   );
 
   return (
-    <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 1000, margin: "0 auto", background: BG, minHeight: "100%" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 mx-auto" style={{ maxWidth: 1000, background: BG, minHeight: "100%" }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: TEXT, marginBottom: 32 }}>Settings</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

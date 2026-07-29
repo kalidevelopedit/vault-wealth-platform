@@ -493,7 +493,7 @@ export default function AssetDetail() {
       )}
 
       {/* Breadcrumb */}
-      <div style={{ borderBottom: `1px solid ${BORD}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
+      <div className="app-page-inner px-4 md:px-6" style={{ borderBottom: `1px solid ${BORD}`, padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
         <Link href="/markets" style={{ display: "flex", alignItems: "center", gap: 6, color: MUTED, textDecoration: "none", fontSize: 13 }}>
           <ArrowLeft style={{ width: 14, height: 14 }} strokeWidth={1.5} /> Markets
         </Link>
@@ -557,17 +557,16 @@ export default function AssetDetail() {
       </div>
 
       {/* Main content */}
-      <div style={{
-        display: "flex", flexDirection: isMobile ? "column" : "row",
+      <div className="asset-detail-grid" style={{
         height: isMobile ? "auto" : "calc(100vh - 232px)", minHeight: isMobile ? 0 : 560,
       }}>
         {/* ── Left: Chart + Info tabs ───────────────────────────────── */}
         <div style={{
-          flex: 1, minWidth: 0,
+          minWidth: 0,
           borderRight: isMobile ? "none" : `1px solid ${BORD}`,
           borderBottom: isMobile ? `1px solid ${BORD}` : "none",
           display: "flex", flexDirection: "column",
-          height: isMobile ? "auto" : undefined,
+          height: isMobile ? "auto" : "100%",
         }}>
           {/* Chart */}
           <div style={{ flex: "0 0 420px", height: isMobile ? 320 : 420 }}>
@@ -729,7 +728,7 @@ export default function AssetDetail() {
 
         {/* ── Right: Trade Form + Order Book ───────────────────────── */}
         <div style={{
-          width: isMobile ? "100%" : 320, flexShrink: 0,
+          minWidth: 0,
           display: "flex", flexDirection: "column",
           overflowY: isMobile ? "visible" : "auto",
           background: CARD,

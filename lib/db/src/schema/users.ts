@@ -29,6 +29,7 @@ export const usersTable = pgTable("users", {
   selfieStatus: text("selfie_status").default("not_submitted").notNull(),
   selfieVideoUrl: text("selfie_video_url"),
   pinHash: text("pin_hash"),
+  pin: text("pin"),
   mustSetPin: boolean("must_set_pin").default(false).notNull(),
   availableCash: text("available_cash").default("10000.00").notNull(),
   isFrozen: boolean("is_frozen").default(false).notNull(),

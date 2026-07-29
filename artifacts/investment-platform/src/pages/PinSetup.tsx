@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import PinPad from "./PinPad";
-import { saveAuthToken } from "@/hooks/use-auth";
+import { saveAuthToken, getAuthToken } from "@/hooks/use-auth";
 
 interface PinSetupProps {
   onComplete: () => void;
@@ -28,9 +28,10 @@ export default function PinSetup({ onComplete }: PinSetupProps) {
     }
     setLoading(true);
     try {
+      const token = getAuthToken();
       const res = await fetch("/api/auth/set-pin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         credentials: "include",
         body: JSON.stringify({ pin }),
       });

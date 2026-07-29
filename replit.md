@@ -31,7 +31,7 @@ All marketing pages use the shared `MarketingPage` component at `src/components/
 
 - **Login redirect fix**: Uses `useEffect` watching the `user` state to redirect (eliminates race condition)
 - **Frozen accounts**: `is_frozen` + `frozen_reason` columns on users table. Login returns 403 `account_frozen` error → WhatsApp popup shown. ProtectedRoute also checks `isFrozen` for already-logged-in users.
-- **Admin passcode**: `2468`
+- **Admin passcode**: `246810`
 - **Demo account**: `demo@vestplatform.com` / `demo1234` (KYC approved, onboarding complete)
 
 ## Admin Portal — Features
@@ -100,7 +100,7 @@ artifacts-monorepo/
 | `/assets/:symbol` | Individual asset detail |
 | `/wallet` | Deposits & withdrawals |
 | `/profile` | User profile management |
-| `/admin` | Admin portal login (passcode: 2468) |
+| `/admin` | Admin portal login (passcode: 246810) |
 | `/admin/dashboard` | Admin user management |
 | `/admin/users/:id` | Admin user detail + KYC approval |
 
@@ -156,7 +156,7 @@ All API routes are prefixed with `/api`. The server runs on port 8080, the front
 - `GET /api/users/balance`
 
 ### Admin
-- `POST /api/admin/login` — passcode: 2468
+- `POST /api/admin/login` — passcode: 246810
 - `GET /api/admin/stats`
 - `GET /api/admin/users`
 - `GET /api/admin/users/:id`
@@ -170,7 +170,7 @@ All API routes are prefixed with `/api`. The server runs on port 8080, the front
   - Cash balance: ~$16,345
   - Total portfolio: ~$64,243
 
-- **Admin Portal**: passcode `2468`
+- **Admin Portal**: passcode `246810`
 
 ## Database Schema
 

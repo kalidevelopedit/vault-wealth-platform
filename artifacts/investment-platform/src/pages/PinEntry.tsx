@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import PinPad from "./PinPad";
-import { saveAuthToken } from "@/hooks/use-auth";
+import { saveAuthToken, getAuthToken } from "@/hooks/use-auth";
+
+function authHeaders(): Record<string, string> {
+  const token = getAuthToken();
+  return { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+}
 
 interface PinEntryProps {
   userEmail: string;
@@ -20,7 +25,7 @@ export default function PinEntry({ userEmail, onSuccess, onLogout }: PinEntryPro
     try {
       const res = await fetch("/api/auth/verify-pin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         credentials: "include",
         body: JSON.stringify({ pin }),
       });
@@ -44,7 +49,7 @@ export default function PinEntry({ userEmail, onSuccess, onLogout }: PinEntryPro
     try {
       const res = await fetch("/api/auth/forgot-pin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         credentials: "include",
         body: JSON.stringify({ email: userEmail }),
       });

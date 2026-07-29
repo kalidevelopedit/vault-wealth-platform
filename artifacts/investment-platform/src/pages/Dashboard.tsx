@@ -385,9 +385,10 @@ function MarketOverviewInner() {
       </div>
 
       {/* Column headers */}
-      <div style={{ display: "grid", gridTemplateColumns: COL, padding: "7px 14px", borderBottom: `1px solid ${BORD}`, gap: 8 }}>
+      <div className="market-row-grid" style={{ padding: "7px 14px", borderBottom: `1px solid ${BORD}` }}>
         {(["#", "Name", "Price", "24h %", "Market Cap", "7d", ""] as const).map((lbl, i) => (
           <div key={i}
+            className={i >= 4 ? "desktop-col" : ""}
             onClick={() => {
               if (lbl === "Price") toggleSort("price");
               else if (lbl === "24h %") toggleSort("change");
@@ -407,11 +408,10 @@ function MarketOverviewInner() {
         ))}
       </div>
 
-      {/* Rows */}
-      <div style={{ maxHeight: 390, overflowY: "auto" }}>
+      <div style={{ maxHeight: 390, overflowY: "auto", overflowX: "hidden" }}>
         {isLoading ? (
           Array.from({ length: 6 }, (_, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: COL, padding: "10px 14px", borderBottom: `1px solid ${BORD}`, gap: 8, alignItems: "center" }}>
+            <div key={i} className="market-row-grid" style={{ padding: "10px 14px", borderBottom: `1px solid ${BORD}` }}>
               <div style={{ height: 12, width: 16, borderRadius: 4, background: shimmer }} />
               <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
                 <div style={{ width: 27, height: 27, borderRadius: "50%", background: shimmer, flexShrink: 0 }} />
@@ -422,9 +422,9 @@ function MarketOverviewInner() {
               </div>
               <div style={{ height: 12, width: 70, borderRadius: 4, background: shimmer, marginLeft: "auto" }} />
               <div style={{ height: 12, width: 50, borderRadius: 4, background: shimmer, marginLeft: "auto" }} />
-              <div style={{ height: 12, width: 60, borderRadius: 4, background: shimmer, marginLeft: "auto" }} />
-              <div style={{ height: 20, width: 40, borderRadius: 4, background: shimmer, margin: "0 auto" }} />
-              <div style={{ height: 26, width: 50, borderRadius: 6, background: shimmer, marginLeft: "auto" }} />
+              <div className="desktop-col" style={{ height: 12, width: 60, borderRadius: 4, background: shimmer, marginLeft: "auto" }} />
+              <div className="desktop-col" style={{ height: 20, width: 40, borderRadius: 4, background: shimmer, margin: "0 auto" }} />
+              <div className="desktop-col" style={{ height: 26, width: 50, borderRadius: 6, background: shimmer, marginLeft: "auto" }} />
             </div>
           ))
         ) : tab === "futures" ? (
@@ -442,7 +442,8 @@ function MarketOverviewInner() {
           return (
             <div key={a.symbol}
               onClick={() => navigate(`/assets/${a.symbol}`)}
-              style={{ display: "grid", gridTemplateColumns: COL, padding: "9px 14px", borderBottom: `1px solid ${BORD}`, gap: 8, alignItems: "center", cursor: "pointer" }}
+              className="market-row-grid"
+              style={{ padding: "9px 14px", borderBottom: `1px solid ${BORD}`, cursor: "pointer" }}
               onMouseEnter={e => (e.currentTarget.style.background = mode === "dark" ? "rgba(255,255,255,0.022)" : "rgba(0,0,0,0.022)")}
               onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
             >
@@ -463,13 +464,13 @@ function MarketOverviewInner() {
                 <span style={{ fontSize: 13, fontWeight: 600, color: pos ? GREEN : RED }}>{pos ? "+" : ""}{fmt2(a.changePercent24h ?? 0)}%</span>
               </div>
 
-              <div style={{ textAlign: "right", fontSize: 12, color: MUTED }}>{fmtCompact(a.marketCap ?? 0)}</div>
+              <div className="desktop-col" style={{ textAlign: "right", fontSize: 12, color: MUTED }}>{fmtCompact(a.marketCap ?? 0)}</div>
 
-              <div style={{ display: "flex", justifyContent: "center" }}>
+              <div className="desktop-col" style={{ display: "flex", justifyContent: "center" }}>
                 <SparkBar pct={a.changePercent24h ?? 0} />
               </div>
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div className="desktop-col" style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Link href={`/assets/${a.symbol}`} onClick={e => e.stopPropagation()} style={{
                   padding: "5px 10px", borderRadius: 6,
                   background: mode === "dark" ? "rgba(37,99,255,0.12)" : "rgba(37,99,255,0.08)",

@@ -37,6 +37,90 @@ function Input({ label, type, value, onChange, placeholder, show, onToggle, colo
   );
 }
 
+function ChangePinModal({ onClose, colors }: { onClose: () => void; colors: any }) {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const digitsOnly = (v: string) => v.replace(/\D/g, "").slice(0, 6);
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (!current || !next || !confirm) { toast.error("All fields are required"); return; }
+    if (!/^\d{6}$/.test(next)) { toast.error("New passcode must be exactly 6 digits"); return; }
+    if (next !== confirm) { toast.error("Passcodes do not match"); return; }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("vault_auth_token");
+      const res = await fetch("/api/auth/change-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        credentials: "include",
+        body: JSON.stringify({ currentPin: current, newPin: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed");
+      if (data.token) localStorage.setItem("vault_auth_token", data.token);
+      toast.success("Passcode changed successfully");
+      onClose();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to change passcode");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pinInput = (label: string, value: string, onChange: (v: string) => void) => (
+    <div>
+      <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: colors.muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>{label}</label>
+      <input
+        type="password"
+        inputMode="numeric"
+        autoComplete="off"
+        value={value}
+        onChange={e => onChange(digitsOnly(e.target.value))}
+        placeholder="••••••"
+        style={{
+          width: "100%", padding: "12px 14px", borderRadius: 10,
+          border: `1px solid ${colors.bord}`, background: colors.inputBg ?? "transparent",
+          color: colors.text, fontSize: 16, letterSpacing: "0.3em", outline: "none",
+        }}
+      />
+    </div>
+  );
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.75)" }} onClick={onClose} />
+      <div style={{
+        position: "relative", width: "100%", maxWidth: 420, background: colors.card,
+        border: `1px solid ${colors.bord}`, borderRadius: 20, padding: "28px", zIndex: 1,
+        margin: "0 16px",
+      }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: colors.text, marginBottom: 4 }}>Change Passcode</div>
+        <div style={{ fontSize: 13, color: colors.muted, marginBottom: 24 }}>Your 6-digit passcode is required each time you open the app.</div>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {pinInput("Current Passcode", current, setCurrent)}
+          {pinInput("New Passcode", next, setNext)}
+          {pinInput("Confirm New Passcode", confirm, setConfirm)}
+          <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+            <button type="button" onClick={onClose} style={{
+              flex: 1, padding: "12px 0", borderRadius: 10, border: `1px solid ${colors.bord}`,
+              background: "transparent", color: colors.muted, fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}>Cancel</button>
+            <button type="submit" disabled={loading} style={{
+              flex: 1, padding: "12px 0", borderRadius: 10, border: "none",
+              background: "#2563FF", color: "#fff", fontSize: 14, fontWeight: 600,
+              cursor: loading ? "default" : "pointer", opacity: loading ? 0.7 : 1,
+            }}>{loading ? "Saving..." : "Save Passcode"}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function ChangePasswordModal({ onClose, colors }: { onClose: () => void; colors: any }) {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -151,6 +235,7 @@ export default function UserSecurity() {
   const { user } = useAuth();
   const { colors } = useTheme();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
   const [sessions, setSessions] = useState<any[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
 
@@ -203,9 +288,9 @@ export default function UserSecurity() {
       desc: "6-digit passcode required every time you open the app",
       status: user?.hasPin ? "Active" : "Not Set",
       statusColor: user?.hasPin ? "#4ade80" : colors.muted,
-      action: user?.hasPin ? "Manage" : "Set Up",
-      onClick: null,
-      href: "/pin-setup",
+      action: user?.hasPin ? "Change" : "Set Up",
+      onClick: user?.hasPin ? () => setShowPinModal(true) : null,
+      href: user?.hasPin ? null : "/pin-setup",
     },
     {
       id: "email",
@@ -221,7 +306,7 @@ export default function UserSecurity() {
   ];
 
   return (
-    <div className="app-page-inner" style={{ padding: "32px 24px", maxWidth: 1000, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 mx-auto" style={{ maxWidth: 1000, background: colors.bg, minHeight: "100%" }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: colors.text, marginBottom: 32 }}>Security</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -350,6 +435,7 @@ export default function UserSecurity() {
       </div>
 
       {showPasswordModal && <ChangePasswordModal onClose={() => setShowPasswordModal(false)} colors={colors} />}
+      {showPinModal && <ChangePinModal onClose={() => setShowPinModal(false)} colors={colors} />}
     </div>
   );
 }

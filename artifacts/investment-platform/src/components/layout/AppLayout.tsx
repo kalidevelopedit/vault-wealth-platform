@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
   LayoutDashboard, BarChart2, Wallet, User, ArrowLeftRight,
   LogOut, Search, Shield, Settings, TrendingUp, Sun, Moon, X,
-  MessageCircle, Gem,
+  MessageCircle, Gem, LayoutGrid,
 } from "lucide-react";
 import { PwaInstallBanner } from "@/components/PwaInstallBanner";
 import { Logo } from "@/components/Logo";
@@ -56,6 +56,15 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [location, navigate] = useLocation();
   const { mode, colors, toggle } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [menuSheetOpen, setMenuSheetOpen] = useState(false);
+
+  // Close the mobile menu sheet with Escape
+  useEffect(() => {
+    if (!menuSheetOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuSheetOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuSheetOpen]);
   const [searchVal, setSearchVal] = useState("");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -100,13 +109,21 @@ export function AppLayout({ children }: AppLayoutProps) {
     { icon: Settings,        label: "Settings",        href: "/settings" },
   ];
 
-  // Bottom nav shows 5 items (mobile)
-  const bottomNav = [
+  // Bottom nav: 4 items + middle Menu button (mobile)
+  const bottomNavLeft = [
     { icon: LayoutDashboard, label: "Home",     href: "/dashboard" },
     { icon: BarChart2,       label: "Markets",  href: "/markets" },
+  ];
+  const bottomNavRight = [
     { icon: Wallet,          label: "Wallet",   href: "/wallet" },
-    { icon: ArrowLeftRight,  label: "Convert",  href: "/convert" },
     { icon: User,            label: "Profile",  href: "/profile" },
+  ];
+  // Items surfaced by the middle Menu sheet (everything not in the bottom bar)
+  const menuSheetLinks = [
+    { icon: Gem,            label: "Wealth Builder", href: "/wealth-builder" },
+    { icon: ArrowLeftRight, label: "Convert",        href: "/convert" },
+    { icon: Shield,         label: "Security",       href: "/account/security" },
+    { icon: Settings,       label: "Settings",       href: "/settings" },
   ];
 
   const isActive = (href: string) => {
@@ -548,19 +565,96 @@ export function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
 
+      {/* ── Mobile Menu Sheet (opened by middle bottom-nav button) ── */}
+      {menuSheetOpen && (
+        <div className="md:hidden" role="dialog" aria-modal="true" aria-label="More navigation options" id="mobile-menu-sheet" style={{ position: "fixed", inset: 0, zIndex: 210 }}>
+          <div onClick={() => setMenuSheetOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(10,15,25,0.45)", backdropFilter: "blur(2px)" }} />
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            background: HEADER, borderTop: `1px solid ${BORD}`,
+            borderRadius: "18px 18px 0 0",
+            padding: "10px 16px",
+            paddingBottom: "calc(84px + env(safe-area-inset-bottom, 0px))",
+            boxShadow: "0 -8px 32px rgba(0,0,0,0.18)",
+            animation: "sheet-up 0.22s cubic-bezier(0.16,1,0.3,1)",
+          }}>
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: BORD, margin: "0 auto 12px" }} />
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: MUTED, marginBottom: 10 }}>More</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {menuSheetLinks.map(item => {
+                const active = isActive(item.href);
+                return (
+                  <Link key={item.label} href={item.href} onClick={() => setMenuSheetOpen(false)} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "13px 14px", borderRadius: 12, textDecoration: "none",
+                    background: active ? ACTIVE : HOVER,
+                    border: `1px solid ${active ? colors.blue + "40" : BORD}`,
+                    color: active ? colors.blue : TEXT,
+                  }}>
+                    <item.icon style={{ width: 18, height: 18, flexShrink: 0 }} strokeWidth={active ? 2 : 1.6} />
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            <button onClick={() => { setMenuSheetOpen(false); logout(); }} style={{
+              width: "100%", marginTop: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "12px 0", borderRadius: 12, border: `1px solid ${BORD}`, background: "transparent",
+              color: "#ef4444", fontSize: 13, fontWeight: 600, cursor: "pointer",
+            }}>
+              <LogOut style={{ width: 16, height: 16 }} /> Log out
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Mobile Bottom Navigation ── */}
       <nav className="md:hidden" style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200,
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 220,
         height: 64, background: HEADER,
         borderTop: `1px solid ${BORD}`,
         display: "flex", alignItems: "stretch",
         boxShadow: mode === "light" ? "0 -2px 12px rgba(0,0,0,0.06)" : "0 -1px 0 rgba(255,255,255,0.04)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}>
-        {bottomNav.map(item => {
+        {bottomNavLeft.map(item => {
           const active = isActive(item.href);
           return (
-            <Link key={item.label} href={item.href} style={{
+            <Link key={item.label} href={item.href} onClick={() => setMenuSheetOpen(false)} style={{
+              flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+              justifyContent: "center", gap: 4, textDecoration: "none",
+              color: active ? colors.blue : MUTED,
+              background: "transparent", transition: "color 0.1s",
+            }}>
+              <item.icon style={{ width: 21, height: 21 }} strokeWidth={active ? 2 : 1.5} />
+              <span style={{ fontSize: 10, fontWeight: active ? 600 : 400 }}>{item.label}</span>
+            </Link>
+          );
+        })}
+        {/* Middle Menu button */}
+        <button onClick={() => setMenuSheetOpen(o => !o)} aria-label="More menu" aria-expanded={menuSheetOpen} aria-controls="mobile-menu-sheet" style={{
+          flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+          justifyContent: "center", gap: 4, background: "transparent", border: "none",
+          cursor: "pointer", position: "relative", padding: 0,
+        }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 22, marginTop: -18,
+            background: menuSheetOpen ? colors.blue : `linear-gradient(135deg, ${colors.blue}, #4f7fff)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 4px 14px rgba(37,99,255,0.4)",
+            border: `3px solid ${HEADER}`,
+            transition: "transform 0.15s",
+          }}>
+            {menuSheetOpen
+              ? <X style={{ width: 20, height: 20, color: "#fff" }} strokeWidth={2.2} />
+              : <LayoutGrid style={{ width: 19, height: 19, color: "#fff" }} strokeWidth={2} />}
+          </div>
+          <span style={{ fontSize: 10, fontWeight: menuSheetOpen ? 600 : 400, color: menuSheetOpen ? colors.blue : MUTED }}>Menu</span>
+        </button>
+        {bottomNavRight.map(item => {
+          const active = isActive(item.href);
+          return (
+            <Link key={item.label} href={item.href} onClick={() => setMenuSheetOpen(false)} style={{
               flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
               justifyContent: "center", gap: 4, textDecoration: "none",
               color: active ? colors.blue : MUTED,
@@ -577,6 +671,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <style>{`
         @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes sheet-up { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         /* Mobile: 90px header */
         .app-main-layout { margin-top: 90px; }

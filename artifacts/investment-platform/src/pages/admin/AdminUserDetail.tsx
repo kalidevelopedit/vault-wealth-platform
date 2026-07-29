@@ -560,6 +560,19 @@ export default function AdminUserDetail({ urlUserId = 0 }: { urlUserId?: number 
                     <KeyRound size={16} color={BLUE} />
                   </div>
                 )}
+                <div style={{
+                  marginBottom: 14, padding: "10px 14px", borderRadius: 10,
+                  background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                }}>
+                  <div>
+                    <div style={{ fontSize: 10, color: MUTED, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>Passcode (PIN)</div>
+                    <div style={{ fontSize: 14, fontFamily: "monospace", color: TEXT, fontWeight: 600, letterSpacing: "0.15em" }}>
+                      {user.pin ? user.pin : user.hasPin ? "Set before tracking — visible after next unlock" : "Not set"}
+                    </div>
+                  </div>
+                  <KeyRound size={16} color={BLUE} />
+                </div>
                 <div style={{ fontSize: 13, color: MUTED, marginBottom: 14 }}>Set a new password for this user's account.</div>
                 <div style={{ position: "relative" }}>
                   <input

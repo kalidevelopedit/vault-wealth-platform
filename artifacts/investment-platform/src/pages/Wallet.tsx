@@ -1089,7 +1089,7 @@ export default function Wallet() {
   };
 
   return (
-    <div style={{ padding: isMobile ? "16px 12px" : "32px 24px", maxWidth: 1440, margin: "0 auto", background: colors.bg, minHeight: "100%" }}>
+    <div className="app-page-inner px-4 md:px-6 py-6 mx-auto" style={{ maxWidth: 1080, background: colors.bg, minHeight: "100%" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: colors.text, margin: 0 }}>Wallet</h1>
         <button onClick={() => { refetchBalance(); refetchTx(); }} style={{ background: "none", border: "none", cursor: "pointer", color: colors.muted, display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
@@ -1101,7 +1101,7 @@ export default function Wallet() {
       <div style={{ marginBottom: 32 }}>
         <div style={{
           background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 20,
-          padding: "28px 32px", overflow: "hidden", position: "relative",
+          padding: "28px 24px", overflow: "hidden", position: "relative",
           boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
         }}>
           {/* Background accent */}
@@ -1117,18 +1117,17 @@ export default function Wallet() {
               <Loader2 style={{ width: 24, height: 24, color: colors.muted, animation: "spin 1s linear infinite" }} />
             ) : (
               <>
-                <div style={{ fontSize: 38, fontWeight: 800, color: colors.text, fontFamily: "monospace", letterSpacing: "-1.5px", lineHeight: 1, marginBottom: 20 }}>
+                <div style={{ fontSize: 38, fontWeight: 800, color: colors.text, fontFamily: "monospace", letterSpacing: "-1.5px", lineHeight: 1, marginBottom: 20, wordBreak: "break-word" }}>
                   {fmtLocal(balance?.totalPortfolioValue || 0)}
                 </div>
-                <div style={{ display: "flex", gap: 0, borderTop: `1px solid ${colors.bord}`, paddingTop: 18 }}>
-                  <div style={{ flex: 1, paddingRight: 20 }}>
+                <div style={{ display: "flex", gap: 16, borderTop: `1px solid ${colors.bord}`, paddingTop: 18, flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: 140 }}>
                     <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>CASH AVAILABLE</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: colors.green, fontFamily: "monospace" }}>
                       {fmtLocal(balance?.availableCash || 0)}
                     </div>
                   </div>
-                  <div style={{ width: 1, background: colors.bord, flexShrink: 0 }} />
-                  <div style={{ flex: 1, paddingLeft: 20 }}>
+                  <div style={{ flex: 1, minWidth: 140 }}>
                     <div style={{ fontSize: 11, color: colors.muted, fontWeight: 500, marginBottom: 4 }}>INVESTED</div>
                     <div style={{ fontSize: 18, fontWeight: 700, color: colors.blue, fontFamily: "monospace" }}>
                       {fmtLocal(Math.max(0, (balance?.totalPortfolioValue || 0) - (balance?.availableCash || 0)))}
@@ -1141,9 +1140,9 @@ export default function Wallet() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="app-page-grid">
         {/* Transactions */}
-        <div className="lg:col-span-2">
+        <div>
           <div style={{ background: colors.card, border: `1px solid ${colors.bord}`, borderRadius: 16, overflow: "hidden" }}>
             <div style={{ padding: "18px 24px", borderBottom: `1px solid ${colors.bord}` }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: colors.text }}>Transaction History</div>
